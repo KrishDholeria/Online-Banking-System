@@ -30,4 +30,10 @@ public class Branch {
     @OneToMany(mappedBy = "branch")
     private List<Manager> managers;
 
+    @OneToMany(mappedBy = "branch")
+    private List<Account> accounts;
+
+    @OneToMany(mappedBy = "branch")
+    private List<Transaction> transactions;
+
 }

@@ -2,7 +2,6 @@
 package com.project.backendrestapi.model;
 
 import java.sql.Date;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;

@@ -17,12 +17,10 @@ import lombok.Setter;
 public class Beneficiary {
 
     @Id
-    String BeneficiaryId;
-    String BeneficiaryName;
+    String beneficiaryId;
+    String beneficiaryName;
 
     @ManyToOne
     private Account account;
 
-
-    
 }

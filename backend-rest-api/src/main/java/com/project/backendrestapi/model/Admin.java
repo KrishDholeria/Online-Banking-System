@@ -15,11 +15,11 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Admin {
 
-    String UserName;
-    String Password;
-    
+    String userName;
+    String password;
+
     @Id
-    String AdminId;
+    String adminId;
 
     @OneToOne
     private Person person;

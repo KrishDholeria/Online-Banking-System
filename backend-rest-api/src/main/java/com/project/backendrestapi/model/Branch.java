@@ -21,11 +21,11 @@ import lombok.Setter;
 public class Branch {
 
     @Id
-    String BranchId;
-    String BranchName;
-    String BranchCode;
-    String Address;
-    String PhoneNumber;
+    String branchId;
+    String branchName;
+    String branchCode;
+    String address;
+    String phoneNumber;
 
     @OneToMany(mappedBy = "branch")
     private List<Manager> managers;

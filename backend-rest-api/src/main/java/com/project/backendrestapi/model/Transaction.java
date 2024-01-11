@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 @Entity
 @Getter
 @Setter
@@ -21,14 +22,14 @@ import lombok.Setter;
 public class Transaction {
 
     @Id
-    String transactionId;
-    String transactionType;
-    String amount;
-    Date transactionDate;
+    String TransactionId;
+    String TransactionType;
+    String Amount;
+    Date TransactionDate;
 
     @ManyToOne
     private Branch branch;
-
+    
     @OneToOne
     private Transaction relatedTransaction;
 

@@ -17,16 +17,16 @@ import lombok.Setter;
 
 public class Manager {
 
-    String userName;
-    String password;
+    String UserName;
+    String Password;
 
     @Id
-    String managerId;
+    String ManagerId;
 
     @OneToOne
     private Person person;
 
     @ManyToOne
     private Branch branch;
-
+    
 }

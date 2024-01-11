@@ -20,13 +20,14 @@ import lombok.Setter;
 public class Person {
 
     @Id
-    private String personId;
-    private String lastName;
-    private String firstName;
-    private Date dob;
-    private String email;
-    private String phoneNo;
-    private String address;
+    private String PersonId;
+    private String LastName;
+    private String FirstName;
+    private Date DOB;
+    private String Email;
+    private String PhoneNo;
+    private String Address;
+    
 
     @OneToOne(mappedBy = "person")
     private Manager manager;
@@ -36,5 +37,5 @@ public class Person {
 
     @OneToOne(mappedBy = "person")
     private Admin admin;
-
+    
 }

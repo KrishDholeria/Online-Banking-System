@@ -22,11 +22,11 @@ import lombok.Setter;
 public class Account {
 
     @Id
-    String accountId;
-    String accountNumber;
-    Double accountBalance;
-    Date dateOpened;
-    Date dateClosed;
+    String AccountId;
+    String AccountNumber;
+    Double AccountBalance;
+    Date DateOpened;
+    Date DateClosed;
 
     @OneToOne
     Customer customer;
@@ -36,5 +36,5 @@ public class Account {
 
     @OneToMany(mappedBy = "account")
     private List<Transaction> transactions;
-
+    
 }

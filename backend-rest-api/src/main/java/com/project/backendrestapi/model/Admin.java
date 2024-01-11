@@ -20,12 +20,12 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Admin {
 
-    String UserName;
-    String Password;
-    
+    String userName;
+    String password;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String AdminId;
+    String adminId;
 
     @OneToOne
     private Person person;

@@ -21,12 +21,10 @@ public class Beneficiary {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String BeneficiaryId;
-    String BeneficiaryName;
+    String beneficiaryId;
+    String beneficiaryName;
 
     @ManyToOne
     private Account account;
 
-
-    
 }

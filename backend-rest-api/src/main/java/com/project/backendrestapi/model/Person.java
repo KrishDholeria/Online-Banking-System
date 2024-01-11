@@ -25,15 +25,14 @@ public class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String PersonId;
-    private String LastName;
-    private String FirstName;
-    private Date DOB;
-    private int Age;
-    private String Email;
-    private String PhoneNo;
-    private String Address;
-    
+    private String personId;
+    private String lastName;
+    private String firstName;
+    private Date dob;
+    private int age;
+    private String email;
+    private String phoneNo;
+    private String address;
 
     @OneToOne(mappedBy = "person")
     private Manager manager;
@@ -43,5 +42,5 @@ public class Person {
 
     @OneToOne(mappedBy = "person")
     private Admin admin;
-    
+
 }

@@ -21,17 +21,17 @@ import lombok.Setter;
 
 public class Manager {
 
-    String UserName;
-    String Password;
+    String userName;
+    String password;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String ManagerId;
+    String managerId;
 
     @OneToOne
     private Person person;
 
     @ManyToOne
     private Branch branch;
-    
+
 }

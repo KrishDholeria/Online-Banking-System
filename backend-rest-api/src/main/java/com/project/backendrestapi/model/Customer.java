@@ -16,16 +16,15 @@ import lombok.Setter;
 public class Customer {
 
     @Id
-    String CustomerId;
-    String UserName;
-    String Password;
-    private String PanNo;
-   
+    String customerId;
+    String userName;
+    String password;
+    private String panNo;
+
     @OneToOne
     private Person person;
 
     @OneToOne(mappedBy = "customer")
     private Account account;
 
-    
 }

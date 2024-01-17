@@ -1,15 +1,32 @@
 package com.project.backendrestapi.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+
 public class Manager {
 
+    String userName;
+    String password;
+
     @Id
-    String ManagerId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    String managerId;
 
     @OneToOne
     private Person person;
@@ -17,48 +34,4 @@ public class Manager {
     @ManyToOne
     private Branch branch;
 
-    public Branch getBranch() {
-        return branch;
-    }
-
-    public void setBranch(Branch branch) {
-        this.branch = branch;
-    }
-
-    public Manager(String managerId) {
-        ManagerId = managerId;
-    }
-
-    public Manager() {
-    }
-
-    public Manager(String managerId, Person person) {
-        ManagerId = managerId;
-        this.person = person;
-    }
-
-    public String getManagerId() {
-        return ManagerId;
-    }
-
-    public void setManagerId(String managerId) {
-        ManagerId = managerId;
-    }
-
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
-    }
-
-    @Override
-    public String toString() {
-        return "Manager [ManagerId=" + ManagerId + ", person=" + person + "]";
-    }
-
-
-
-    
 }

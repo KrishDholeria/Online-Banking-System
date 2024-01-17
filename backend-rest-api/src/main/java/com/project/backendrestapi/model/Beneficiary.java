@@ -4,7 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,22 +14,17 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer {
+@Builder
+public class Beneficiary {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String customerId;
-    String userName;
-    String password;
-    private String panNo;
+    String beneficiaryId;
+    String beneficiaryName;
 
-    @OneToOne
-    private Person person;
-
-    @OneToOne(mappedBy = "customer")
+    @ManyToOne
     private Account account;
 
 }

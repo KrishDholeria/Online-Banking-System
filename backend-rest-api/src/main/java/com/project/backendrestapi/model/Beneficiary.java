@@ -20,9 +20,9 @@ import lombok.Setter;
 public class Beneficiary {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String beneficiaryId;
-    String beneficiaryName;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long beneficiaryId;
+    private String beneficiaryName;
 
     @ManyToOne
     private Account account;

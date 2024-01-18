@@ -24,8 +24,8 @@ import lombok.Setter;
 public class Person {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String personId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long personId;
     private String lastName;
     private String firstName;
     private Date dob;

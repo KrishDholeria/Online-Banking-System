@@ -25,12 +25,12 @@ import lombok.Setter;
 public class Account {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String accountId;
-    String accountNumber;
-    Double accountBalance;
-    Date dateOpened;
-    Date dateClosed;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long accountId;
+    private String accountNumber;
+    private Double accountBalance;
+    private Date dateOpened;
+    private Date dateClosed;
 
     @OneToOne
     Customer customer;

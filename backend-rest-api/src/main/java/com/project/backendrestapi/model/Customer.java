@@ -20,10 +20,10 @@ import lombok.Setter;
 public class Customer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String customerId;
-    String userName;
-    String password;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long customerId;
+    private String userName;
+    private String password;
     private String panNo;
 
     @OneToOne

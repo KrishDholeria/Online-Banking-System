@@ -24,7 +24,7 @@ public class PersonService {
         return personRepository.findAll();
     }
 
-    public Optional<Person> getPersonById(String personId) {
+    public Optional<Person> getPersonById(Long personId) {
         return personRepository.findById(personId);
     }
 
@@ -32,7 +32,7 @@ public class PersonService {
         return personRepository.save(person);
     }
 
-    public Optional<Person> updatePerson(String personId, Person updatedPerson) {
+    public Optional<Person> updatePerson(Long personId, Person updatedPerson) {
         Optional<Person> existingPerson = personRepository.findById(personId);
 
         if (existingPerson.isPresent()) {
@@ -53,7 +53,7 @@ public class PersonService {
         }
     }
 
-    public boolean deletePerson(String personId) {
+    public boolean deletePerson(Long personId) {
         if (personRepository.existsById(personId)) {
             personRepository.deleteById(personId);
             return true;

@@ -22,11 +22,11 @@ import lombok.Setter;
 public class Transaction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String transactionId;
-    String transactionType;
-    String amount;
-    Date transactionDate;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long transactionId;
+    private String transactionType;
+    private String amount;
+    private Date transactionDate;
 
     @ManyToOne
     private Branch branch;

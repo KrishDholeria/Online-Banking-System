@@ -1,13 +1,15 @@
 package com.project.backendrestapi.model;
 
-import java.util.List;
+import java.sql.Date;
 
+import java.util.List;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,30 +17,30 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Branch")
-@Setter
 @Getter
-@Builder
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class Branch {
+@Builder
+public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String branchId;
-    String branchName;
-    String branchCode;
-    String address;
-    String phoneNumber;
+    String accountId;
+    String accountNumber;
+    Double accountBalance;
+    Date dateOpened;
+    Date dateClosed;
 
-    @OneToMany(mappedBy = "branch")
-    private List<Manager> managers;
+    @OneToOne
+    Customer customer;
 
-    @OneToMany(mappedBy = "branch")
-    private List<Account> accounts;
+    @ManyToOne
+    Branch branch;
 
-    @OneToMany(mappedBy = "branch")
+    @OneToMany(mappedBy = "account")
     private List<Transaction> transactions;
 
+    @OneToMany(mappedBy = "account")
+    private List<Beneficiary> beneficiaries;
 }

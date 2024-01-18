@@ -1,12 +1,15 @@
 package com.project.backendrestapi.model;
 
+import java.sql.Date;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,22 +17,23 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer {
+public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String customerId;
-    String userName;
-    String password;
-    private String panNo;
+    String transactionId;
+    String transactionType;
+    String amount;
+    Date transactionDate;
+
+    @ManyToOne
+    private Branch branch;
 
     @OneToOne
-    private Person person;
+    private Transaction relatedTransaction;
 
-    @OneToOne(mappedBy = "customer")
+    @ManyToOne
     private Account account;
-
 }

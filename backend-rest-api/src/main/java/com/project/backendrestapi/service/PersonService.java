@@ -2,9 +2,7 @@ package com.project.backendrestapi.service;
 
 import com.project.backendrestapi.model.Person;
 import com.project.backendrestapi.repository.PersonRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

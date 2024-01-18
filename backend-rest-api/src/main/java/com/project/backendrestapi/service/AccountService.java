@@ -23,7 +23,7 @@ public class AccountService {
         return accountRepository.findAll();
     }
 
-    public Optional<Account> getAccountById(String accountId) {
+    public Optional<Account> getAccountById(Long accountId) {
         return accountRepository.findById(accountId);
     }
 
@@ -31,7 +31,7 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    public Optional<Account> updateAccount(String accountId, Account updatedAccount) {
+    public Optional<Account> updateAccount(Long accountId, Account updatedAccount) {
         Optional<Account> existingAccount = accountRepository.findById(accountId);
 
         if (existingAccount.isPresent()) {
@@ -42,9 +42,6 @@ public class AccountService {
             existing.setDateOpened(updatedAccount.getDateOpened());
             existing.setDateClosed(updatedAccount.getDateClosed());
 
-            // You may need to handle relationships (e.g., Customer, Branch, transactions,
-            // beneficiaries) here if necessary
-
             accountRepository.save(existing);
 
             return Optional.of(existing);
@@ -53,7 +50,7 @@ public class AccountService {
         }
     }
 
-    public boolean deleteAccount(String accountId) {
+    public boolean deleteAccount(Long accountId) {
         if (accountRepository.existsById(accountId)) {
             accountRepository.deleteById(accountId);
             return true;

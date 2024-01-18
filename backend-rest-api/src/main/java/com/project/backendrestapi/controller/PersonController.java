@@ -31,7 +31,7 @@ public class PersonController {
 
     // get person by id
     @GetMapping("/{personId}")
-    public ResponseEntity<Person> getPersonById(@PathVariable String personId) {
+    public ResponseEntity<Person> getPersonById(@PathVariable Long personId) {
         Optional<Person> person = personService.getPersonById(personId);
         return person.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -46,7 +46,7 @@ public class PersonController {
 
     // update person details
     @PutMapping("/{personId}")
-    public ResponseEntity<Person> updatePerson(@PathVariable String personId, @RequestBody Person updatedPerson) {
+    public ResponseEntity<Person> updatePerson(@PathVariable Long personId, @RequestBody Person updatedPerson) {
         Optional<Person> existingPerson = personService.updatePerson(personId, updatedPerson);
 
         return existingPerson.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
@@ -55,7 +55,7 @@ public class PersonController {
 
     // delete person
     @DeleteMapping("/{personId}")
-    public ResponseEntity<Void> deletePerson(@PathVariable String personId) {
+    public ResponseEntity<Void> deletePerson(@PathVariable Long personId) {
         boolean deleted = personService.deletePerson(personId);
 
         return deleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.NOT_FOUND);

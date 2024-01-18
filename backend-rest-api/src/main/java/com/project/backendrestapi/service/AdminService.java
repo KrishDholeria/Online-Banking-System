@@ -23,7 +23,7 @@ public class AdminService {
         return adminRepository.findAll();
     }
 
-    public Optional<Admin> getAdminById(String adminId) {
+    public Optional<Admin> getAdminById(Long adminId) {
         return adminRepository.findById(adminId);
     }
 
@@ -31,7 +31,7 @@ public class AdminService {
         return adminRepository.save(admin);
     }
 
-    public Optional<Admin> updateAdmin(String adminId, Admin updatedAdmin) {
+    public Optional<Admin> updateAdmin(Long adminId, Admin updatedAdmin) {
         Optional<Admin> existingAdmin = adminRepository.findById(adminId);
 
         if (existingAdmin.isPresent()) {
@@ -46,7 +46,7 @@ public class AdminService {
         }
     }
 
-    public boolean deleteAdmin(String adminId) {
+    public boolean deleteAdmin(Long adminId) {
         if (adminRepository.existsById(adminId)) {
             adminRepository.deleteById(adminId);
             return true;

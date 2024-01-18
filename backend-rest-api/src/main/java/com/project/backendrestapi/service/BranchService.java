@@ -25,7 +25,7 @@ public class BranchService {
         return branchRepository.findAll();
     }
 
-    public Optional<Branch> getBranchById(String branchId) {
+    public Optional<Branch> getBranchById(Long branchId) {
         return branchRepository.findById(branchId);
     }
 
@@ -33,7 +33,7 @@ public class BranchService {
         return branchRepository.save(branch);
     }
 
-    public Optional<Branch> updateBranch(String branchId, Branch updatedBranch) {
+    public Optional<Branch> updateBranch(Long branchId, Branch updatedBranch) {
         Optional<Branch> existingBranch = branchRepository.findById(branchId);
 
         if (existingBranch.isPresent()) {
@@ -56,7 +56,7 @@ public class BranchService {
         }
     }
 
-    public boolean deleteBranch(String branchId) {
+    public boolean deleteBranch(Long branchId) {
         if (branchRepository.existsById(branchId)) {
             branchRepository.deleteById(branchId);
             return true;
@@ -65,7 +65,7 @@ public class BranchService {
         }
     }
 
-    public void addAccountToBranch(String branchId, Account account) {
+    public void addAccountToBranch(Long branchId, Account account) {
         Optional<Branch> branchOptional = branchRepository.findById(branchId);
         if (branchOptional.isPresent()) {
             Branch branch = branchOptional.get();

@@ -6,5 +6,4 @@ import com.project.backendrestapi.model.Customer;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
-    
 }

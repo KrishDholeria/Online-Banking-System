@@ -42,9 +42,6 @@ public class AccountService {
             existing.setDateOpened(updatedAccount.getDateOpened());
             existing.setDateClosed(updatedAccount.getDateClosed());
 
-            // You may need to handle relationships (e.g., Customer, Branch, transactions,
-            // beneficiaries) here if necessary
-
             accountRepository.save(existing);
 
             return Optional.of(existing);

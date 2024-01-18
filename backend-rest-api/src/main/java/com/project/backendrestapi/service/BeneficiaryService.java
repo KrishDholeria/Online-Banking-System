@@ -24,7 +24,7 @@ public class BeneficiaryService {
         return beneficiaryRepository.findAll();
     }
 
-    public Optional<Beneficiary> getBeneficiaryById(String beneficiaryId) {
+    public Optional<Beneficiary> getBeneficiaryById(Long beneficiaryId) {
         return beneficiaryRepository.findById(beneficiaryId);
     }
 
@@ -33,7 +33,7 @@ public class BeneficiaryService {
         return beneficiaryRepository.save(beneficiary);
     }
 
-    public Optional<Beneficiary> updateBeneficiary(String beneficiaryId, Beneficiary updatedBeneficiary,
+    public Optional<Beneficiary> updateBeneficiary(Long beneficiaryId, Beneficiary updatedBeneficiary,
             Account account) {
         Optional<Beneficiary> existingBeneficiary = beneficiaryRepository.findById(beneficiaryId);
 
@@ -51,7 +51,7 @@ public class BeneficiaryService {
         }
     }
 
-    public boolean deleteBeneficiary(String beneficiaryId) {
+    public boolean deleteBeneficiary(Long beneficiaryId) {
         if (beneficiaryRepository.existsById(beneficiaryId)) {
             beneficiaryRepository.deleteById(beneficiaryId);
             return true;

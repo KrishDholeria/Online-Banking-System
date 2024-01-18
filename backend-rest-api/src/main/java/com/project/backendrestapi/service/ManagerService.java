@@ -25,7 +25,7 @@ public class ManagerService {
         return managerRepository.findAll();
     }
 
-    public Optional<Manager> getManagerById(String managerId) {
+    public Optional<Manager> getManagerById(Long managerId) {
         return managerRepository.findById(managerId);
     }
 
@@ -33,7 +33,7 @@ public class ManagerService {
         return managerRepository.save(manager);
     }
 
-    public Optional<Manager> updateManager(String managerId, Manager updatedManager) {
+    public Optional<Manager> updateManager(Long managerId, Manager updatedManager) {
         Optional<Manager> existingManager = managerRepository.findById(managerId);
 
         if (existingManager.isPresent()) {
@@ -54,7 +54,7 @@ public class ManagerService {
         }
     }
 
-    public boolean deleteManager(String managerId) {
+    public boolean deleteManager(Long managerId) {
         if (managerRepository.existsById(managerId)) {
             managerRepository.deleteById(managerId);
             return true;
@@ -64,7 +64,7 @@ public class ManagerService {
     }
 
     // assigning a person to a manager
-    public void assignPersonToManager(String managerId, Person person) {
+    public void assignPersonToManager(Long managerId, Person person) {
         Optional<Manager> managerOptional = managerRepository.findById(managerId);
         if (managerOptional.isPresent()) {
             Manager manager = managerOptional.get();
@@ -74,7 +74,7 @@ public class ManagerService {
     }
 
     // assigning a branch to a manager
-    public void assignBranchToManager(String managerId, Branch branch) {
+    public void assignBranchToManager(Long managerId, Branch branch) {
         Optional<Manager> managerOptional = managerRepository.findById(managerId);
         if (managerOptional.isPresent()) {
             Manager manager = managerOptional.get();

@@ -23,7 +23,7 @@ public class PersonController {
     }
 
     // get all person
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<Person>> getAllPersons() {
         List<Person> persons = personService.getAllPersons();
         return new ResponseEntity<>(persons, HttpStatus.OK);

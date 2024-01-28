@@ -12,6 +12,6 @@ import lombok.Setter;
 public class ManagerDto {
     String userName;
     String password;
-    private long personId;
-    private long branchId;
+    private Long personId;
+    private Long branchId;
 }

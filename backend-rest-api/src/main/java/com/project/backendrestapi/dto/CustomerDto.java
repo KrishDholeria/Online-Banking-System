@@ -13,5 +13,5 @@ public class CustomerDto {
     private String userName;
     private String password;
     private String panNo;
-    private long personId;
+    private Long personId;
 }

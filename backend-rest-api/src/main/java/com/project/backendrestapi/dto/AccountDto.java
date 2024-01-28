@@ -11,6 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AccountDto {
     private Double accountBalance;
-    private long cutomerId;
-    private long branchId;
+    private Long cutomerId;
+    private Long branchId;
 }

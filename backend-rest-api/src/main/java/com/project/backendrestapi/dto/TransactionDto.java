@@ -12,7 +12,7 @@ import lombok.Setter;
 public class TransactionDto {
     private String transactionType;
     private String amount;
-    private long branchId;
-    private long accountId;
-    private long transactionId;
+    private Long branchId;
+    private Long accountId;
+    private Long transactionId;
 }

@@ -11,5 +11,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class BenificiaryDto {
     private String beneficiaryName;
-    private long accountId;
+    private Long accountId;
 }

@@ -23,6 +23,7 @@ public class Manager {
 
     String userName;
     String password;
+    
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

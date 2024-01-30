@@ -14,4 +14,10 @@ public class CustomerDto {
     private String password;
     private String panNo;
     private Long personId;
+    private String lastName;
+    private String firstName;
+    private String dob;
+    private String email;
+    private String phoneNo;
+    private String address;
 }

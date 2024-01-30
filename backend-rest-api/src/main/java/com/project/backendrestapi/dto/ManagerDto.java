@@ -10,8 +10,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ManagerDto {
-    String userName;
-    String password;
+    private String userName;
+    private String password;
     private Long personId;
     private Long branchId;
+    private String lastName;
+    private String firstName;
+    private String dob;
+    private String email;
+    private String phoneNo;
+    private String address;
 }

@@ -7,17 +7,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class CustomerDto {
     private String userName;
     private String password;
     private String panNo;
-    private Long personId;
-    private String lastName;
-    private String firstName;
-    private String dob;
-    private String email;
-    private String phoneNo;
-    private String address;
+    private PersonDto person; // Include PersonDto
+    private AccountDto account; // Include AccountDto
 }

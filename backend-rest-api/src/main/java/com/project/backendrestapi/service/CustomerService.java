@@ -1,54 +1,62 @@
 package com.project.backendrestapi.service;
 
+import com.project.backendrestapi.dto.AccountDto;
+import com.project.backendrestapi.dto.CustomerDto;
+import com.project.backendrestapi.dto.PersonDto;
+import com.project.backendrestapi.model.Account;
 import com.project.backendrestapi.model.Customer;
 import com.project.backendrestapi.model.Person;
-import com.project.backendrestapi.model.Account;
+import com.project.backendrestapi.repository.AccountRepository;
 import com.project.backendrestapi.repository.CustomerRepository;
+import com.project.backendrestapi.repository.PersonRepository;
+
+import lombok.AllArgsConstructor;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class CustomerService {
 
     @Autowired
     private final CustomerRepository customerRepository;
 
-    public CustomerService(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
-    }
+    @Autowired
+    private final PersonService personService;
+
+    @Autowired
+    private final AccountService accountService;
 
     public List<Customer> getAllCustomers() {
-        return customerRepository.findAll();
+        List<Customer> customers = customerRepository.findAll();
+        return customers;
     }
 
     public Optional<Customer> getCustomerById(Long customerId) {
-        return customerRepository.findById(customerId);
+        Optional<Customer> customerOptional = customerRepository.findById(customerId);
+        return customerOptional;
     }
 
-    public Customer createCustomer(Customer customer) {
-        return customerRepository.save(customer);
+    public Customer createCustomer(CustomerDto customerDto) {
+        Customer customer = convertToEntity(customerDto);
+        customerRepository.save(customer);
+        return customer;
     }
 
-    public Optional<Customer> updateCustomer(Long customerId, Customer updatedCustomer) {
-        Optional<Customer> existingCustomer = customerRepository.findById(customerId);
+    public Optional<Customer> updateCustomer(Long customerId, CustomerDto updatedCustomerDto) {
+        Optional<Customer> existingCustomerOptional = customerRepository.findById(customerId);
 
-        if (existingCustomer.isPresent()) {
-            Customer existing = existingCustomer.get();
-            existing.setCustomerId(customerId);
-            existing.setUserName(updatedCustomer.getUserName());
-            existing.setPassword(updatedCustomer.getPassword());
-            existing.setPanNo(updatedCustomer.getPanNo());
-
-            // Handle relationships
-            existing.setPerson(updatedCustomer.getPerson());
-            existing.setAccount(updatedCustomer.getAccount());
-
-            customerRepository.save(existing);
-
-            return Optional.of(existing);
+        if (existingCustomerOptional.isPresent()) {
+            Customer existingCustomer = existingCustomerOptional.get();
+            BeanUtils.copyProperties(updatedCustomerDto, existingCustomer, "customerId");
+            customerRepository.save(existingCustomer);
+            return existingCustomerOptional;
         } else {
             return Optional.empty();
         }
@@ -63,25 +71,12 @@ public class CustomerService {
         }
     }
 
-    // Additional methods for handling relationships if needed
-
-    // Example method for assigning a person to a customer
-    public void assignPersonToCustomer(Long customerId, Person person) {
-        Optional<Customer> customerOptional = customerRepository.findById(customerId);
-        if (customerOptional.isPresent()) {
-            Customer customer = customerOptional.get();
-            customer.setPerson(person);
-            customerRepository.save(customer);
-        }
+    private Customer convertToEntity(CustomerDto customerDto) {
+        Customer customer = new Customer();
+        BeanUtils.copyProperties(customerDto, customer);
+        customer.setPerson(personService.createPerson(customerDto.getPerson()));
+        customer.setAccount(accountService.createAccount(customerDto.getAccount()));
+        return customer;
     }
 
-    // Example method for assigning an account to a customer
-    public void assignAccountToCustomer(Long customerId, Account account) {
-        Optional<Customer> customerOptional = customerRepository.findById(customerId);
-        if (customerOptional.isPresent()) {
-            Customer customer = customerOptional.get();
-            customer.setAccount(account);
-            customerRepository.save(customer);
-        }
-    }
 }

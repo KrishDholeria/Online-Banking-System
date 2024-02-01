@@ -43,7 +43,7 @@ public class ManagerService {
             .person(personService.createPerson(managerDto.getPerson()))
             .branch(branchService.getBranchById(managerDto.getBranchId()).get())
             .build();
-
+        branchService.assignManagerToBranch(managerDto.getBranchId(), manager);
         return managerRepository.save(manager);
     }
 
@@ -68,6 +68,8 @@ public class ManagerService {
 
     public boolean deleteManager(Long managerId) {
         if (managerRepository.existsById(managerId)) {
+            Manager manager = managerRepository.findById(managerId).get();
+            branchService.getBranchById(manager.getBranch().getBranchId()).get().getManagers().remove(manager);
             managerRepository.deleteById(managerId);
             return true;
         } else {
@@ -75,21 +77,21 @@ public class ManagerService {
         }
     }
 
-    public void assignPersonToManager(Long managerId, Person person) {
-        Optional<Manager> managerOptional = managerRepository.findById(managerId);
-        if (managerOptional.isPresent()) {
-            Manager manager = managerOptional.get();
-            manager.setPerson(person);
-            managerRepository.save(manager);
-        }
-    }
-
-    public void assignBranchToManager(Long managerId, Branch branch) {
-        Optional<Manager> managerOptional = managerRepository.findById(managerId);
-        if (managerOptional.isPresent()) {
-            Manager manager = managerOptional.get();
-            manager.setBranch(branch);
-            managerRepository.save(manager);
-        }
-    }
+//    public void assignPersonToManager(Long managerId, Person person) {
+//        Optional<Manager> managerOptional = managerRepository.findById(managerId);
+//        if (managerOptional.isPresent()) {
+//            Manager manager = managerOptional.get();
+//            manager.setPerson(person);
+//            managerRepository.save(manager);
+//        }
+//    }
+//
+//    public void assignBranchToManager(Long managerId, Branch branch) {
+//        Optional<Manager> managerOptional = managerRepository.findById(managerId);
+//        if (managerOptional.isPresent()) {
+//            Manager manager = managerOptional.get();
+//            manager.setBranch(branch);
+//            managerRepository.save(manager);
+//        }
+//    }
 }

@@ -25,11 +25,11 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long transactionId;
     private String transactionType;
-    private String amount;
+    private int amount;
     private Date transactionDate;
 
-    @ManyToOne
-    private Branch branch;
+//    @ManyToOne
+//    private Branch branch;
 
     @OneToOne
     private Transaction relatedTransaction;

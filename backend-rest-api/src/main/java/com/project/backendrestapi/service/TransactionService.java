@@ -44,7 +44,6 @@ public class TransactionService {
 
             // Handle relationships
             existing.setAccount(updatedTransaction.getAccount());
-            existing.setBranch(updatedTransaction.getBranch());
             existing.setRelatedTransaction(updatedTransaction.getRelatedTransaction());
 
             transactionRepository.save(existing);
@@ -84,12 +83,12 @@ public class TransactionService {
     }
 
     // Example method for associating a transaction with a branch
-    public void associateTransactionWithBranch(Long transactionId, Branch branch) {
-        Optional<Transaction> transactionOptional = transactionRepository.findById(transactionId);
-        if (transactionOptional.isPresent()) {
-            Transaction transaction = transactionOptional.get();
-            transaction.setBranch(branch);
-            transactionRepository.save(transaction);
-        }
-    }
+    // public void associateTransactionWithBranch(Long transactionId, Branch branch) {
+    //     Optional<Transaction> transactionOptional = transactionRepository.findById(transactionId);
+    //     if (transactionOptional.isPresent()) {
+    //         Transaction transaction = transactionOptional.get();
+    //         transaction.setBranch(branch);
+    //         transactionRepository.save(transaction);
+    //     }
+    // }
 }

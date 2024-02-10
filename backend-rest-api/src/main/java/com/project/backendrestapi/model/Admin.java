@@ -1,6 +1,6 @@
 package com.project.backendrestapi.model;
 
-import jakarta.annotation.Generated;
+//import jakarta.annotation.Generated;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,12 +20,12 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Admin {
 
-    String userName;
-    String password;
+    private String userName;
+    private String password;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String adminId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long adminId;
 
     @OneToOne
     private Person person;

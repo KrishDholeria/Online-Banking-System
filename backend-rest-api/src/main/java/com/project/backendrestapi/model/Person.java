@@ -1,7 +1,7 @@
 
 package com.project.backendrestapi.model;
 
-import java.sql.Date;
+import java.util.Date;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,12 +24,11 @@ import lombok.Setter;
 public class Person {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String personId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long personId;
     private String lastName;
     private String firstName;
     private Date dob;
-    private int age;
     private String email;
     private String phoneNo;
     private String address;

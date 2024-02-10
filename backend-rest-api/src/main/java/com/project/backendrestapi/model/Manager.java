@@ -23,10 +23,11 @@ public class Manager {
 
     String userName;
     String password;
+    
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String managerId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long managerId;
 
     @OneToOne
     private Person person;

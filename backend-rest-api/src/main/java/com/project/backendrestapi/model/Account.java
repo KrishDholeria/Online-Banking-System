@@ -1,6 +1,7 @@
 package com.project.backendrestapi.model;
 
-import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Date;
 
 import java.util.List;
 import jakarta.persistence.Entity;
@@ -25,12 +26,12 @@ import lombok.Setter;
 public class Account {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String accountId;
-    String accountNumber;
-    Double accountBalance;
-    Date dateOpened;
-    Date dateClosed;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long accountId;
+    private String accountNumber;
+    private Double accountBalance;
+    private Date dateOpened;
+    private Date dateClosed;
 
     @OneToOne
     Customer customer;
@@ -43,4 +44,12 @@ public class Account {
 
     @OneToMany(mappedBy = "account")
     private List<Beneficiary> beneficiaries;
+
+    public List<Beneficiary> addBeneficiary(Beneficiary beneficiary){
+        if(beneficiaries == null){
+            beneficiaries = new ArrayList<Beneficiary>();
+        }
+        beneficiaries.add(beneficiary);
+        return beneficiaries;
+    }
 }

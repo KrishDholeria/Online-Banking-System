@@ -25,12 +25,12 @@ import lombok.Setter;
 public class Branch {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String branchId;
-    String branchName;
-    String branchCode;
-    String address;
-    String phoneNumber;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long branchId;
+    private String branchName;
+    private String branchCode;
+    private String address;
+    private String phoneNumber;
 
     @OneToMany(mappedBy = "branch")
     private List<Manager> managers;
@@ -38,7 +38,7 @@ public class Branch {
     @OneToMany(mappedBy = "branch")
     private List<Account> accounts;
 
-    @OneToMany(mappedBy = "branch")
-    private List<Transaction> transactions;
+//    @OneToMany(mappedBy = "branch")
+//    private List<Transaction> transactions;
 
 }

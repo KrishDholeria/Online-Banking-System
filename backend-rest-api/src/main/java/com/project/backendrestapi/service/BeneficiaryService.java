@@ -1,9 +1,12 @@
 package com.project.backendrestapi.service;
 
+import com.project.backendrestapi.dto.BeneficiaryDto;
 import com.project.backendrestapi.model.Account;
 import com.project.backendrestapi.model.Beneficiary;
+import com.project.backendrestapi.repository.AccountRepository;
 import com.project.backendrestapi.repository.BeneficiaryRepository;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,14 +14,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class BeneficiaryService {
 
     @Autowired
     private final BeneficiaryRepository beneficiaryRepository;
+    @Autowired
+    private final AccountService accountService;
 
-    public BeneficiaryService(BeneficiaryRepository beneficiaryRepository) {
-        this.beneficiaryRepository = beneficiaryRepository;
-    }
+
+
 
     public List<Beneficiary> getAllBeneficiaries() {
         return beneficiaryRepository.findAll();
@@ -28,19 +33,26 @@ public class BeneficiaryService {
         return beneficiaryRepository.findById(beneficiaryId);
     }
 
-    public Beneficiary createBeneficiary(Beneficiary beneficiary, Account account) {
-        beneficiary.setAccount(account);
-        return beneficiaryRepository.save(beneficiary);
+    public Beneficiary createBeneficiary(BeneficiaryDto beneficiary) throws Exception {
+        Account account = accountService.getAccountByAccountNo(beneficiary.getAccountNo());
+        if(account!= null){
+            Beneficiary beneficiary1 = Beneficiary.builder()
+                    .beneficiaryName(beneficiary.getBeneficiaryName())
+                    .account(account)
+                    .build();
+            return beneficiaryRepository.save(beneficiary1);
+        }
+        throw new Exception("Account Doesn't Exist");
+
     }
 
-    public Optional<Beneficiary> updateBeneficiary(Long beneficiaryId, Beneficiary updatedBeneficiary,
-            Account account) {
+    public Optional<Beneficiary> updateBeneficiary(Long beneficiaryId, BeneficiaryDto beneficiary) {
         Optional<Beneficiary> existingBeneficiary = beneficiaryRepository.findById(beneficiaryId);
-
+        Account account = accountService.getAccountByAccountNo(beneficiary.getAccountNo());
         if (existingBeneficiary.isPresent()) {
             Beneficiary existing = existingBeneficiary.get();
             existing.setBeneficiaryId(beneficiaryId);
-            existing.setBeneficiaryName(updatedBeneficiary.getBeneficiaryName());
+            existing.setBeneficiaryName(beneficiary.getBeneficiaryName());
             existing.setAccount(account);
 
             beneficiaryRepository.save(existing);

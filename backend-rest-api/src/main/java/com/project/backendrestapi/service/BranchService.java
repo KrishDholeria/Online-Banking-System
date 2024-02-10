@@ -1,8 +1,10 @@
 package com.project.backendrestapi.service;
 
+import com.project.backendrestapi.dto.BranchDto;
 import com.project.backendrestapi.model.Branch;
 import com.project.backendrestapi.model.Account;
 //import com.project.backendrestapi.model.Manager;
+import com.project.backendrestapi.model.Manager;
 import com.project.backendrestapi.repository.BranchRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class BranchService {
@@ -29,24 +32,30 @@ public class BranchService {
         return branchRepository.findById(branchId);
     }
 
-    public Branch createBranch(Branch branch) {
-        return branchRepository.save(branch);
+    public Branch createBranch(BranchDto branchDto) {
+        StringBuilder bc = new StringBuilder("B4EV0");
+        Random rand = new Random();
+        for(int i=0; i<6; i++){
+            bc.append(rand.nextInt(10));
+        }
+        Branch branch = Branch.builder()
+                .branchName(branchDto.getBranchName())
+                .address(branchDto.getAddress())
+                .phoneNumber(branchDto.getPhoneNumber())
+                .branchCode(bc.toString())
+                .build();
+        return branch;
     }
 
-    public Optional<Branch> updateBranch(Long branchId, Branch updatedBranch) {
+    public Optional<Branch> updateBranch(Long branchId, BranchDto updatedBranch) {
         Optional<Branch> existingBranch = branchRepository.findById(branchId);
 
         if (existingBranch.isPresent()) {
             Branch existing = existingBranch.get();
             existing.setBranchId(branchId);
             existing.setBranchName(updatedBranch.getBranchName());
-            existing.setBranchCode(updatedBranch.getBranchCode());
             existing.setAddress(updatedBranch.getAddress());
             existing.setPhoneNumber(updatedBranch.getPhoneNumber());
-
-            existing.setManagers(updatedBranch.getManagers());
-            existing.setAccounts(updatedBranch.getAccounts());
-            existing.setTransactions(updatedBranch.getTransactions());
 
             branchRepository.save(existing);
 
@@ -73,14 +82,15 @@ public class BranchService {
             branchRepository.save(branch);
         }
     }
+    public void assignManagerToBranch(Long branchId, Manager manager) {
+        Optional<Branch> branchOptional = branchRepository.findById(branchId);
+        if (branchOptional.isPresent()) {
+            Branch branch = branchOptional.get();
+            branch.getManagers().add(manager);
+            branchRepository.save(branch);
+        }
+    }
 }
 
-// public void assignManagerToBranch(String branchId, Manager manager) {
-// Optional<Branch> branchOptional = branchRepository.findById(branchId);
-// if (branchOptional.isPresent()) {
-// Branch branch = branchOptional.get();
-// branch.setManager(manager);
-// branchRepository.save(branch);
-// }
-// }
+
 // }

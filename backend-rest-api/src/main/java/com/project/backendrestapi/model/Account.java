@@ -1,6 +1,7 @@
 package com.project.backendrestapi.model;
 
-import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Date;
 
 import java.util.List;
 import jakarta.persistence.Entity;
@@ -43,4 +44,11 @@ public class Account {
 
     @OneToMany(mappedBy = "account")
     private List<Beneficiary> beneficiaries;
+
+    public List<Beneficiary> addBeneficiary(Beneficiary beneficiary){
+        if(beneficiaries == null){
+            beneficiaries = new ArrayList<Beneficiary>();
+        }
+        beneficiaries.add(beneficiary);
+    }
 }

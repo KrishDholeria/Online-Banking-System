@@ -1,5 +1,6 @@
 package com.project.backendrestapi.controller;
 
+import com.project.backendrestapi.dto.PersonDto;
 import com.project.backendrestapi.model.Person;
 import com.project.backendrestapi.service.PersonService;
 
@@ -39,14 +40,14 @@ public class PersonController {
 
     // create a new person
     @PostMapping("/new")
-    public ResponseEntity<Person> createPerson(@RequestBody Person person) {
+    public ResponseEntity<Person> createPerson(@RequestBody PersonDto person) {
         Person savedPerson = personService.createPerson(person);
         return new ResponseEntity<>(savedPerson, HttpStatus.CREATED);
     }
 
     // update person details
     @PutMapping("/{personId}")
-    public ResponseEntity<Person> updatePerson(@PathVariable Long personId, @RequestBody Person updatedPerson) {
+    public ResponseEntity<Person> updatePerson(@PathVariable Long personId, @RequestBody PersonDto updatedPerson) {
         Optional<Person> existingPerson = personService.updatePerson(personId, updatedPerson);
 
         return existingPerson.map(value -> new ResponseEntity<>(value, HttpStatus.OK))

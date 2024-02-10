@@ -38,7 +38,7 @@ public class Branch {
     @OneToMany(mappedBy = "branch")
     private List<Account> accounts;
 
-    @OneToMany(mappedBy = "branch")
-    private List<Transaction> transactions;
+//    @OneToMany(mappedBy = "branch")
+//    private List<Transaction> transactions;
 
 }

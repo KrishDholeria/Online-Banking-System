@@ -16,7 +16,7 @@ public class PersonDto {
     
     private String lastName;
     private String firstName;
-    private Date dob;
+    private String dob;
     private String email;
     private String phoneNo;
     private String address;

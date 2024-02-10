@@ -28,9 +28,7 @@ public class AccountService {
     @Autowired
     private final BranchService branchService;
     @Autowired
-    private final CustomerService customerService;
-    @Autowired
-    private final BeneficiaryService beneficiaryService;
+    private final CustomerRepository customerRepository;
 
     public List<Account> getAllAccounts() {
         return accountRepository.findAll();
@@ -41,7 +39,7 @@ public class AccountService {
     }
 
     public Account getAccountByAccountNo(String accountNo){
-        return accountRepository.findAccountByAccountNo(accountNo);
+        return accountRepository.findAccountByAccountNumber(accountNo);
     }
 
     private String generateAccountNo(){
@@ -56,7 +54,7 @@ public class AccountService {
         return ac.toString();
     }
     public Account createAccount(AccountDto account) {
-        Customer customer = customerService.getCustomerById(account.getCutomerId()).get();
+        Customer customer = customerRepository.findById(account.getCutomerId()).get();
         Branch branch = branchService.getBranchById(account.getBranchId()).get();
         Account newAccount = Account.builder()
                 .accountBalance(account.getAccountBalance())
@@ -95,10 +93,5 @@ public class AccountService {
         }
     }
 
-    public Account addBeneficiary(BeneficiaryDto beneficiaryDto, Long accountId) throws Exception {
-        Beneficiary beneficiary = beneficiaryService.createBeneficiary(beneficiaryDto);
-        Account account = getAccountById(accountId).get();
-        account.addBeneficiary(beneficiary);
-        return account;
-    }
+
 }

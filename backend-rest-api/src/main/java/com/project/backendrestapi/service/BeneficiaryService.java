@@ -71,4 +71,10 @@ public class BeneficiaryService {
             return false;
         }
     }
+    public Account addBeneficiary(BeneficiaryDto beneficiaryDto, Long accountId) throws Exception {
+        Beneficiary beneficiary = createBeneficiary(beneficiaryDto);
+        Account account = accountService.getAccountById(accountId).get();
+        account.addBeneficiary(beneficiary);
+        return account;
+    }
 }

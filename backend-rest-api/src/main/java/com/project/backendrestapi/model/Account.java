@@ -50,5 +50,6 @@ public class Account {
             beneficiaries = new ArrayList<Beneficiary>();
         }
         beneficiaries.add(beneficiary);
+        return beneficiaries;
     }
 }

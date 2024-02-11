@@ -13,10 +13,4 @@ public class AdminDto {
     private String userName;
     private String password;
     private Long personId;
-    private String lastName;
-    private String firstName;
-    private String dob;
-    private String email;
-    private String phoneNo;
-    private String address;
 }

@@ -37,6 +37,7 @@ public class ManagerService {
     }
 
     public Manager createManager(ManagerDto managerDto) {
+
         Manager manager = Manager.builder()
             .userName(managerDto.getUserName())
             .password(managerDto.getPassword())
@@ -75,6 +76,21 @@ public class ManagerService {
         } else {
             return false;
         }
+    }
+
+    public Manager authenticateManager(String username, String password) {
+        // Find the manager by username from the database
+        Manager manager = managerRepository.findByuserName(username);
+
+        System.out.println(manager);
+        System.out.println("he");
+        // If manager not found or password does not match, return null
+        if (manager == null || password == manager.getPassword()){
+            return null;
+        }
+
+        // Return the authenticated manager
+        return manager;
     }
 
 //    public void assignPersonToManager(Long managerId, Person person) {

@@ -83,7 +83,7 @@ public class ManagerService {
         Manager manager = managerRepository.findByuserName(username);
 
         System.out.println(manager);
-        System.out.println("he");
+        
         // If manager not found or password does not match, return null
         if (manager == null || password == manager.getPassword()){
             return null;

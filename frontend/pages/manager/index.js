@@ -3,7 +3,7 @@ import { useState } from 'react';
 import axios from 'axios';
 
 export default function Login() {
-  const [username, setUsername] = useState('');
+  const [userName, setuserName] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -12,11 +12,12 @@ export default function Login() {
 
     try {
       const response = await axios.post('/manager/login', {
-        username,
+        userName,
         password,
       });
 
       const { data } = response;
+      console.log(response);
 
       // Store the token in localStorage
       localStorage.setItem('token', data.token);
@@ -24,7 +25,7 @@ export default function Login() {
       // Optionally, redirect to another page upon successful login
       // router.push('/dashboard');
     } catch (error) {
-      setErrorMessage('Invalid username or password.');
+      setErrorMessage('Invalid userName or password.');
     }
   };
 
@@ -40,13 +41,13 @@ export default function Login() {
 
         <form className="space-y-4" onSubmit={handleLogin}>
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-900">Username:</label>
+            <label htmlFor="userName" className="block text-sm font-medium text-gray-900">userName:</label>
             <input 
               type="text" 
-              id="username" 
-              name="username" 
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              id="userName" 
+              name="userName" 
+              value={userName}
+              onChange={(e) => setuserName(e.target.value)}
               minLength={8}
               className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm" 
               required 

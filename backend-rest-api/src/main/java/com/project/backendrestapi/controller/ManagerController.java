@@ -30,6 +30,7 @@ public class ManagerController {
         // Extract username and password from the request body
         String username = managerDto.getUserName();
         String password = managerDto.getPassword();
+        
 
         // Authenticate manager
         Manager manager = managerService.authenticateManager(username, password);
@@ -49,6 +50,8 @@ public class ManagerController {
     // Generate JWT token
     private String generateToken(String username) {
         long expirationTime = 1000 * 60 * 60 * 10; // Token expiration time (10 hours)
+
+        
         String secretKey = "YcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcretKdvvvvfvfereydwdeffwewwff"; // Change this to your secret key
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationTime);

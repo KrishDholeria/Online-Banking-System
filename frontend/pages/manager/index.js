@@ -1,11 +1,13 @@
 import Head from 'next/head';
 import { useState } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/router'; // Import the useRouter hook
 
 export default function Login() {
-  const [userName, setuserName] = useState('');
+  const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const router = useRouter(); // Initialize the useRouter hook
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -17,15 +19,15 @@ export default function Login() {
       });
 
       const { data } = response;
-      console.log(response);
 
       // Store the token in localStorage
       localStorage.setItem('token', data.token);
+      console.log(data.token);
 
-      // Optionally, redirect to another page upon successful login
-      // router.push('/dashboard');
+      // Redirect to the manager home page upon successful login
+      router.push('/manager/home');
     } catch (error) {
-      setErrorMessage('Invalid userName or password.');
+      setErrorMessage('Invalid username or password.');
     }
   };
 
@@ -41,13 +43,13 @@ export default function Login() {
 
         <form className="space-y-4" onSubmit={handleLogin}>
           <div>
-            <label htmlFor="userName" className="block text-sm font-medium text-gray-900">userName:</label>
+            <label htmlFor="userName" className="block text-sm font-medium text-gray-900">Username:</label>
             <input 
               type="text" 
               id="userName" 
               name="userName" 
               value={userName}
-              onChange={(e) => setuserName(e.target.value)}
+              onChange={(e) => setUserName(e.target.value)}
               minLength={8}
               className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm" 
               required 

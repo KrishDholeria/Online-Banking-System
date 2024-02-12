@@ -1,7 +1,29 @@
-import { useState } from 'react';
+// import { useState } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/router';
+import { useState, useEffect } from 'react';
+
 
 export default function AddCustomerForm() {
+
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if the user is logged in by verifying the presence of a token in localStorage
+    const token = localStorage.getItem('token');
+    if (token) {
+      // You can also validate the token with your backend to ensure it's still valid
+      // For simplicity, we're assuming the presence of a token means the user is logged in
+      setIsLoggedIn(true);
+    } else {
+      // Redirect to the login page if the user is not logged in
+      router.push('/manager');
+    }
+  }, []);
+
+
   const [lastName, setLastName] = useState('');
   const [firstName, setFirstName] = useState('');
   const [dob, setDob] = useState('');
@@ -12,7 +34,7 @@ export default function AddCustomerForm() {
   const [accountBalance, setAccountBalance] = useState('');
   const [branchId, setBranchId] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {

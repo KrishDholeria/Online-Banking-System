@@ -2,12 +2,20 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
+import { FaSignOutAlt } from 'react-icons/fa';
 
 export default function ManagerHome() {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
 
+  const handleLogout = () => {
+    // Perform logout logic here (e.g., clear localStorage, reset state, etc.)
+    localStorage.removeItem('token')
+    setIsLoggedIn(false);
+    // Redirect to the login page after logout
+    router.push('/manager');
+  };
 
   useEffect(() => {
     // Check if the user is logged in by verifying the presence of a token in localStorage
@@ -18,12 +26,25 @@ export default function ManagerHome() {
       setIsLoggedIn(true);
     } else {
       // Redirect to the login page if the user is not logged in
-      router.push('/index.js');
+      router.push('/manager');
     }
   }, []);
 
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col justify-center items-center">
+
+    <header className="bg-white p-4 w-full fixed top-0">
+        <div className="flex justify-end items-center">
+          {isLoggedIn && (
+            <>
+              <button onClick={handleLogout} className="text-gray-700 hover:text-gray-900 mr-4">
+                Logout
+              </button>
+              <FaSignOutAlt className="text-gray-700 hover:text-gray-900 cursor-pointer" size={20} onClick={handleLogout} />
+            </>
+          )}
+        </div>
+      </header>
       
       <Head>
         <title>Manager Home</title>

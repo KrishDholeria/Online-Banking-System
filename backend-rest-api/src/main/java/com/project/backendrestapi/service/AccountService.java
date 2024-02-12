@@ -54,11 +54,9 @@ public class AccountService {
         return ac.toString();
     }
     public Account createAccount(AccountDto account) {
-        Customer customer = customerRepository.findById(account.getCutomerId()).get();
         Branch branch = branchService.getBranchById(account.getBranchId()).get();
         Account newAccount = Account.builder()
                 .accountBalance(account.getAccountBalance())
-                .customer(customer)
                 .branch(branch)
                 .accountNumber(generateAccountNo())
                 .dateOpened(new Date())
@@ -92,6 +90,5 @@ public class AccountService {
             return false;
         }
     }
-
 
 }

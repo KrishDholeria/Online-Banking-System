@@ -1,11 +1,16 @@
 package com.project.backendrestapi.controller;
 
+import com.project.backendrestapi.dto.CustomerDto;
 import com.project.backendrestapi.dto.LoginResponse;
 import com.project.backendrestapi.dto.ManagerDto;
+import com.project.backendrestapi.model.Customer;
 import com.project.backendrestapi.model.Manager;
+import com.project.backendrestapi.service.CustomerService;
 import com.project.backendrestapi.service.ManagerService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.AllArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +21,25 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Date;
 
 @RestController
+@AllArgsConstructor
 public class ManagerController {
 
-    private final ManagerService managerService;
-
     @Autowired
-    public ManagerController(ManagerService managerService) {
-        this.managerService = managerService;
+    private final ManagerService managerService;
+   
+    @Autowired
+    private final CustomerService customerService;
+
+    
+
+    @PostMapping("/add/customer")
+    public ResponseEntity<String> addCustomer(@RequestBody CustomerDto customerDto) {
+        try {
+            Customer customer = customerService.createCustomer(customerDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Customer added successfully with ID: " + customer.getCustomerId());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add customer: " + e.getMessage());
+        }
     }
 
     @PostMapping("/manager/login")
@@ -30,8 +47,6 @@ public class ManagerController {
         // Extract username and password from the request body
         String username = managerDto.getUserName();
         String password = managerDto.getPassword();
-        
-
         // Authenticate manager
         Manager manager = managerService.authenticateManager(username, password);
 

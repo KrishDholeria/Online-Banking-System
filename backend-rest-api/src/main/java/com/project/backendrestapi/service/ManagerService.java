@@ -27,7 +27,6 @@ public class ManagerService {
     @Autowired
     private final BranchService branchService;
 
-
     public List<Manager> getAllManagers() {
         return managerRepository.findAll();
     }
@@ -38,11 +37,11 @@ public class ManagerService {
 
     public Manager createManager(ManagerDto managerDto) {
         Manager manager = Manager.builder()
-            .userName(managerDto.getUserName())
-            .password(managerDto.getPassword())
-            .person(personService.createPerson(managerDto.getPerson()))
-            .branch(branchService.getBranchById(managerDto.getBranchId()).get())
-            .build();
+                .userName(managerDto.getUserName())
+                .password(managerDto.getPassword())
+                .person(personService.createPerson(managerDto.getPerson()))
+                .branch(branchService.getBranchById(managerDto.getBranchId()).get())
+                .build();
         branchService.assignManagerToBranch(managerDto.getBranchId(), manager);
         return managerRepository.save(manager);
     }
@@ -77,21 +76,21 @@ public class ManagerService {
         }
     }
 
-//    public void assignPersonToManager(Long managerId, Person person) {
-//        Optional<Manager> managerOptional = managerRepository.findById(managerId);
-//        if (managerOptional.isPresent()) {
-//            Manager manager = managerOptional.get();
-//            manager.setPerson(person);
-//            managerRepository.save(manager);
-//        }
-//    }
-//
-//    public void assignBranchToManager(Long managerId, Branch branch) {
-//        Optional<Manager> managerOptional = managerRepository.findById(managerId);
-//        if (managerOptional.isPresent()) {
-//            Manager manager = managerOptional.get();
-//            manager.setBranch(branch);
-//            managerRepository.save(manager);
-//        }
-//    }
+    // public void assignPersonToManager(Long managerId, Person person) {
+    // Optional<Manager> managerOptional = managerRepository.findById(managerId);
+    // if (managerOptional.isPresent()) {
+    // Manager manager = managerOptional.get();
+    // manager.setPerson(person);
+    // managerRepository.save(manager);
+    // }
+    // }
+    //
+    // public void assignBranchToManager(Long managerId, Branch branch) {
+    // Optional<Manager> managerOptional = managerRepository.findById(managerId);
+    // if (managerOptional.isPresent()) {
+    // Manager manager = managerOptional.get();
+    // manager.setBranch(branch);
+    // managerRepository.save(manager);
+    // }
+    // }
 }

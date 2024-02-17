@@ -32,13 +32,15 @@ public class Branch {
     private String address;
     private String phoneNumber;
 
+    // private String managerUsername;
+
     @OneToMany(mappedBy = "branch")
     private List<Manager> managers;
 
     @OneToMany(mappedBy = "branch")
     private List<Account> accounts;
 
-//    @OneToMany(mappedBy = "branch")
-//    private List<Transaction> transactions;
+    // @OneToMany(mappedBy = "branch")
+    // private List<Transaction> transactions;
 
 }

@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
+import { FaSignOutAlt, FaArrowLeft } from 'react-icons/fa';
 
 
 export default function AddCustomerForm() {
@@ -22,6 +23,11 @@ export default function AddCustomerForm() {
       router.push('/manager');
     }
   }, []);
+
+  const handleBack = () => {
+    // Redirect to the home page
+    router.push('/manager/home');
+  };
 
 
   const [lastName, setLastName] = useState('');
@@ -65,7 +71,13 @@ export default function AddCustomerForm() {
   return (
     <div className="min-h-screen bg-gray-900 flex justify-center items-center">
       <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
-        <h1 className="text-3xl mb-6 text-center text-gray-900">Add Customer</h1>
+        <div className="flex items-center justify-between mb-4"> {/* Add flex container for back arrow and title */}
+          <button onClick={handleBack} className="mr-4 text-gray-700 hover:text-gray-900">
+            <FaArrowLeft size={20} />
+          </button>
+          <h1 className="text-3xl text-gray-900">Add Customer</h1>
+          <div></div> {/* Add a placeholder for symmetry */}
+        </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>

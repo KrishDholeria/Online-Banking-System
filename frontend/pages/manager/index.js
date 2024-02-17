@@ -22,6 +22,8 @@ export default function Login() {
 
       // Store the token in localStorage
       localStorage.setItem('token', data.token);
+      localStorage.setItem('username', userName);
+
       console.log(data.token);
 
       // Redirect to the manager home page upon successful login

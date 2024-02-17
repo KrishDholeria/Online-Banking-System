@@ -3,8 +3,12 @@ package com.project.backendrestapi.controller;
 import com.project.backendrestapi.dto.CustomerDto;
 import com.project.backendrestapi.dto.LoginResponse;
 import com.project.backendrestapi.dto.ManagerDto;
+import com.project.backendrestapi.dto.PersonDto;
+import com.project.backendrestapi.model.Branch;
 import com.project.backendrestapi.model.Customer;
 import com.project.backendrestapi.model.Manager;
+import com.project.backendrestapi.model.Person;
+import com.project.backendrestapi.repository.PersonRepository;
 import com.project.backendrestapi.service.CustomerService;
 import com.project.backendrestapi.service.ManagerService;
 import io.jsonwebtoken.Jwts;
@@ -14,8 +18,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
@@ -26,21 +33,57 @@ public class ManagerController {
 
     @Autowired
     private final ManagerService managerService;
-   
+
     @Autowired
     private final CustomerService customerService;
 
-    
+    @Autowired
+    private final PersonRepository personRepository;
 
     @PostMapping("/add/customer")
     public ResponseEntity<String> addCustomer(@RequestBody CustomerDto customerDto) {
         try {
             Customer customer = customerService.createCustomer(customerDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Customer added successfully with ID: " + customer.getCustomerId());
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body("Customer added successfully with ID: " + customer.getCustomerId());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add customer: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to add customer: " + e.getMessage());
         }
     }
+
+    @PostMapping("/manager/details")
+    public ResponseEntity<ManagerDto> getManagerDetails(@RequestBody String username) {
+    try {
+        Manager manager = managerService.getManagerByUserName(username);
+        if (manager != null) {
+            // Map the manager entity to ManagerDto
+            ManagerDto managerDto = new ManagerDto();
+            managerDto.setUserName(manager.getUserName());
+            managerDto.setPassword(manager.getPassword());
+            // managerDto.setbranchId(manager.getbranchId());
+            // Map the Person entity to PersonDto
+            Person person = manager.getPerson();
+            if (person != null) {
+                PersonDto personDto = new PersonDto();
+                personDto.setFirstName(person.getFirstName());
+                personDto.setLastName(person.getLastName());
+                personDto.setAddress(person.getAddress());
+                // personDto.setDob(person.getDob());
+                personDto.setEmail(person.getEmail());
+                personDto.setPhoneNo(person.getPhoneNo());
+                // Set other properties as needed
+                managerDto.setPerson(personDto);
+            }
+            return ResponseEntity.ok().body(managerDto);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+}
+
 
     @PostMapping("/manager/login")
     public ResponseEntity<?> managerLogin(@RequestBody ManagerDto managerDto) {
@@ -58,7 +101,8 @@ public class ManagerController {
             return ResponseEntity.ok(new LoginResponse("Login successful", token));
         } else {
             // If authentication fails, return an unauthorized response
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponse("Invalid username or password"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new LoginResponse("Invalid username or password"));
         }
     }
 
@@ -66,8 +110,12 @@ public class ManagerController {
     private String generateToken(String username) {
         long expirationTime = 1000 * 60 * 60 * 10; // Token expiration time (10 hours)
 
-        
-        String secretKey = "YcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcretKdvvvvfvfereydwdeffwewwff"; // Change this to your secret key
+        String secretKey = "YcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcoufefeffrsdsgerererergrrgegerSefffbfbrrrrcretKdvvvvfvfereydwdeffwewwff"; // Change
+                                                                                                                                                                                                                                                                                                                                                                   // this
+                                                                                                                                                                                                                                                                                                                                                                   // to
+                                                                                                                                                                                                                                                                                                                                                                   // your
+                                                                                                                                                                                                                                                                                                                                                                   // secret
+                                                                                                                                                                                                                                                                                                                                                                   // key
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationTime);
 

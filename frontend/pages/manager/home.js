@@ -33,14 +33,18 @@ export default function ManagerHome() {
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col justify-center items-center">
 
-    <header className="bg-white p-4 w-full fixed top-0">
+<header className="bg-white p-4 w-full fixed top-0">
         <div className="flex justify-end items-center">
           {isLoggedIn && (
             <>
-              <button onClick={handleLogout} className="text-gray-700 hover:text-gray-900 mr-4">
-                Logout
-              </button>
-              <FaSignOutAlt className="text-gray-700 hover:text-gray-900 cursor-pointer" size={20} onClick={handleLogout} />
+              <div className="mr-4"> {/* Add a div wrapper */}
+                <button onClick={handleLogout} className="text-gray-700 hover:text-gray-900">
+                  Logout
+                </button>
+              </div>
+              <div className="text-gray-700 hover:text-gray-900 cursor-pointer">
+                <FaSignOutAlt size={20} onClick={handleLogout} />
+              </div>
             </>
           )}
         </div>
@@ -51,25 +55,25 @@ export default function ManagerHome() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
+      <main className="bg-white p-8 rounded-lg shadow-md max-w-md w-full flex flex-col justify-center items-center">
         <h1 className="text-3xl mb-6 text-center text-gray-900">Manager Home</h1>
 
         <div className="grid grid-cols-1 gap-4">
-          <div className="flex justify-between">
-            <Link href="/manager/add-customer"> {/* Update the href to point to the Add Customer form route */}
+          <div className="flex flex-col items-center"> {/* Wrap buttons in a div with flex direction column and center alignment */}
+            <Link href="/manager/add-customer"> 
               <button className="p-4 bg-gray-800 text-white rounded-md text-center hover:bg-gray-700 transition duration-300">
                 Add Customer
               </button>
             </Link>
 
             <Link href="/manager/update-profile">
-              <button className="p-4 bg-gray-800 text-white rounded-md text-center hover:bg-gray-700 transition duration-300 ml-4">
-                Update Profile
+              <button className="p-4 bg-gray-800 text-white rounded-md text-center hover:bg-gray-700 transition duration-300 mt-4"> {/* Add margin top */}
+                Update profile
               </button>
             </Link>
 
             <Link href="/manager/view-customer-details">
-              <button className="p-4 bg-gray-800 text-white rounded-md text-center hover:bg-gray-700 transition duration-300 ml-4">
+              <button className="p-4 bg-gray-800 text-white rounded-md text-center hover:bg-gray-700 transition duration-300 mt-4"> {/* Add margin top */}
                 View Customer Details
               </button>
             </Link>

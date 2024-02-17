@@ -35,7 +35,7 @@ public class BranchService {
     public Branch createBranch(BranchDto branchDto) {
         StringBuilder bc = new StringBuilder("B4EV0");
         Random rand = new Random();
-        for(int i=0; i<6; i++){
+        for (int i = 0; i < 6; i++) {
             bc.append(rand.nextInt(10));
         }
         Branch branch = Branch.builder()
@@ -82,6 +82,7 @@ public class BranchService {
             branchRepository.save(branch);
         }
     }
+
     public void assignManagerToBranch(Long branchId, Manager manager) {
         Optional<Branch> branchOptional = branchRepository.findById(branchId);
         if (branchOptional.isPresent()) {
@@ -91,6 +92,5 @@ public class BranchService {
         }
     }
 }
-
 
 // }

@@ -10,6 +10,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { useCarousel } from '@/components/ui/carousel'
 
 
 export default function step1() {
@@ -18,6 +19,7 @@ export default function step1() {
     const [confirmaccount, setConfirmAccount] = useState('');
     const [ifsccode, setIfscCode] = useState('');
     const [error, setError] = useState(null);
+    const {scrollNext} = useCarousel();
 
     const handleUsernameChange = (e) => {
         setUsername(e.target.value);
@@ -38,13 +40,13 @@ export default function step1() {
             setError('Please fill all the fields.');
             return;
         }
-        var validusernameregx = /^[a-zA-Z0-9]+$/; //alphanumeric
+        const validusernameregx = /^[a-zA-Z0-9]+$/; //alphanumeric
         if (!username.match(validusernameregx)) {
             setError('Username should be alphanumeric.');
             return;
         }
         // regular expression for 12 digits number
-        var validaccountregx = /^[0-9]{12}$/
+        const validaccountregx = /^\d{12}$/
         if (!account.match(validaccountregx)) {
             setError('Account number must be 12 digits.');
             return;
@@ -54,9 +56,10 @@ export default function step1() {
             return;
         }
         setError(null);
+        scrollNext();
     }
 
-    return (<Card className={`w-[450px] h-[580px]`}>
+    return (<Card className={`w-full h-[600px] overflow-auto`}>
     <CardHeader>
         <CardTitle className="text-3xl flex justify-center">Welcome to Bank4Ever</CardTitle>
         <CardDescription className="flex justify-center">Enter your credentials to signup</CardDescription>

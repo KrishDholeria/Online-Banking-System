@@ -35,7 +35,15 @@ public class ManagerService {
         return managerRepository.findById(managerId);
     }
 
+    public Manager getManagerByUserName(String username){
+        Manager manager = managerRepository.findByUserName(username).get();
+        // System.out.println(username);
+        // System.out.println(manager);
+        return manager;
+    }
+
     public Manager createManager(ManagerDto managerDto) {
+
         Manager manager = Manager.builder()
                 .userName(managerDto.getUserName())
                 .password(managerDto.getPassword())
@@ -75,6 +83,44 @@ public class ManagerService {
             return false;
         }
     }
+
+    public Manager authenticateManager(String username, String password) {
+        // Find the manager by username from the database
+        Manager manager = managerRepository.findByUserName(username).get();
+        System.out.println(username);
+
+        System.out.println(manager.getPerson());
+        
+        // If manager not found or password does not match, return null
+        if (manager == null || password == manager.getPassword()){
+            return null;
+        }
+
+        // Return the authenticated manager
+        return manager;
+    }
+
+    public Manager abc(String username) {
+        // Find the manager by username from the database
+        Manager manager = managerRepository.findByUserName(username).get();
+        System.out.println(username);
+
+        System.out.println(manager.getPerson());
+        
+
+        // Return the authenticated manager
+        return manager;
+    }
+
+    public static ManagerDto managerToManagerDto(Manager manager) {
+        ManagerDto managerDto = new ManagerDto();
+        managerDto.setUserName(manager.getUserName());
+        managerDto.setPassword(manager.getPassword());
+        managerDto.setBranchId(manager.getBranch().getBranchId()); // Assuming branchId is stored in Manager object
+        managerDto.setPerson(PersonService.personToPersonDto(manager.getPerson())); // Assuming you have a method to map Person to PersonDto
+        return managerDto;
+    }
+
 
     public ManagerDto entityToDto(Manager manager){
         return ManagerDto.builder()

@@ -58,6 +58,7 @@ public class PersonService {
     }
 
     public Optional<Person> updatePerson(Long personId, PersonDto updatedPerson) {
+        System.out.println("hello");
         Optional<Person> existingPerson = personRepository.findById(personId);
 
         if (existingPerson.isPresent()) {
@@ -74,6 +75,7 @@ public class PersonService {
             existing.setPersonId(personId);
             existing.setFirstName(updatedPerson.getFirstName());
             existing.setLastName(updatedPerson.getLastName());
+            System.out.println(date);
             existing.setDob(date);
             existing.setEmail(updatedPerson.getEmail());
             existing.setPhoneNo(updatedPerson.getPhoneNo());
@@ -95,6 +97,38 @@ public class PersonService {
             return false;
         }
     }
+
+    public static PersonDto personToPersonDto(Person person) {
+        PersonDto personDto = new PersonDto();
+        personDto.setLastName(person.getLastName());
+        personDto.setFirstName(person.getFirstName());
+        personDto.setDob(person.getDob().toString()); // Assuming dob is a String in the format "yyyy-MM-dd"
+        personDto.setEmail(person.getEmail());
+        personDto.setPhoneNo(person.getPhoneNo());
+        personDto.setAddress(person.getAddress());
+        return personDto;
+    }
+
+    public static Person personDtoToPerson(PersonDto personDto) {
+        Person person = new Person();
+        person.setLastName(personDto.getLastName());
+        person.setFirstName(personDto.getFirstName());
+        Date date = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC")); // replace "UTC" with your desired timezone
+        try{
+            date = sdf.parse(personDto.getDob());
+        }
+        catch(ParseException e){
+            e.printStackTrace();
+        }
+        person.setDob(date); // Assuming dob is a String in the format "yyyy-MM-dd"
+        person.setEmail(personDto.getEmail());
+        person.setPhoneNo(personDto.getPhoneNo());
+        person.setAddress(personDto.getAddress());
+        return person;
+    }
+
 
     public PersonDto entityToDto(Person person){
         return PersonDto.builder()

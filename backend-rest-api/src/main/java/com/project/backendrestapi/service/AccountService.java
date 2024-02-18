@@ -54,11 +54,9 @@ public class AccountService {
         return ac.toString();
     }
     public Account createAccount(AccountDto account) {
-        Customer customer = customerRepository.findById(account.getCutomerId()).get();
         Branch branch = branchService.getBranchById(account.getBranchId()).get();
         Account newAccount = Account.builder()
                 .accountBalance(account.getAccountBalance())
-                .customer(customer)
                 .branch(branch)
                 .accountNumber(generateAccountNo())
                 .dateOpened(new Date())
@@ -91,6 +89,14 @@ public class AccountService {
         } else {
             return false;
         }
+    }
+
+    public static AccountDto fromEntity(Account account) {
+        AccountDto accountDto = new AccountDto();
+        accountDto.setAccountBalance(account.getAccountBalance());
+        accountDto.setCutomerId(account.getCustomer().getCustomerId()); // Assuming customerId is a Long in the Customer entity
+        accountDto.setBranchId(account.getBranch().getBranchId()); // Assuming branchId is a Long in the Branch entity
+        return accountDto;
     }
 
 

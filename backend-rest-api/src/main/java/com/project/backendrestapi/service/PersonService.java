@@ -31,6 +31,11 @@ public class PersonService {
         return personRepository.findById(personId);
     }
 
+    public String dateToString(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        return sdf.format(date);
+    }
+
     public Person createPerson(PersonDto personDto) {
         Date date = null;
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -89,5 +94,17 @@ public class PersonService {
         } else {
             return false;
         }
+    }
+
+    public PersonDto entityToDto(Person person){
+        return PersonDto.builder()
+                .lastName(person.getLastName())
+                .firstName(person.getFirstName())
+                .phoneNo(person.getPhoneNo())
+                .address(person.getAddress())
+                .address(person.getAddress())
+                .email(person.getEmail())
+                .dob(dateToString(person.getDob()))
+                .build();
     }
 }

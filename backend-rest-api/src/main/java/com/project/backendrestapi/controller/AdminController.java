@@ -1,11 +1,16 @@
 package com.project.backendrestapi.controller;
 
+import com.project.backendrestapi.dto.AdminDto;
+import com.project.backendrestapi.dto.BranchDto;
+import com.project.backendrestapi.dto.ManagerDto;
 import com.project.backendrestapi.model.Admin;
 import com.project.backendrestapi.model.Branch;
 import com.project.backendrestapi.model.Customer;
 import com.project.backendrestapi.model.Manager;
 import com.project.backendrestapi.service.AdminService;
 
+import com.project.backendrestapi.service.BranchService;
+import com.project.backendrestapi.service.ManagerService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -13,6 +18,7 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,28 +33,38 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
+    @Autowired
+    private ManagerService managerService;
+
+    @Autowired
+    private BranchService branchService;
+
     @GetMapping("/all")
-    public ResponseEntity<List<Admin>> getAllAdmins() {
+    public ResponseEntity<List<AdminDto>> getAllAdmins() {
         List<Admin> admins = adminService.getAllAdmins();
-        return ResponseEntity.ok(admins);
+        List<AdminDto> adminDtos = new ArrayList<>();
+        for(Admin a : admins){
+            adminDtos.add(adminService.entityToDto(a));
+        }
+        return ResponseEntity.ok(adminDtos);
     }
 
     @GetMapping("/{adminId}")
-    public ResponseEntity<Admin> getAdminById(@PathVariable Long adminId) {
+    public ResponseEntity<AdminDto> getAdminById(@PathVariable Long adminId) {
         Optional<Admin> admin = adminService.getAdminById(adminId);
-        return admin.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return admin.map(value -> ResponseEntity.status(HttpStatus.OK).body(adminService.entityToDto(admin.get()))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/new")
-    public ResponseEntity<Admin> createAdmin(@RequestBody Admin admin) {
+    public ResponseEntity<AdminDto> createAdmin(@RequestBody AdminDto admin) {
         Admin createdAdmin = adminService.createAdmin(admin);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdAdmin);
+        return ResponseEntity.status(HttpStatus.CREATED).body(adminService.entityToDto(createdAdmin));
     }
 
     @PutMapping("/{adminId}")
-    public ResponseEntity<Admin> updateAdmin(@PathVariable Long adminId, @RequestBody Admin updatedAdmin) {
+    public ResponseEntity<AdminDto> updateAdmin(@PathVariable Long adminId, @RequestBody AdminDto updatedAdmin) {
         Optional<Admin> admin = adminService.updateAdmin(adminId, updatedAdmin);
-        return admin.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return admin.map(value -> ResponseEntity.status(HttpStatus.OK).body(adminService.entityToDto(admin.get()))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{adminId}")
@@ -58,7 +74,7 @@ public class AdminController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginAdmin(@RequestBody Admin admin) {
+    public ResponseEntity<String> loginAdmin(@RequestBody AdminDto admin) {
         if (adminService.authenticateAdmin(admin.getUserName(), admin.getPassword())) {
             // If authentication is successful, generate a JWT token
             String token = generateToken(admin.getUserName());
@@ -83,30 +99,33 @@ public class AdminController {
                 .compact();
     }
 
-    @GetMapping("/customers")
-    public ResponseEntity<List<Customer>> getAllCustomers() {
-        List<Customer> customers = adminService.getAllCustomers();
-        return ResponseEntity.ok(customers);
-    }
+//    @GetMapping("/customers")
+//    public ResponseEntity<List<Customer>> getAllCustomers() {
+//        List<Customer> customers = adminService.getAllCustomers();
+//        return ResponseEntity.ok(customers);
+//    }
 
     @GetMapping("/managers")
-    public ResponseEntity<List<Manager>> getAllManagers() {
-        List<Manager> managers = adminService.getAllManagers();
-        return ResponseEntity.ok(managers);
+    public ResponseEntity<List<ManagerDto>> getAllManagers() {
+        List<Manager> managers = managerService.getAllManagers();
+        List<ManagerDto> managerDtos = new ArrayList<>();
+        for(Manager m: managers){
+            managerDtos.add(managerService.entityToDto(m));
+        }
+        return ResponseEntity.ok(managerDtos);
     }
 
     @GetMapping("/managers/{managerId}")
-    public ResponseEntity<Manager> getManagerById(@PathVariable Long managerId) {
-        Optional<Manager> manager = adminService.getManagerById(managerId);
-        return manager.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<ManagerDto> getManagerById(@PathVariable Long managerId) {
+        Optional<Manager> manager = managerService.getManagerById(managerId);
+        return manager.map(value -> ResponseEntity.status(HttpStatus.OK).body(managerService.entityToDto(manager.get()))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/managers/new")
-    public ResponseEntity<Manager> createManager(@RequestBody Manager manager) {
-        manager.setUserName(manager.getUserName());
+    public ResponseEntity<ManagerDto> createManager(@RequestBody ManagerDto manager) {
 
-        Manager createdManager = adminService.createManager(manager);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdManager);
+        Manager createdManager = managerService.createManager(manager);
+        return ResponseEntity.status(HttpStatus.CREATED).body(managerService.entityToDto(createdManager));
     }
 
     // @PutMapping("/managers/{managerId}")
@@ -120,37 +139,45 @@ public class AdminController {
 
     @DeleteMapping("/managers/{managerId}")
     public ResponseEntity<Void> deleteManager(@PathVariable Long managerId) {
-        boolean deleted = adminService.deleteManager(managerId);
+        boolean deleted = managerService.deleteManager(managerId);
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/branches")
-    public ResponseEntity<List<Branch>> getAllBranches() {
-        List<Branch> branches = adminService.getAllBranches();
-        return ResponseEntity.ok(branches);
+    public ResponseEntity<List<BranchDto>> getAllBranches() {
+        List<Branch> branches = branchService.getAllBranches();
+        List<BranchDto> branchDtos = new ArrayList<>();
+        for(Branch b: branches){
+            branchDtos.add(branchService.entityToDto(b));
+        }
+        return ResponseEntity.ok(branchDtos);
     }
 
-    @GetMapping("/branches/{branchId}")
-    public ResponseEntity<Branch> getBranchById(@PathVariable Long branchId) {
-        Optional<Branch> branch = adminService.getBranchById(branchId);
-        return branch.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping("/branches/{branchCode}")
+    public ResponseEntity<BranchDto> getBranchById(@PathVariable String branchCode) {
+        Optional<Branch> branch = branchService.getBranchByBranchCode(branchCode);
+        return branch.map(value -> ResponseEntity.status(HttpStatus.OK).body(branchService.entityToDto(value))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/branches/new")
-    public ResponseEntity<Branch> createBranch(@RequestBody Branch branch) {
-        Branch createdBranch = adminService.createBranch(branch);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdBranch);
+    public ResponseEntity<BranchDto> createBranch(@RequestBody BranchDto branch) {
+        Branch createdBranch = branchService.createBranch(branch);
+        return ResponseEntity.status(HttpStatus.CREATED).body(branchService.entityToDto(createdBranch));
     }
 
-    @PutMapping("/branches/{branchId}")
-    public ResponseEntity<Branch> updateBranch(@PathVariable Long branchId, @RequestBody Branch updatedBranch) {
-        Optional<Branch> branch = adminService.updateBranch(branchId, updatedBranch);
-        return branch.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    @PutMapping("/branches/{branchCode}")
+    public ResponseEntity<BranchDto> updateBranch(@PathVariable String branchCode, @RequestBody BranchDto updatedBranch) {
+        System.out.println(branchCode);
+        Optional<Branch> branch = branchService.updateBranch(branchCode, updatedBranch);
+        if(branch.isPresent()){
+            return ResponseEntity.status(HttpStatus.OK).body(branchService.entityToDto(branch.get()));
+        }
+        return ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/branches/{branchId}")
-    public ResponseEntity<Void> deleteBranch(@PathVariable Long branchId) {
-        boolean deleted = adminService.deleteBranch(branchId);
+    @DeleteMapping("/branches/{branchCode}")
+    public ResponseEntity<Void> deleteBranch(@PathVariable String branchCode) {
+        boolean deleted = branchService.deleteBranch(branchCode);
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 

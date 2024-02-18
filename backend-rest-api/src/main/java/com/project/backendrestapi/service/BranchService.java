@@ -32,6 +32,12 @@ public class BranchService {
         return branchRepository.findById(branchId);
     }
 
+    public Optional<Branch> getBranchByBranchCode(String branchCode){
+        Optional<Branch> branch = branchRepository.findByBranchCode(branchCode);
+        System.out.println("Branch:::::::::::::::" + branch.get());
+        return Optional.of(branch.get());
+    }
+
     public Branch createBranch(BranchDto branchDto) {
         StringBuilder bc = new StringBuilder("B4EV0");
         Random rand = new Random();
@@ -44,15 +50,15 @@ public class BranchService {
                 .phoneNumber(branchDto.getPhoneNumber())
                 .branchCode(bc.toString())
                 .build();
+        branchRepository.save(branch);
         return branch;
     }
 
-    public Optional<Branch> updateBranch(Long branchId, BranchDto updatedBranch) {
-        Optional<Branch> existingBranch = branchRepository.findById(branchId);
+    public Optional<Branch> updateBranch(String branchCode, BranchDto updatedBranch) {
+        Optional<Branch> existingBranch = branchRepository.findByBranchCode(branchCode);
 
         if (existingBranch.isPresent()) {
             Branch existing = existingBranch.get();
-            existing.setBranchId(branchId);
             existing.setBranchName(updatedBranch.getBranchName());
             existing.setAddress(updatedBranch.getAddress());
             existing.setPhoneNumber(updatedBranch.getPhoneNumber());
@@ -65,9 +71,10 @@ public class BranchService {
         }
     }
 
-    public boolean deleteBranch(Long branchId) {
-        if (branchRepository.existsById(branchId)) {
-            branchRepository.deleteById(branchId);
+    public boolean deleteBranch(String branchCode) {
+        if (branchRepository.existsByBranchCode(branchCode)) {
+            Branch branch = branchRepository.findByBranchCode(branchCode).get();
+            branchRepository.deleteById(branch.getBranchId());
             return true;
         } else {
             return false;
@@ -90,6 +97,15 @@ public class BranchService {
             branch.getManagers().add(manager);
             branchRepository.save(branch);
         }
+    }
+
+    public BranchDto entityToDto(Branch branch){
+        return BranchDto.builder()
+                .branchCode(branch.getBranchCode())
+                .branchName(branch.getBranchName())
+                .address(branch.getAddress())
+                .phoneNumber(branch.getPhoneNumber())
+                .build();
     }
 }
 

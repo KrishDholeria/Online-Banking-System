@@ -40,9 +40,9 @@ public class ManagerService {
                 .userName(managerDto.getUserName())
                 .password(managerDto.getPassword())
                 .person(personService.createPerson(managerDto.getPerson()))
-                .branch(branchService.getBranchById(managerDto.getBranchId()).get())
+                .branch(branchService.getBranchByBranchCode(managerDto.getBranch().getBranchCode()).get())
                 .build();
-        branchService.assignManagerToBranch(managerDto.getBranchId(), manager);
+        branchService.assignManagerToBranch(manager.getBranch().getBranchId(), manager);
         return managerRepository.save(manager);
     }
 
@@ -55,7 +55,7 @@ public class ManagerService {
             existing.setUserName(updatedManagerDto.getUserName());
             existing.setPassword(updatedManagerDto.getPassword());
 
-            existing.setBranch(branchService.getBranchById(updatedManagerDto.getBranchId()).get());
+            existing.setBranch(branchService.getBranchByBranchCode(updatedManagerDto.getBranch().getBranchCode()).get());
 
             managerRepository.save(existing);
 
@@ -74,6 +74,16 @@ public class ManagerService {
         } else {
             return false;
         }
+    }
+
+    public ManagerDto entityToDto(Manager manager){
+        return ManagerDto.builder()
+                .userName(manager.getUserName())
+                .manageId(manager.getManagerId())
+                .password(manager.getPassword())
+                .branch(branchService.entityToDto(manager.getBranch()))
+                .person(personService.entityToDto(manager.getPerson()))
+                .build();
     }
 
     // public void assignPersonToManager(Long managerId, Person person) {

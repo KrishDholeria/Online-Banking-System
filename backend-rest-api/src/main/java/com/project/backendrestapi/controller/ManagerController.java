@@ -11,8 +11,6 @@ import com.project.backendrestapi.model.Person;
 import com.project.backendrestapi.repository.PersonRepository;
 import com.project.backendrestapi.service.CustomerService;
 import com.project.backendrestapi.service.ManagerService;
-import com.project.backendrestapi.service.PersonService;
-
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.AllArgsConstructor;
@@ -27,8 +25,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+<<<<<<< HEAD
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+=======
+>>>>>>> parent of abcbe0f (manager update half)
 import java.util.Date;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class ManagerController {
     private final CustomerService customerService;
 
     @Autowired
-    private final PersonService personService;
+    private final PersonRepository personRepository;
 
     @PostMapping("/add/customer")
     public ResponseEntity<String> addCustomer(@RequestBody CustomerDto customerDto) {
@@ -74,8 +75,6 @@ public class ManagerController {
     public ResponseEntity<ManagerDto> getManagerDetails(@RequestBody String username) {
     try {
         Manager manager = managerService.getManagerByUserName(username);
-        System.out.println(username);
-        System.out.println(manager);
         if (manager != null) {
             // Map the manager entity to ManagerDto
             ManagerDto managerDto = new ManagerDto();
@@ -89,10 +88,7 @@ public class ManagerController {
                 personDto.setFirstName(person.getFirstName());
                 personDto.setLastName(person.getLastName());
                 personDto.setAddress(person.getAddress());
-                Date sqlDate = person.getDob();
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                String dateString = dateFormat.format(sqlDate);
-                personDto.setDob(dateString);
+                // personDto.setDob(person.getDob());
                 personDto.setEmail(person.getEmail());
                 personDto.setPhoneNo(person.getPhoneNo());
                 // Set other properties as needed
@@ -106,28 +102,6 @@ public class ManagerController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }
-
-    @PostMapping("/manager/update")
-    public ResponseEntity<?> updateManagerDetails(@RequestParam String username,@RequestBody PersonDto personDto) {
-        try {
-
-            Manager manager = managerService.getManagerByUserName(username);
-            System.out.println(username);
-            System.out.println(manager);
-
-            ManagerDto managerDto = managerService.managerToManagerDto(manager);
-            managerDto.setPerson(personDto);
-
-            managerService.updateManager(manager.getManagerId(), managerDto);
-
-
-            return ResponseEntity.ok().body("Manager details updated successfully");
-        } catch (Exception e) {
-            // If an error occurs, return an internal server error response
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body("Failed to update manager details: " + e.getMessage());
-        }
-    }
 
 
     @PostMapping("/manager/login")

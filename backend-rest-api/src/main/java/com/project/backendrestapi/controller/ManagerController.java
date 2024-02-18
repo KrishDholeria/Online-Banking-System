@@ -26,8 +26,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+=======
+>>>>>>> parent of abcbe0f (manager update half)
 =======
 >>>>>>> parent of abcbe0f (manager update half)
 import java.util.Date;

@@ -51,7 +51,8 @@ export default function UpdateManagerDetailForm() {
     e.preventDefault();
     try {
       const username = localStorage.getItem('username');
-      await axios.put(`/manager/details?username=${username}`, person);
+      await axios.post(`/manager/update?username=${username}`, {person });
+      console.log("updated!!!");
       // Optionally, you can handle success response here
     } catch (error) {
       console.error('Error updating manager details:', error);

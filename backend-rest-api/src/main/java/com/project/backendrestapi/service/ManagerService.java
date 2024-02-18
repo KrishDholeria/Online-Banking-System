@@ -37,9 +37,9 @@ public class ManagerService {
     }
 
     public Manager getManagerByUserName(String username){
-        Manager manager = managerRepository.findByUserName("keval545");
-        System.out.println(username);
-        System.out.println(manager);
+        Manager manager = managerRepository.findByUserName(username);
+        // System.out.println(username);
+        // System.out.println(manager);
         return manager;
     }
 
@@ -64,8 +64,9 @@ public class ManagerService {
             existing.setUserName(updatedManagerDto.getUserName());
             existing.setPassword(updatedManagerDto.getPassword());
 
+            Person person = existing.getPerson();
+            personService.updatePerson(person.getPersonId(), personService.personToPersonDto(person));
             existing.setBranch(branchService.getBranchById(updatedManagerDto.getBranchId()).get());
-
             managerRepository.save(existing);
 
             return Optional.of(existing);
@@ -111,6 +112,15 @@ public class ManagerService {
 
         // Return the authenticated manager
         return manager;
+    }
+
+    public static ManagerDto managerToManagerDto(Manager manager) {
+        ManagerDto managerDto = new ManagerDto();
+        managerDto.setUserName(manager.getUserName());
+        managerDto.setPassword(manager.getPassword());
+        managerDto.setBranchId(manager.getBranch().getBranchId()); // Assuming branchId is stored in Manager object
+        managerDto.setPerson(PersonService.personToPersonDto(manager.getPerson())); // Assuming you have a method to map Person to PersonDto
+        return managerDto;
     }
 
 

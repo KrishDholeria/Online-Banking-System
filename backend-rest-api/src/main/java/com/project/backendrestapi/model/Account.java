@@ -33,7 +33,7 @@ public class Account {
     private Date dateOpened;
     private Date dateClosed;
 
-    @OneToOne(mappedBy = "account")
+    @OneToOne
     Customer customer;
 
     @ManyToOne

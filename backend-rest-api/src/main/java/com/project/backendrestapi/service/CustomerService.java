@@ -79,4 +79,14 @@ public class CustomerService {
         return customer;
     }
 
+    public CustomerDto convertToCustomerDto(Customer customer) {
+        PersonDto personDto = personService.personToPersonDto(customer.getPerson());
+        AccountDto accountDto = accountService.fromEntity(customer.getAccount());
+        CustomerDto customerDto = new CustomerDto();
+        customerDto.setPanNo(customer.getPanNo());
+        customerDto.setPerson(personDto);
+        customerDto.setAccount(accountDto);
+
+        return customerDto;
+    }
 }

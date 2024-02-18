@@ -91,4 +91,13 @@ public class AccountService {
         }
     }
 
+    public static AccountDto fromEntity(Account account) {
+        AccountDto accountDto = new AccountDto();
+        accountDto.setAccountBalance(account.getAccountBalance());
+        accountDto.setCutomerId(account.getCustomer().getCustomerId()); // Assuming customerId is a Long in the Customer entity
+        accountDto.setBranchId(account.getBranch().getBranchId()); // Assuming branchId is a Long in the Branch entity
+        return accountDto;
+    }
+
+
 }

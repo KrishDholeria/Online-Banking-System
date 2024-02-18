@@ -29,7 +29,7 @@ public class Customer {
     @OneToOne
     private Person person;
 
-    @OneToOne
+    @OneToOne(mappedBy = "customer")
     private Account account;
 
 }

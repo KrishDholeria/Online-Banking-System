@@ -28,7 +28,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -53,6 +55,19 @@ public class ManagerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to add customer: " + e.getMessage());
         }
+    }
+
+    @GetMapping("all/customers")
+    public List<CustomerDto> getAllCustomers() {
+        List<Customer> customers = customerService.getAllCustomers();
+        List<CustomerDto> customerDtos = new ArrayList<>();
+
+        for (Customer customer : customers) {
+            CustomerDto customerDto = customerService.convertToCustomerDto(customer);
+            customerDtos.add(customerDto);
+        }
+
+        return customerDtos;
     }
 
     @PostMapping("/manager/details")

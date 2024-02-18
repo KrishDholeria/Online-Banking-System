@@ -11,9 +11,10 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useCarousel } from '@/components/ui/carousel'
+import axios from 'axios'
 
 
-export default function step1() {
+export default function step1({setUser}) {
     const [username, setUsername] = useState('');
     const [account, setAccount] = useState('');
     const [confirmaccount, setConfirmAccount] = useState('');
@@ -56,6 +57,14 @@ export default function step1() {
             return;
         }
         setError(null);
+        const user = await axios.post('/customer/setusername', {
+            userName: username,
+            accountNo: account,
+            branchCode: ifsccode
+        });
+        setUser(user.data);
+        console.log(user);
+        // localStorage.setItem('customer', JSON.stringify(user.data));
         scrollNext();
     }
 

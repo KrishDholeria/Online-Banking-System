@@ -10,6 +10,7 @@ import com.project.backendrestapi.model.Customer;
 import com.project.backendrestapi.model.Person;
 import com.project.backendrestapi.service.AccountService;
 import com.project.backendrestapi.service.CustomerService;
+import com.project.backendrestapi.service.SMSService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,9 +35,13 @@ public class CustomerController {
     @Autowired
     private final AccountService accountService;
 
+    @Autowired
+    private final SMSService smsService;
+
     @PostMapping("/setusername")
     public ResponseEntity<CustomerDto> setUsername(@RequestBody CustomerSignupDto customer){
         Account account = accountService.getAccountByAccountNo(customer.getAccountNo());
+        System.out.println("Helloooooooo!!!!!!");
         if(!customerService.customerExistByUserName(customer.getUserName())){
             Optional<Customer> customer1 = customerService.updateCustomer(account.getCustomer().getCustomerId(), CustomerDto.builder().userName(customer.getUserName()).build());
             Person person = customer1.get().getPerson();
@@ -58,6 +63,7 @@ public class CustomerController {
                             .lastName(person.getLastName())
                             .build())
                     .build();
+            String s = smsService.genrateOTP();
             return new ResponseEntity<>(customerDto, HttpStatus.OK);
         }
         else {

@@ -13,11 +13,16 @@ import com.project.backendrestapi.repository.PersonRepository;
 import lombok.AllArgsConstructor;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.beans.PropertyDescriptor;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +43,10 @@ public class CustomerService {
         return customers;
     }
 
+    public Boolean customerExistByUserName(String userName){
+        return customerRepository.existsByUserName(userName);
+    }
+
     public Optional<Customer> getCustomerById(Long customerId) {
         Optional<Customer> customerOptional = customerRepository.findById(customerId);
         return customerOptional;
@@ -49,12 +58,26 @@ public class CustomerService {
         return customer;
     }
 
+    //to get array of null properties
+    private static String[] getNullPropertyNames(Object source) {
+        final BeanWrapper src = new BeanWrapperImpl(source);
+        PropertyDescriptor[] pds = src.getPropertyDescriptors();
+
+        Set<String> emptyNames = new HashSet<>();
+        for (PropertyDescriptor pd : pds) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue == null) emptyNames.add(pd.getName());
+        }
+        String[] result = new String[emptyNames.size()];
+        return emptyNames.toArray(result);
+    }
+
     public Optional<Customer> updateCustomer(Long customerId, CustomerDto updatedCustomerDto) {
         Optional<Customer> existingCustomerOptional = customerRepository.findById(customerId);
 
         if (existingCustomerOptional.isPresent()) {
             Customer existingCustomer = existingCustomerOptional.get();
-            BeanUtils.copyProperties(updatedCustomerDto, existingCustomer, "customerId");
+            BeanUtils.copyProperties(updatedCustomerDto, existingCustomer, getNullPropertyNames(updatedCustomerDto));
             customerRepository.save(existingCustomer);
             return existingCustomerOptional;
         } else {

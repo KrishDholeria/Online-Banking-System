@@ -1,9 +1,6 @@
 package com.project.backendrestapi.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.stereotype.Service;
 
 @Getter
@@ -11,6 +8,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class JwtRequest {
     private String username;
     private String password;

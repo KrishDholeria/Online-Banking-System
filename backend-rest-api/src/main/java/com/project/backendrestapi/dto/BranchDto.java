@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BranchDto {
-    
+    private String branchCode;
     private String branchName;
     private String address;
     private String phoneNumber;

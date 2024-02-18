@@ -1,14 +1,12 @@
 package com.project.backendrestapi.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AccountDto {
     private Double accountBalance;
     private Long cutomerId;

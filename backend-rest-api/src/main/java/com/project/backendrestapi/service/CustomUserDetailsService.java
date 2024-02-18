@@ -28,21 +28,21 @@ public class CustomUserDetailsService implements UserDetailsService {
     CustomerRepository customerRepository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Admin> admin = adminRepository.findByUserName(username);
-        if(admin.isPresent()){
-            return org.springframework.security.core.userdetails.User.withUsername(admin.get().getUserName())
-                    .password(admin.get().getPassword())
-                    .roles("ADMIN")
-                    .build();
-        }
-
-        Optional<Manager> manager = managerRepository.findByUserName(username);
-        if(manager.isPresent()){
-            return org.springframework.security.core.userdetails.User.withUsername(manager.get().getUserName())
-                    .password(manager.get().getPassword())
-                    .roles("MANAGER")
-                    .build();
-        }
+//        Optional<Admin> admin = adminRepository.findByUserName(username);
+//        if(admin.isPresent()){
+//            return org.springframework.security.core.userdetails.User.withUsername(admin.get().getUserName())
+//                    .password(admin.get().getPassword())
+//                    .roles("ADMIN")
+//                    .build();
+//        }
+//
+//        Optional<Manager> manager = managerRepository.findByUserName(username);
+//        if(manager.isPresent()){
+//            return org.springframework.security.core.userdetails.User.withUsername(manager.get().getUserName())
+//                    .password(manager.get().getPassword())
+//                    .roles("MANAGER")
+//                    .build();
+//        }
 
         Optional<Customer> customer = customerRepository.findByUserName(username);
         if(customer.isPresent()){

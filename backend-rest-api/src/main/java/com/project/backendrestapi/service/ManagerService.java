@@ -37,7 +37,7 @@ public class ManagerService {
     }
 
     public Manager getManagerByUserName(String username){
-        Manager manager = managerRepository.findByUserName(username);
+        Manager manager = managerRepository.findByUserName(username).get();
         // System.out.println(username);
         // System.out.println(manager);
         return manager;
@@ -88,7 +88,7 @@ public class ManagerService {
 
     public Manager authenticateManager(String username, String password) {
         // Find the manager by username from the database
-        Manager manager = managerRepository.findByUserName(username);
+        Manager manager = managerRepository.findByUserName(username).get();
         System.out.println(username);
 
         System.out.println(manager.getPerson());
@@ -104,7 +104,7 @@ public class ManagerService {
 
     public Manager abc(String username) {
         // Find the manager by username from the database
-        Manager manager = managerRepository.findByUserName(username);
+        Manager manager = managerRepository.findByUserName(username).get();
         System.out.println(username);
 
         System.out.println(manager.getPerson());

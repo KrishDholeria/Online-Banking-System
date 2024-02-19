@@ -78,5 +78,21 @@ public class CustomerService {
         customer.setAccount(accountService.createAccount(customerDto.getAccount()));
         return customer;
     }
+
+    public CustomerDto convertToCustomerDto(Customer customer) {
+        PersonDto personDto = personService.personToPersonDto(customer.getPerson());
+        AccountDto accountDto = accountService.fromEntity(customer.getAccount());
+        CustomerDto customerDto = new CustomerDto();
+        customerDto.setPanNo(customer.getPanNo());
+        customerDto.setPerson(personDto);
+        customerDto.setAccount(accountDto);
+
+        return customerDto;
+    }
+
+    public Customer getCustomerByAccountId(Account account) {
+        Customer customer = customerRepository.findByAccount(account);
+        return customer;
+    }
     
 }

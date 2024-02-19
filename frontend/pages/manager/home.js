@@ -79,6 +79,13 @@ export default function ManagerHome() {
                 View Customer Details
               </button>
             </Link>
+
+            <Link href="/manager/change-password">
+              <button className="p-4 bg-gray-800 text-white rounded-md text-center hover:bg-gray-700 transition duration-300 mt-4 flex items-center">
+                <FaUserCog size={18} className="mr-2" />
+                Change Password
+              </button>
+            </Link>
           </div>
         </div>
       </main>

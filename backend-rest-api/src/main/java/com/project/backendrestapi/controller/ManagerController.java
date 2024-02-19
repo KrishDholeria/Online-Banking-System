@@ -1,16 +1,22 @@
 package com.project.backendrestapi.controller;
 
+import com.project.backendrestapi.dto.ChangePasswordRequest;
 import com.project.backendrestapi.dto.CustomerDto;
 import com.project.backendrestapi.dto.LoginResponse;
 import com.project.backendrestapi.dto.ManagerDto;
 import com.project.backendrestapi.dto.PersonDto;
+import com.project.backendrestapi.model.Account;
 import com.project.backendrestapi.model.Branch;
 import com.project.backendrestapi.model.Customer;
 import com.project.backendrestapi.model.Manager;
 import com.project.backendrestapi.model.Person;
+import com.project.backendrestapi.repository.AccountRepository;
 import com.project.backendrestapi.repository.PersonRepository;
+import com.project.backendrestapi.service.AccountService;
 import com.project.backendrestapi.service.CustomerService;
 import com.project.backendrestapi.service.ManagerService;
+import com.project.backendrestapi.service.PersonService;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.AllArgsConstructor;
@@ -25,16 +31,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-=======
->>>>>>> parent of abcbe0f (manager update half)
-=======
->>>>>>> parent of abcbe0f (manager update half)
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -47,7 +48,10 @@ public class ManagerController {
     private final CustomerService customerService;
 
     @Autowired
-    private final PersonRepository personRepository;
+    private final PersonService personService;
+
+    @Autowired
+    private final AccountService accountService;
 
     @PostMapping("/add/customer")
     public ResponseEntity<String> addCustomer(@RequestBody CustomerDto customerDto) {
@@ -74,10 +78,49 @@ public class ManagerController {
         return customerDtos;
     }
 
+    @GetMapping("customer")
+    public List<CustomerDto> getCustomersByaccountNo(@RequestParam String accountNo) {
+        Account account = accountService.getAccountByAccountNo(accountNo);
+        System.out.println(account);
+        List<CustomerDto> customerDtos = new ArrayList<>();
+        Customer customer = customerService.getCustomerByAccountId(account);
+        
+        System.out.println(customer);
+        CustomerDto customerDto = new CustomerDto();
+        customerDto = customerService.convertToCustomerDto(customer);
+        customerDtos.add(customerDto);
+        return customerDtos;
+    }
+
+    @PostMapping("manager/change-password")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) {
+        try {
+            String username = request.getUsername();
+            String oldPassword = request.getOldPassword();
+            String newPassword = request.getNewPassword();
+
+            // Validate old password
+            boolean isPasswordValid = managerService.validatePassword(username, oldPassword);
+            if (!isPasswordValid) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Invalid old password");
+            }
+            // Change password
+            managerService.changePassword(username, newPassword);
+
+            return ResponseEntity.ok().body("Password changed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to change password: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/manager/details")
     public ResponseEntity<ManagerDto> getManagerDetails(@RequestBody String username) {
     try {
         Manager manager = managerService.getManagerByUserName(username);
+        System.out.println(username);
+        System.out.println(manager);
         if (manager != null) {
             // Map the manager entity to ManagerDto
             ManagerDto managerDto = new ManagerDto();
@@ -91,7 +134,10 @@ public class ManagerController {
                 personDto.setFirstName(person.getFirstName());
                 personDto.setLastName(person.getLastName());
                 personDto.setAddress(person.getAddress());
-                // personDto.setDob(person.getDob());
+                Date sqlDate = person.getDob();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                String dateString = dateFormat.format(sqlDate);
+                personDto.setDob(dateString);
                 personDto.setEmail(person.getEmail());
                 personDto.setPhoneNo(person.getPhoneNo());
                 // Set other properties as needed
@@ -105,6 +151,28 @@ public class ManagerController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }
+
+    @PostMapping("/manager/update")
+    public ResponseEntity<?> updateManagerDetails(@RequestParam String username,@RequestBody PersonDto personDto) {
+        try {
+
+            Manager manager = managerService.getManagerByUserName(username);
+            System.out.println(username);
+            System.out.println(manager);
+
+            ManagerDto managerDto = managerService.managerToManagerDto(manager);
+            managerDto.setPerson(personDto);
+
+            managerService.updateManager(manager.getManagerId(), managerDto);
+
+
+            return ResponseEntity.ok().body("Manager details updated successfully");
+        } catch (Exception e) {
+            // If an error occurs, return an internal server error response
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("Failed to update manager details: " + e.getMessage());
+        }
+    }
 
 
     @PostMapping("/manager/login")

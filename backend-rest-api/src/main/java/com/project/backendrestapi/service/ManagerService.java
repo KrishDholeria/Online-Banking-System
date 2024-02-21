@@ -86,6 +86,12 @@ public class ManagerService {
                 .build();
     }
 
+    public Optional<Manager> getManagerByuserName(String userName) {
+        Optional<Manager> manager = managerRepository.getManagerByuserName(userName);
+        // TODO Auto-generated method stub
+        return manager;
+    }
+
     // public void assignPersonToManager(Long managerId, Person person) {
     // Optional<Manager> managerOptional = managerRepository.findById(managerId);
     // if (managerOptional.isPresent()) {

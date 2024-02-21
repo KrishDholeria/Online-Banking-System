@@ -27,7 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping
 public class AdminController {
 
     @Autowired
@@ -73,7 +73,7 @@ public class AdminController {
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/login")
+    @PostMapping("/admin/login")
     public ResponseEntity<String> loginAdmin(@RequestBody AdminDto admin) {
         if (adminService.authenticateAdmin(admin.getUserName(), admin.getPassword())) {
             // If authentication is successful, generate a JWT token
@@ -105,7 +105,7 @@ public class AdminController {
 //        return ResponseEntity.ok(customers);
 //    }
 
-    @GetMapping("/managers")
+    @GetMapping("all/managers")
     public ResponseEntity<List<ManagerDto>> getAllManagers() {
         List<Manager> managers = managerService.getAllManagers();
         List<ManagerDto> managerDtos = new ArrayList<>();
@@ -115,13 +115,13 @@ public class AdminController {
         return ResponseEntity.ok(managerDtos);
     }
 
-    @GetMapping("/managers/{managerId}")
-    public ResponseEntity<ManagerDto> getManagerById(@PathVariable Long managerId) {
-        Optional<Manager> manager = managerService.getManagerById(managerId);
+    @GetMapping("/manager/username")
+    public ResponseEntity<ManagerDto> getManagerById(@RequestParam String userName) {
+        Optional<Manager> manager = managerService.getManagerByuserName(userName);
         return manager.map(value -> ResponseEntity.status(HttpStatus.OK).body(managerService.entityToDto(manager.get()))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/managers/new")
+    @PostMapping("/add/manager")
     public ResponseEntity<ManagerDto> createManager(@RequestBody ManagerDto manager) {
 
         Manager createdManager = managerService.createManager(manager);
@@ -159,7 +159,7 @@ public class AdminController {
         return branch.map(value -> ResponseEntity.status(HttpStatus.OK).body(branchService.entityToDto(value))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/branches/new")
+    @PostMapping("/add/branch")
     public ResponseEntity<BranchDto> createBranch(@RequestBody BranchDto branch) {
         Branch createdBranch = branchService.createBranch(branch);
         return ResponseEntity.status(HttpStatus.CREATED).body(branchService.entityToDto(createdBranch));

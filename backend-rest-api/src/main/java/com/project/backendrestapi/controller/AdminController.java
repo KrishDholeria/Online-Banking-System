@@ -2,6 +2,7 @@ package com.project.backendrestapi.controller;
 
 import com.project.backendrestapi.dto.AdminDto;
 import com.project.backendrestapi.dto.BranchDto;
+import com.project.backendrestapi.dto.ChangePasswordRequest;
 import com.project.backendrestapi.dto.ManagerDto;
 import com.project.backendrestapi.model.Admin;
 import com.project.backendrestapi.model.Branch;
@@ -179,6 +180,30 @@ public class AdminController {
     public ResponseEntity<Void> deleteBranch(@PathVariable String branchCode) {
         boolean deleted = branchService.deleteBranch(branchCode);
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
+
+
+     @PostMapping("admin/change-password")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) {
+        try {
+            String username = request.getUsername();
+            String oldPassword = request.getOldPassword();
+            String newPassword = request.getNewPassword();
+
+            // Validate old password
+            boolean isPasswordValid = adminService.validatePassword(username, oldPassword);
+            if (!isPasswordValid) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Invalid old password");
+            }
+            // Change password
+            adminService.changePassword(username, newPassword);
+
+            return ResponseEntity.ok().body("Password changed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to change password: " + e.getMessage());
+        }
     }
 
 }

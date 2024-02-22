@@ -114,6 +114,32 @@ public class AdminService {
     // }
     // }
 
+    // public void changePassword(String username, String newPassword) {
+    //     Manager manager = managerRepository.findByUserName(username);
+    //     if (manager != null) {
+    //         manager.setPassword(newPassword);
+    //         managerRepository.save(manager);
+    //     }
+    // }
+
+    public void changePassword(String username, String newPassword){
+        Optional<Admin> admin = adminRepository.findByUserName(username);
+        if(admin.isPresent()){
+            admin.get().setPassword(newPassword);
+            adminRepository.save(admin.get());
+        }
+    }
+
+    public boolean validatePassword(String username, String password) {
+        Optional<Admin> admin = adminRepository.findByUserName(username);
+        if (admin.isPresent()) {
+            if(admin.get().getPassword().equals(password)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean deleteManager(Long managerId) {
         if (managerRepository.existsById(managerId)) {
             managerRepository.deleteById(managerId);

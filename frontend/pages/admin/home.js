@@ -73,10 +73,17 @@ export default function AdminHome() {
               </button>
             </Link>
 
-            <Link href="/admin/add-branch"> {/* Replace update-profile route with add-branch route */}
-              <button className="p-4 bg-gray-800 text-white rounded-md text-center hover:bg-gray-700 transition duration-300 mt-4 flex items-center"> {/* Add margin top */}
+            <Link href="/admin/add-branch">
+              <button className="p-4 bg-gray-800 text-white rounded-md text-center hover:bg-gray-700 transition duration-300 mt-4 flex items-center"> 
                 <FaBuilding size={18} className="mr-2" />
                 Add Branch
+              </button>
+            </Link>
+
+            <Link href="/admin/view-branch">
+              <button className="p-4 bg-gray-800 text-white rounded-md text-center hover:bg-gray-700 transition duration-300 mt-4 flex items-center"> 
+                <FaBuilding size={18} className="mr-2" />
+                View Branch
               </button>
             </Link>
 
@@ -86,6 +93,7 @@ export default function AdminHome() {
                 Change Password
               </button>
             </Link>
+            
           </div>
         </div>
       </main>

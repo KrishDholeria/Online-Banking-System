@@ -10,11 +10,14 @@ import {
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import axios from 'axios'
+import { useRouter } from 'next/router'
 
 const login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const router = useRouter();
 
   const handleUsernameChange = (e) => {
     setUsername(e.target.value);
@@ -41,7 +44,21 @@ const login = () => {
       setError('Password should be minimum eight characters.');
       return;
     }
-    setError(null);
+    try {
+      const response = await axios.post("/auth/login", {username, password });
+      console.log(response);
+      setError(null);
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('username', username);
+      router.push('/customer');
+    }
+    catch (error) {
+      console.log(error.response);
+      setError(error.response.data);
+    }
+    // const response = await axios.post("/auth/login", {username, password});
+    // setError(null);
+    // router.push('/customer');
   }
 
   return (

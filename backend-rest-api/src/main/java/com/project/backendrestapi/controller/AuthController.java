@@ -32,9 +32,13 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest request) {
+    public ResponseEntity<?> login(@RequestBody JwtRequest request) {
 
-        this.doAuthenticate(request.getUsername(), request.getPassword());
+        try {
+            this.doAuthenticate(request.getUsername(), request.getPassword());
+        } catch (BadCredentialsException e) {
+            return new ResponseEntity<>("Credentials Invalid", HttpStatus.UNAUTHORIZED);
+        }
 
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());

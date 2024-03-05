@@ -1,10 +1,6 @@
 package com.project.backendrestapi.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,8 +19,11 @@ public class Beneficiary {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long beneficiaryId;
     private String beneficiaryName;
+    private String accountNumber;
+    private String branchCode;
 
-    @ManyToOne
-    private Account account;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
 }

@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useCarousel } from '@/components/ui/carousel'
 import { ArrowLeft } from "lucide-react"
+import axios from 'axios'
 
 
 export default function step1() {
@@ -32,6 +33,14 @@ export default function step1() {
         const validotpregx = /^\d{6}$/;
         if (!otp.match(validotpregx)) {
             setError('OTP should be 6 digits.');
+            return;
+        }
+        if(error){
+            return;
+        }
+        const response = await axios.post("/customer/verifyotp", {otp});
+        if(response.status !== 200){
+            setError('Invalid OTP');
             return;
         }
         setError(null);

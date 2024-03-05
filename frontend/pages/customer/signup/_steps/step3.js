@@ -12,13 +12,16 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useCarousel } from '@/components/ui/carousel'
 import { ArrowLeft } from "lucide-react"
+import { useRouter } from 'next/router'
+import axios from 'axios'
 
 
-export default function step1() {
+export default function step1({user, setUser}) {
     const [password, setPassword] = useState('');
     const [confirmpassword, setConfirmPassword] = useState('');
     const [error, setError] = useState(null);
     const {scrollNext, scrollPrev} = useCarousel();
+    const router = useRouter();
 
     const handlePasswordChange = (e) => {
         setPassword(e.target.value);
@@ -37,8 +40,13 @@ export default function step1() {
             setError('Password and confirm password do not match.');
             return;
         }
+        if(error !== null){
+            return;
+        }
+        const res = await axios.post("/customer/setpassword", {...user, password});
+        setUser(res.data);
         setError(null);
-        scrollNext();
+        router.push('/customer/login');
     }
 
     return (<Card className={`w-full h-[450px] overflow-auto`}>

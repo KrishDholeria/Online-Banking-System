@@ -14,10 +14,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -38,7 +35,7 @@ public class AccountService {
         return accountRepository.findById(accountId);
     }
 
-    public Account getAccountByAccountNo(String accountNo){
+    public Optional<Account> getAccountByAccountNo(String accountNo){
         return accountRepository.findAccountByAccountNumber(accountNo);
     }
 
@@ -47,6 +44,7 @@ public class AccountService {
         int[] nums = new int[12];
         StringBuilder ac = new StringBuilder();
         nums[0] = rand.nextInt(1,9);
+        ac.append(nums[0]);
         for(int i=1; i<12; i++){
             nums[i] = rand.nextInt(10);
             ac.append(nums[i]);
@@ -64,15 +62,13 @@ public class AccountService {
         return accountRepository.save(newAccount);
     }
 
-    public Optional<Account> updateAccount(Long accountId, AccountDto updatedAccount) {
+    public Optional<Account> updateAccount(Long accountId, Account account) {
         Optional<Account> existingAccount = accountRepository.findById(accountId);
-        Optional<Branch> branch = branchService.getBranchById(updatedAccount.getBranchId());
-        Branch branch1 = branch.get();
         if (existingAccount.isPresent()) {
             Account existing = existingAccount.get();
             existing.setAccountId(accountId);
-            existing.setAccountBalance(updatedAccount.getAccountBalance());
-            existing.setBranch(branch1);
+            existing.setAccountBalance(account.getAccountBalance());
+            existing.setBranch(account.getBranch());
 
             accountRepository.save(existing);
 
@@ -91,7 +87,8 @@ public class AccountService {
         }
     }
 
-    public static AccountDto fromEntity(Account account) {
+    public AccountDto fromEntity(Account account) {
+        System.out.println("Account:  !!!!!!!" + account);
         AccountDto accountDto = new AccountDto();
         accountDto.setAccountBalance(account.getAccountBalance());
         accountDto.setCutomerId(account.getCustomer().getCustomerId()); // Assuming customerId is a Long in the Customer entity

@@ -29,7 +29,7 @@ public class SMSService {
         return "OTP generated and sent succesfully";
     }
 
-    public  String verifyOTP(String otpString){
+    public  Boolean verifyOTP(String otpString){
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 
         try {
@@ -43,8 +43,8 @@ public class SMSService {
             System.out.println(verificationCheck.getStatus());
 
         } catch (Exception e) {
-            return "Invalid OTP!!!!!";
+            return false;
         }
-        return "OTP verified succesfully";
+        return true;
     }
 }

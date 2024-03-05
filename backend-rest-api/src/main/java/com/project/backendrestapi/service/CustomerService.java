@@ -1,9 +1,11 @@
 package com.project.backendrestapi.service;
 
 import com.project.backendrestapi.dto.AccountDto;
+import com.project.backendrestapi.dto.BeneficiaryDto;
 import com.project.backendrestapi.dto.CustomerDto;
 import com.project.backendrestapi.dto.PersonDto;
 import com.project.backendrestapi.model.Account;
+import com.project.backendrestapi.model.Beneficiary;
 import com.project.backendrestapi.model.Customer;
 import com.project.backendrestapi.model.Person;
 import com.project.backendrestapi.repository.AccountRepository;
@@ -16,13 +18,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.beans.PropertyDescriptor;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +38,9 @@ public class CustomerService {
     @Autowired
     private final AccountService accountService;
 
+    @Autowired
+    private final BeneficiaryService beneficiaryService;
+
     public List<Customer> getAllCustomers() {
         List<Customer> customers = customerRepository.findAll();
         return customers;
@@ -52,9 +55,13 @@ public class CustomerService {
         return customerOptional;
     }
 
+    public Optional<Customer> getCustomerByUserName(String userName){
+        return customerRepository.findByUserName(userName);
+    }
+
     public Customer createCustomer(CustomerDto customerDto) {
         Customer customer = convertToEntity(customerDto);
-        customerRepository.save(customer);
+        customer = customerRepository.save(customer);
         return customer;
     }
 
@@ -72,8 +79,8 @@ public class CustomerService {
         return emptyNames.toArray(result);
     }
 
-    public Optional<Customer> updateCustomer(Long customerId, CustomerDto updatedCustomerDto) {
-        Optional<Customer> existingCustomerOptional = customerRepository.findById(customerId);
+    public Optional<Customer> updateCustomer(String userName, CustomerDto updatedCustomerDto) {
+        Optional<Customer> existingCustomerOptional = customerRepository.findByUserName(userName);
 
         if (existingCustomerOptional.isPresent()) {
             Customer existingCustomer = existingCustomerOptional.get();
@@ -96,7 +103,9 @@ public class CustomerService {
 
     private Customer convertToEntity(CustomerDto customerDto) {
         Customer customer = new Customer();
+        BCryptPasswordEncoder b = new BCryptPasswordEncoder();
         BeanUtils.copyProperties(customerDto, customer);
+        customer.setPassword(b.encode(customerDto.getPassword()));
         customer.setPerson(personService.createPerson(customerDto.getPerson()));
         customer.setAccount(accountService.createAccount(customerDto.getAccount()));
         return customer;
@@ -109,6 +118,11 @@ public class CustomerService {
         customerDto.setPanNo(customer.getPanNo());
         customerDto.setPerson(personDto);
         customerDto.setAccount(accountDto);
+        List<BeneficiaryDto> beneficiaryDtos = new ArrayList<>();
+        for(Beneficiary b: customer.getBeneficiaries()){
+            beneficiaryDtos.add(beneficiaryService.entityToDto(b));
+        }
+        customerDto.setBeneficiaries(beneficiaryDtos);
 
         return customerDto;
     }

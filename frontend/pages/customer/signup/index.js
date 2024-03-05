@@ -22,7 +22,9 @@ const signup = () => {
                         <Step2 />
                     </CarouselItem>
                     <CarouselItem>
-                        <Step3 />
+                        <Step3 user={customer} setUser={(value) => {
+                            setCustomer(value);
+                        }}/>
                     </CarouselItem>
                 </CarouselContent>
             </Carousel>

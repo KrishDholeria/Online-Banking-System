@@ -112,11 +112,11 @@ public class ManagerService {
         return manager;
     }
 
-    public static ManagerDto managerToManagerDto(Manager manager) {
+    public ManagerDto managerToManagerDto(Manager manager) {
         ManagerDto managerDto = new ManagerDto();
         managerDto.setUserName(manager.getUserName());
         managerDto.setPassword(manager.getPassword());
-        managerDto.setBranchId(manager.getBranch().getBranchId()); // Assuming branchId is stored in Manager object
+        managerDto.setBranch(this.branchService.entityToDto(manager.getBranch())); // Assuming branchId is stored in Manager object
         managerDto.setPerson(PersonService.personToPersonDto(manager.getPerson())); // Assuming you have a method to map Person to PersonDto
         return managerDto;
     }

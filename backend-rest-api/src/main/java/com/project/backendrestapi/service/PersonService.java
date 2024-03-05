@@ -38,7 +38,7 @@ public class PersonService {
 
     public Person createPerson(PersonDto personDto) {
         Date date = null;
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC")); // replace "UTC" with your desired timezone
         try{
             date = sdf.parse(personDto.getDob());

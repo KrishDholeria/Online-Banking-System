@@ -43,6 +43,7 @@ export default function AddCustomerForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(dob);
     try {
       const response = await axios.post('/add/customer', {
         person: {

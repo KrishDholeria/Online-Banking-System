@@ -3,6 +3,8 @@ package com.project.backendrestapi.service;
 import com.project.backendrestapi.model.Transaction;
 import com.project.backendrestapi.model.Account;
 import com.project.backendrestapi.model.Branch;
+import com.project.backendrestapi.model.Customer;
+import com.project.backendrestapi.repository.CustomerRepository;
 import com.project.backendrestapi.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,9 +17,11 @@ public class TransactionService {
 
     @Autowired
     private final TransactionRepository transactionRepository;
+    private final CustomerRepository customerRepository;
 
-    public TransactionService(TransactionRepository transactionRepository) {
+    public TransactionService(TransactionRepository transactionRepository, CustomerRepository customerRepository) {
         this.transactionRepository = transactionRepository;
+        this.customerRepository = customerRepository;
     }
 
     public List<Transaction> getAllTransactions() {
@@ -83,12 +87,26 @@ public class TransactionService {
     }
 
     // Example method for associating a transaction with a branch
-    // public void associateTransactionWithBranch(Long transactionId, Branch branch) {
-    //     Optional<Transaction> transactionOptional = transactionRepository.findById(transactionId);
-    //     if (transactionOptional.isPresent()) {
-    //         Transaction transaction = transactionOptional.get();
-    //         transaction.setBranch(branch);
-    //         transactionRepository.save(transaction);
-    //     }
+    // public void associateTransactionWithBranch(Long transactionId, Branch branch)
+    // {
+    // Optional<Transaction> transactionOptional =
+    // transactionRepository.findById(transactionId);
+    // if (transactionOptional.isPresent()) {
+    // Transaction transaction = transactionOptional.get();
+    // transaction.setBranch(branch);
+    // transactionRepository.save(transaction);
     // }
+    // }
+
+    public List<Transaction> getTransactionsByCustomerId(Long customerId) {
+        // Fetch transactions associated with the customer ID
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+        // Get the account associated with the customer
+        Account account = customer.getAccount();
+
+        // Now, fetch transactions associated with this account
+        return transactionRepository.findByAccount(account);
+    }
 }

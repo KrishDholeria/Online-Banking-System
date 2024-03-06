@@ -1,5 +1,9 @@
 package com.project.backendrestapi.controller;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import com.project.backendrestapi.dto.*;
 import com.project.backendrestapi.model.*;
@@ -7,12 +11,16 @@ import com.project.backendrestapi.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.method.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
@@ -37,20 +45,20 @@ public class CustomerController {
     private final BeneficiaryService beneficiaryService;
 
     @PostMapping("/setusername")
-    public ResponseEntity<?> setUsername(@RequestBody CustomerSignupDto customer){
+    public ResponseEntity<?> setUsername(@RequestBody CustomerSignupDto customer) {
         Optional<Account> accountOptional = accountService.getAccountByAccountNo(customer.getAccountNo());
         Account account;
-        if(accountOptional.isPresent()){
+        if (accountOptional.isPresent()) {
             account = accountOptional.get();
-        }
-        else {
+        } else {
             return new ResponseEntity<>("Account not found", HttpStatus.NO_CONTENT);
         }
 
         System.out.println("Helloooooooo!!!!!!");
-        if(!customerService.customerExistByUserName(customer.getUserName())){
-            Optional<Customer> customer1 = customerService.updateCustomer(account.getCustomer().getUserName(), CustomerDto.builder().userName(customer.getUserName()).build());
-            if(customer1.get().getPassword() != null){
+        if (!customerService.customerExistByUserName(customer.getUserName())) {
+            Optional<Customer> customer1 = customerService.updateCustomer(account.getCustomer().getUserName(),
+                    CustomerDto.builder().userName(customer.getUserName()).build());
+            if (customer1.get().getPassword() != null) {
                 return new ResponseEntity<>("Customer already exist!!!", HttpStatus.ALREADY_REPORTED);
             }
             Person person = customer1.get().getPerson();
@@ -74,29 +82,28 @@ public class CustomerController {
                     .build();
             String s = smsService.genrateOTP();
             return new ResponseEntity<>(customerDto, HttpStatus.OK);
-        }
-        else {
+        } else {
             return new ResponseEntity<>(HttpStatus.IM_USED);
         }
-//        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        // return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping("/verifyotp")
-    public ResponseEntity<?> verifyOtp(@RequestBody OtpRequest otpRequest){
+    public ResponseEntity<?> verifyOtp(@RequestBody OtpRequest otpRequest) {
         Boolean res = smsService.verifyOTP(otpRequest.getOtp());
-        if(res){
+        if (res) {
             return ResponseEntity.ok("OTP Verified");
         }
         return new ResponseEntity<>("Invalid Otp!!!", HttpStatus.NON_AUTHORITATIVE_INFORMATION);
     }
 
     @PostMapping("/setpassword")
-    public ResponseEntity<?> setPassword(@RequestBody CustomerDto customerDto){
+    public ResponseEntity<?> setPassword(@RequestBody CustomerDto customerDto) {
         System.out.println(customerDto.getPassword() + " " + customerDto.getUserName());
         String username = customerDto.getUserName();
         String password = customerDto.getPassword();
         Optional<Customer> customerOptional = customerService.getCustomerByUserName(username);
-        if(customerOptional.isPresent()){
+        if (customerOptional.isPresent()) {
             Customer customer = customerOptional.get();
             BCryptPasswordEncoder b = new BCryptPasswordEncoder();
             customer.setPassword(b.encode(password));
@@ -119,24 +126,25 @@ public class CustomerController {
     }
 
     @GetMapping("/getbeneficieries/{username}")
-    public ResponseEntity<?> getBeneficieries(@PathVariable String username){
+    public ResponseEntity<?> getBeneficieries(@PathVariable String username) {
         List<Beneficiary> beneficiaries = beneficiaryService.getBeneficiaryFromCustomer(username);
         List<BeneficiaryDto> beneficiaryDtos = new ArrayList<>();
-        for (Beneficiary b : beneficiaries){
+        for (Beneficiary b : beneficiaries) {
             beneficiaryDtos.add(beneficiaryService.entityToDto(b));
         }
         return new ResponseEntity<>(beneficiaryDtos, HttpStatus.OK);
     }
 
     @GetMapping("/getaccount/{accountNo}")
-    public AccountDto getAccount(@PathVariable String accountNo){
-//        return accountService.getAccountByAccountNo(accountNo).get();
+    public AccountDto getAccount(@PathVariable String accountNo) {
+        // return accountService.getAccountByAccountNo(accountNo).get();
         Account account = accountService.getAccountByAccountNo(accountNo).get();
         return accountService.fromEntity(account);
     }
 
     @PostMapping("/maketransacion/{username}")
-    public ResponseEntity<?> makeTransaction(@RequestBody TransactionDto transactionDto, @PathVariable String username){
+    public ResponseEntity<?> makeTransaction(@RequestBody TransactionDto transactionDto,
+            @PathVariable String username) {
         Optional<Customer> customerOptional = customerService.getCustomerByUserName(username);
         Customer customer = customerOptional.get();
         Account from = customer.getAccount();
@@ -144,11 +152,10 @@ public class CustomerController {
 
         StringBuilder refId = new StringBuilder();
         Random rand = new Random();
-        for(int i=0; i<16; i++){
-            if(i==0) {
+        for (int i = 0; i < 16; i++) {
+            if (i == 0) {
                 refId.append(rand.nextInt(1, 9));
-            }
-            else {
+            } else {
                 refId.append(rand.nextInt(10));
             }
         }
@@ -161,7 +168,6 @@ public class CustomerController {
 
         accountService.updateAccount(to.getAccountId(), to);
         accountService.updateAccount(from.getAccountId(), from);
-
 
         Transaction add = Transaction.builder()
                 .transactionType(transactionDto.getTransactionType())
@@ -183,8 +189,6 @@ public class CustomerController {
         add.setRelatedTransaction(remove);
         transactionService.updateTransaction(add.getTransactionId(), add);
 
-
-
         TransactionResponse response = TransactionResponse.builder()
                 .accountTo(to.getAccountNumber())
                 .accountFrom(from.getAccountNumber())
@@ -195,6 +199,66 @@ public class CustomerController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
+    }
+
+    @GetMapping("/transactions")
+    public ResponseEntity<List<Transaction>> getAllTransactions() {
+        List<Transaction> transactions = transactionService.getAllTransactions();
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
+    @GetMapping("/statement")
+    public ResponseEntity<byte[]> generateStatement(@RequestParam("customerId") Long customerId) {
+
+        // Fetch customer by ID to ensure it exists
+        Optional<Customer> customerOptional = customerService.getCustomerById(customerId);
+        if (customerOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            // Fetch transactions by customer ID
+            List<Transaction> transactions = transactionService.getTransactionsByCustomerId(customerId);
+
+            // Generate PDF document
+            try (PDDocument document = new PDDocument()) {
+                PDPage page = new PDPage();
+                document.addPage(page);
+
+                try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+                    contentStream.beginText();
+                    contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+                    contentStream.newLineAtOffset(100, 700);
+                    contentStream.showText("Transaction Statement for Customer ID: " + customerId);
+                    contentStream.newLine();
+                    contentStream.setFont(PDType1Font.HELVETICA, 10);
+
+                    // Write transaction details to the PDF
+                    for (Transaction transaction : transactions) {
+                        contentStream.showText("Transaction ID: " + transaction.getTransactionId());
+                        contentStream.newLine();
+                        contentStream.showText("Amount: " + transaction.getAmount());
+                        contentStream.newLine();
+                        // Add more transaction details as needed
+                    }
+
+                    contentStream.endText();
+                }
+
+                // Convert PDF document to byte array
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                document.save(baos);
+                byte[] pdfBytes = baos.toByteArray();
+
+                // Set headers for PDF response
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_PDF);
+                headers.setContentDispositionFormData("filename", "transaction_statement.pdf");
+
+                return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
     }
 
 }

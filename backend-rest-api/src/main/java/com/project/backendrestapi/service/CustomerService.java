@@ -8,6 +8,7 @@ import com.project.backendrestapi.model.Account;
 import com.project.backendrestapi.model.Beneficiary;
 import com.project.backendrestapi.model.Customer;
 import com.project.backendrestapi.model.Person;
+import com.project.backendrestapi.model.Transaction;
 import com.project.backendrestapi.repository.AccountRepository;
 import com.project.backendrestapi.repository.CustomerRepository;
 import com.project.backendrestapi.repository.PersonRepository;
@@ -41,12 +42,15 @@ public class CustomerService {
     @Autowired
     private final BeneficiaryService beneficiaryService;
 
+    @Autowired
+    private final TransactionService transactionService;
+
     public List<Customer> getAllCustomers() {
         List<Customer> customers = customerRepository.findAll();
         return customers;
     }
 
-    public Boolean customerExistByUserName(String userName){
+    public Boolean customerExistByUserName(String userName) {
         return customerRepository.existsByUserName(userName);
     }
 
@@ -55,7 +59,7 @@ public class CustomerService {
         return customerOptional;
     }
 
-    public Optional<Customer> getCustomerByUserName(String userName){
+    public Optional<Customer> getCustomerByUserName(String userName) {
         return customerRepository.findByUserName(userName);
     }
 
@@ -65,7 +69,7 @@ public class CustomerService {
         return customer;
     }
 
-    //to get array of null properties
+    // to get array of null properties
     private static String[] getNullPropertyNames(Object source) {
         final BeanWrapper src = new BeanWrapperImpl(source);
         PropertyDescriptor[] pds = src.getPropertyDescriptors();
@@ -73,7 +77,8 @@ public class CustomerService {
         Set<String> emptyNames = new HashSet<>();
         for (PropertyDescriptor pd : pds) {
             Object srcValue = src.getPropertyValue(pd.getName());
-            if (srcValue == null) emptyNames.add(pd.getName());
+            if (srcValue == null)
+                emptyNames.add(pd.getName());
         }
         String[] result = new String[emptyNames.size()];
         return emptyNames.toArray(result);
@@ -119,7 +124,7 @@ public class CustomerService {
         customerDto.setPerson(personDto);
         customerDto.setAccount(accountDto);
         List<BeneficiaryDto> beneficiaryDtos = new ArrayList<>();
-        for(Beneficiary b: customer.getBeneficiaries()){
+        for (Beneficiary b : customer.getBeneficiaries()) {
             beneficiaryDtos.add(beneficiaryService.entityToDto(b));
         }
         customerDto.setBeneficiaries(beneficiaryDtos);

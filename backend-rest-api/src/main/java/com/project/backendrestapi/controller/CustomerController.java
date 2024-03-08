@@ -207,16 +207,16 @@ public class CustomerController {
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 
-    @GetMapping("/statement")
-    public ResponseEntity<byte[]> generateStatement(@RequestParam("customerId") Long customerId) {
+    @GetMapping("/statement/{username}")
+    public ResponseEntity<byte[]> generateStatement(@PathVariable String username) {
 
         // Fetch customer by ID to ensure it exists
-        Optional<Customer> customerOptional = customerService.getCustomerById(customerId);
+        Optional<Customer> customerOptional = customerService.getCustomerByUserName(username);
         if (customerOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {
             // Fetch transactions by customer ID
-            List<Transaction> transactions = transactionService.getTransactionsByCustomerId(customerId);
+            List<Transaction> transactions = transactionService.getTransactionsByCustomerId(customerOptional.get().getCustomerId());
 
             // Generate PDF document
             try (PDDocument document = new PDDocument()) {
@@ -227,7 +227,7 @@ public class CustomerController {
                     contentStream.beginText();
                     contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
                     contentStream.newLineAtOffset(100, 700);
-                    contentStream.showText("Transaction Statement for Customer ID: " + customerId);
+                    contentStream.showText("Transaction Statement for Customer ID: " + customerOptional.get().getCustomerId());
                     contentStream.newLine();
                     contentStream.setFont(PDType1Font.HELVETICA, 10);
 

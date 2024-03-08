@@ -14,7 +14,12 @@ const StatementPage = () => {
 
     useEffect(() => {
         // Fetch the PDF file from the backend
-        axios.get("/customer/statement", { responseType: "blob" })
+        const token = localStorage.getItem('token');
+        const headers = {
+            'Authorization': `Bearer ${token}`
+        }
+        const username = localStorage.getItem('username');
+        axios.get(`/customer/statement/${username}`, { responseType: "blob", headers })
             .then((response) => {
                 // Convert the blob to URL
                 const file = new Blob([response.data], { type: "application/pdf" });
@@ -63,4 +68,4 @@ const StatementPage = () => {
     );
 }
 
-
+export default StatementPage;

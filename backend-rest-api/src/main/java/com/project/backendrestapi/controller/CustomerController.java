@@ -310,6 +310,12 @@ public class CustomerController {
         return new ResponseEntity<>("Customer not found", HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping("/sendotp")
+    ResponseEntity<?> sendOtp(){
+        smsService.genrateOTP();
+        return new ResponseEntity<>("OTP sent!!", HttpStatus.OK);
+    }
+
 //    @GetMapping("/getbeneficieries/{username}")
 //    ResponseEntity<?> getBeneficieries(@PathVariable String username){
 //        Optional<Customer> customerOptional = customerService.getCustomerByUserName(username);

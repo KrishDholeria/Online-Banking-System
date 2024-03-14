@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import axios from "axios"
+import { useRouter } from "next/router"
 
 
 
@@ -20,6 +21,15 @@ export default function addBeneficiery() {
     const [confirmAccountNo, setConfirmAccountNo] = useState('');
     const [ifsc, setIfsc] = useState('');
     const [error, setError] = useState(null);
+    const router = useRouter();
+
+    useEffect(() => {
+        const token = localStorage.getItem('customer-token');
+        if (!token) {
+            router.push('/customer/login');
+            return;
+        }
+    }, [])
 
     const handleNameChange = (e) => {
         error && setError(null);
@@ -67,8 +77,8 @@ export default function addBeneficiery() {
             branchCode: ifsc
         }
         console.log('data', data);
-        const token = localStorage.getItem('token');
-        const username = localStorage.getItem('username');
+        const token = localStorage.getItem('customer-token');
+        const username = localStorage.getItem('customer-username');
         const headers = {
             'Authorization': `Bearer ${token}`
         }

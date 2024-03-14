@@ -43,7 +43,7 @@ public class BeneficiaryService {
         return customer.getBeneficiaries();
     }
 
-    public Optional<Beneficiary> updateBeneficiary(Long beneficiaryId, BeneficiaryDto beneficiary) {
+    public Beneficiary updateBeneficiary(Long beneficiaryId, BeneficiaryDto beneficiary) {
         Optional<Beneficiary> existingBeneficiary = beneficiaryRepository.findById(beneficiaryId);
         Account account = accountService.getAccountByAccountNo(beneficiary.getAccountNo()).get();
         if (existingBeneficiary.isPresent()) {
@@ -54,9 +54,9 @@ public class BeneficiaryService {
             existing.setAccountNumber(beneficiary.getAccountNo());
             beneficiaryRepository.save(existing);
 
-            return Optional.of(existing);
+            return existing;
         } else {
-            return Optional.empty();
+            return null;
         }
     }
 

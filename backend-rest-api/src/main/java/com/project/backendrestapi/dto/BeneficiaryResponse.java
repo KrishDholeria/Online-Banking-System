@@ -2,18 +2,15 @@ package com.project.backendrestapi.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TransactionResponse {
+public class BeneficiaryResponse {
     private String responseCode;
     private String responseMessage;
-    private String refId;
-    private String amount;
-    private String type;
-    private String accountTo;
-    private String accountFrom;
-
+    private List<BeneficiaryDto> beneficiaryDtoList;
 }

@@ -33,9 +33,7 @@ public class BranchService {
     }
 
     public Optional<Branch> getBranchByBranchCode(String branchCode){
-        Optional<Branch> branch = branchRepository.findByBranchCode(branchCode);
-        System.out.println("Branch:::::::::::::::" + branch.get());
-        return Optional.of(branch.get());
+        return branchRepository.findByBranchCode(branchCode);
     }
 
     public Branch createBranch(BranchDto branchDto) {

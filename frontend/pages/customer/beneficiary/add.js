@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import axios from "axios"
 import { useRouter } from "next/router"
-
+import { toast } from 'sonner'
 
 
 export default function addBeneficiery() {
@@ -47,7 +47,7 @@ export default function addBeneficiery() {
         error && setError(null);
         setIfsc(e.target.value);
     }
-    const handleAdd = (e) => {
+    const handleAdd = async (e) => {
         e.preventDefault();
         if (name === '' || accountNo === '' || confirmAccountNo === '' || ifsc === '') {
             setError('Please fill all the fields.');
@@ -82,7 +82,60 @@ export default function addBeneficiery() {
         const headers = {
             'Authorization': `Bearer ${token}`
         }
-        const response = axios.post(`/customer/addbeneficiary/${username}`, data, { headers: headers });
+        await axios.post(`/customer/addbeneficiary/${username}`, data, { headers: headers })
+            .then((res) => {
+                console.log(res);
+                switch (res.data.responseCode) {
+                    case "002":
+                        toast(
+                            'Account doesn\'t exist for the given account number.',
+                            {
+                                description:"Please enter valid account details.",
+                                action: {
+                                    label: 'Close',
+                                    onClick: () => toast.dismiss()
+                                }
+                            }
+                        )
+                        break;
+                    case "006":
+                        toast(
+                            'No branch exist for the given IFSC code.',
+                            {
+                                description:"Please enter a valid IFSC code.",
+                                action: {
+                                    label: 'Close',
+                                    onClick: () => toast.dismiss()
+                                }
+                            }
+                        )
+                        break;
+                    case "004":
+                        toast(
+                            'Beneficiery already exist.',
+                            {
+                                description:"Try adding a different beneficiary. This one already exist.",
+                                action: {
+                                    label: 'Close',
+                                    onClick: () => toast.dismiss()
+                                }
+                            }
+                        )
+                        break;
+                    case "005":
+                        toast(
+                            'Beneficiery added successfully.',
+                            {
+                                action: {
+                                    label: 'Close',
+                                    onClick: () => toast.dismiss()
+                                }
+                            }
+                        )
+                        router.push('/customer/beneficiary');
+                        break;
+                }
+            });
 
     }
 

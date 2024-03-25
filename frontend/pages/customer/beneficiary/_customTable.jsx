@@ -12,9 +12,8 @@ import { FiEdit, FiTrash2, FiCheck, FiXCircle } from 'react-icons/fi';
 import axios from 'axios';
 import { useRouter } from "next/router";
 
-export default function CustomTable() {
+export default function CustomTable({beneficiaries, setBeneficiaries}) {
     const [isEditing, setIsEditing] = useState(null);
-    const [beneficiaries, setBeneficiaries] = useState([]);
     const [rowData, setRowData] = useState();
     const router = useRouter();
     useEffect(() => {
@@ -60,6 +59,7 @@ export default function CustomTable() {
                 beneficiaries[isEditing] = rowData;
                 console.log(res);
                 setIsEditing(null);
+                router.push('/customer/beneficiary');
             })
             .catch(err => {
                 console.log(err);
@@ -75,8 +75,9 @@ export default function CustomTable() {
         axios.delete(`customer/deleteBeneficiary/${username}/${beneficiaries[isEditing].accountNo}`, { headers })
             .then(res => {
                 beneficiaries.splice(isEditing, 1);
-                console.log(res);
+                console.log(beneficiaries);
                 setIsEditing(null);
+                router.push('/customer/beneficiary');
             })
             .catch(err => {
                 console.log(err);

@@ -1,5 +1,6 @@
 package com.project.backendrestapi.controller;
 
+import com.project.backendrestapi.utils.Util;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -89,6 +90,7 @@ public class CustomerController {
     @PostMapping("/verifyotp")
     public ResponseEntity<?> verifyOtp(@RequestBody OtpRequest otpRequest) {
         Boolean res = smsService.verifyOTP(otpRequest.getOtp());
+        System.out.println("controller: " + res);
         if (res) {
             return ResponseEntity.ok("OTP Verified");
         }
@@ -113,14 +115,7 @@ public class CustomerController {
 
     @PostMapping("/addbeneficiary/{username}")
     public ResponseEntity<?> addBeneficiary(@RequestBody BeneficiaryDto beneficiaryDto, @PathVariable String username) {
-        try {
-            List<BeneficiaryDto> beneficiaryDtos = beneficiaryService.addBeneficiary(beneficiaryDto, username);
-            return new ResponseEntity<>(beneficiaryDtos, HttpStatus.OK);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>("Account Not Found", HttpStatus.NO_CONTENT);
-        }
-
+        return ResponseEntity.ok(beneficiaryService.addBeneficiary(beneficiaryDto, username));
     }
 
     @GetMapping("/getbeneficieries/{username}")
@@ -141,12 +136,19 @@ public class CustomerController {
     }
 
     @PostMapping("/maketransacion/{username}")
-    public ResponseEntity<?> makeTransaction(@RequestBody TransactionDto transactionDto,
+    public TransactionResponse makeTransaction(@RequestBody TransactionDto transactionDto,
             @PathVariable String username) {
         Optional<Customer> customerOptional = customerService.getCustomerByUserName(username);
         Customer customer = customerOptional.get();
         Account from = customer.getAccount();
-        Account to = accountService.getAccountByAccountNo(transactionDto.getAccountNo()).get();
+        Optional<Account> accountOptional = accountService.getAccountByAccountNo((transactionDto.getAccountNo()));
+        if(accountOptional.isEmpty()){
+            return TransactionResponse.builder()
+                    .responseCode(Util.ACCOUNT_NOT_FOUND_CODE)
+                    .responseMessage(Util.ACCOUNT_NOT_FOUND_MESSAGE)
+                    .build();
+        }
+        Account to = accountOptional.get();
 
         StringBuilder refId = new StringBuilder();
         Random rand = new Random();
@@ -160,6 +162,12 @@ public class CustomerController {
         Date date = new Date();
 
         int amount = Integer.parseInt(transactionDto.getAmount());
+        if(from.getAccountBalance() < amount){
+            return TransactionResponse.builder()
+                    .responseCode(Util.INSUFFICIENT_BALANCE_CODE)
+                    .responseMessage(Util.INSUFFICIENT_BALANCE_MESSAGE)
+                    .build();
+        }
 
         to.setAccountBalance(to.getAccountBalance() + amount);
         from.setAccountBalance(from.getAccountBalance() - amount);
@@ -187,15 +195,15 @@ public class CustomerController {
         add.setRelatedTransaction(remove);
         transactionService.updateTransaction(add.getTransactionId(), add);
 
-        TransactionResponse response = TransactionResponse.builder()
+        return TransactionResponse.builder()
+                .responseMessage(Util.TRANSFER_COMPLETE_MESSAGE)
+                .responseCode(Util.TRANSFER_COMPLETE_CODE)
                 .accountTo(to.getAccountNumber())
                 .accountFrom(from.getAccountNumber())
                 .type(transactionDto.getTransactionType())
                 .refId(refId.toString())
                 .amount(transactionDto.getAmount())
                 .build();
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 

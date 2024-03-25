@@ -19,6 +19,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useRouter } from "next/router"
+import { toast } from 'sonner'
 
 
 export default function Transaction() {
@@ -106,6 +107,15 @@ export default function Transaction() {
         await axios.get('/customer/sendotp', { headers })
             .then(res => {
                 console.log(res.data);
+                toast(
+                    'OTP sent successfully.',
+                    {
+                        action: {
+                            label: 'Close',
+                            onClick: () => toast.dismiss()
+                        }
+                    }
+                )
             })
             .catch(err => {
                 console.log(err);
@@ -113,8 +123,6 @@ export default function Transaction() {
         console.log('OTP sent');
         setActiveTab("OTP");
         console.log(activeTab);
-
-
     }
     const handleVerify = async (e) => {
         e.preventDefault();
@@ -130,27 +138,106 @@ export default function Transaction() {
         await axios.post('/customer/verifyotp', { otp }, { headers })
             .then(res => {
                 console.log(res.data);
+                res.status === 203 ?
+                    toast(
+                        'Invalid OTP.',
+                        {
+                            description: 'Please enter a valid OTP.',
+                            action: {
+                                label: 'Close',
+                                onClick: () => toast.dismiss()
+                            }
+                        }
+                    )
+                    : makeTransaction();
             })
             .catch(err => {
                 console.log(err);
             })
         console.log('OTP verified');
+
+    }
+    const makeTransaction = async () => {
+        toast(
+            'OTP verified successfully.',
+            {
+                action: {
+                    label: 'Close',
+                    onClick: () => toast.dismiss()
+                }
+            }
+        )
         const username = localStorage.getItem('customer-username');
+        const token = localStorage.getItem('customer-token');
+        const headers = {
+            'Authorization': `Bearer ${token}`
+        }
         const res = await axios.post(`/customer/maketransacion/${username}`, { accountNo, amount, transactionType: type }, { headers })
             .then(res => {
                 console.log(res.data);
+                switch (res.data.responseCode) {
+                    case "002":
+                        toast(
+                            'Account for the beneficiery not found.',
+                            {
+                                description: 'Please choose a valid beneficiery.',
+                                action: {
+                                    label: 'Close',
+                                    onClick: () => toast.dismiss()
+                                }
+                            }
+                        )
+                        router.push('/customer/transcation');
+                        break;
+                    case "001":
+                        toast(
+                            'Insufficient balance.',
+                            {
+                                description: 'Please enter a valid ammount.',
+                                action: {
+                                    label: 'Close',
+                                    onClick: () => toast.dismiss()
+                                }
+                            }
+                        )
+                        router.push('/customer/transcation');
+                        break;
+                    case "003":
+                        toast(
+                            'Transaction succesful.',
+                            {
+                                action: {
+                                    label: 'Close',
+                                    onClick: () => toast.dismiss()
+                                }
+                            }
+                        )
+                        router.push('/customer/');
+                        break;
+                    default:
+                        toast(
+                            'Transaction failed.',
+                            {
+                                action: {
+                                    label: 'Close',
+                                    onClick: () => toast.dismiss()
+                                }
+                            }
+                        )
+                        router.push('/customer/transcation');
+                        break;
+                }
             })
             .catch(err => {
                 console.log(err);
             });
-        console.log('Transaction made');
     }
 
 
 
     return (
         <div className="flex justify-center mt-52">
-            { activeTab === 'transfer' && (<Card className="w-[400px]">
+            {activeTab === 'transfer' && (<Card className="w-[400px]">
                 <CardHeader>
                     <CardTitle>Transfer Money</CardTitle>
                     <CardDescription>

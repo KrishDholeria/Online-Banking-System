@@ -110,9 +110,7 @@ public class CustomerService {
         Customer customer = new Customer();
         BCryptPasswordEncoder b = new BCryptPasswordEncoder();
         BeanUtils.copyProperties(customerDto, customer);
-        if(customerDto.getPassword() != null){
-            customer.setPassword(b.encode(customerDto.getPassword()));
-        }
+        customer.setPassword(b.encode(customerDto.getPassword()));
         customer.setPerson(personService.createPerson(customerDto.getPerson()));
         customer.setAccount(accountService.createAccount(customerDto.getAccount()));
         return customer;

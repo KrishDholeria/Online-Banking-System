@@ -48,8 +48,8 @@ const login = () => {
       const response = await axios.post("/auth/login", {username, password });
       console.log(response);
       setError(null);
-      localStorage.setItem('customer-token', response.data.token);
-      localStorage.setItem('customer-username', username);
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('username', username);
       router.push('/customer');
     }
     catch (error) {

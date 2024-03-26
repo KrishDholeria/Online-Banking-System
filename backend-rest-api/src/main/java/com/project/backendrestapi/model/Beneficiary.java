@@ -1,7 +1,11 @@
 package com.project.backendrestapi.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -9,7 +13,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
 public class Beneficiary {
 
     @Id
@@ -19,7 +22,7 @@ public class Beneficiary {
     private String accountNumber;
     private String branchCode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;
 

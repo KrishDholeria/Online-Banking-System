@@ -40,12 +40,11 @@ public class SMSService {
                     .setCode(otpString)
                     .create();
 
-            System.out.println(verificationCheck.getValid());
-//            System.out.println(verificationCheck.getStatus() == "pending");
-            return verificationCheck.getValid();
+            System.out.println(verificationCheck.getStatus());
 
         } catch (Exception e) {
             return false;
         }
+        return true;
     }
 }

@@ -60,7 +60,6 @@ export default function AddCustomerForm() {
         branchId
         }
       });
-      setErrorMessage(null);
       // Handle successful response
       console.log(response.data);
     } catch (error) {

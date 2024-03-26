@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -11,8 +11,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import axios from "axios"
-import { useRouter } from "next/router"
-import { toast } from 'sonner'
+
 
 
 export default function addBeneficiery() {
@@ -21,15 +20,6 @@ export default function addBeneficiery() {
     const [confirmAccountNo, setConfirmAccountNo] = useState('');
     const [ifsc, setIfsc] = useState('');
     const [error, setError] = useState(null);
-    const router = useRouter();
-
-    useEffect(() => {
-        const token = localStorage.getItem('customer-token');
-        if (!token) {
-            router.push('/customer/login');
-            return;
-        }
-    }, [])
 
     const handleNameChange = (e) => {
         error && setError(null);
@@ -47,7 +37,7 @@ export default function addBeneficiery() {
         error && setError(null);
         setIfsc(e.target.value);
     }
-    const handleAdd = async (e) => {
+    const handleAdd = (e) => {
         e.preventDefault();
         if (name === '' || accountNo === '' || confirmAccountNo === '' || ifsc === '') {
             setError('Please fill all the fields.');
@@ -77,65 +67,12 @@ export default function addBeneficiery() {
             branchCode: ifsc
         }
         console.log('data', data);
-        const token = localStorage.getItem('customer-token');
-        const username = localStorage.getItem('customer-username');
+        const token = localStorage.getItem('token');
+        const username = localStorage.getItem('username');
         const headers = {
             'Authorization': `Bearer ${token}`
         }
-        await axios.post(`/customer/addbeneficiary/${username}`, data, { headers: headers })
-            .then((res) => {
-                console.log(res);
-                switch (res.data.responseCode) {
-                    case "002":
-                        toast(
-                            'Account doesn\'t exist for the given account number.',
-                            {
-                                description:"Please enter valid account details.",
-                                action: {
-                                    label: 'Close',
-                                    onClick: () => toast.dismiss()
-                                }
-                            }
-                        )
-                        break;
-                    case "006":
-                        toast(
-                            'No branch exist for the given IFSC code.',
-                            {
-                                description:"Please enter a valid IFSC code.",
-                                action: {
-                                    label: 'Close',
-                                    onClick: () => toast.dismiss()
-                                }
-                            }
-                        )
-                        break;
-                    case "004":
-                        toast(
-                            'Beneficiery already exist.',
-                            {
-                                description:"Try adding a different beneficiary. This one already exist.",
-                                action: {
-                                    label: 'Close',
-                                    onClick: () => toast.dismiss()
-                                }
-                            }
-                        )
-                        break;
-                    case "005":
-                        toast(
-                            'Beneficiery added successfully.',
-                            {
-                                action: {
-                                    label: 'Close',
-                                    onClick: () => toast.dismiss()
-                                }
-                            }
-                        )
-                        router.push('/customer/beneficiary');
-                        break;
-                }
-            });
+        const response = axios.post(`/customer/addbeneficiary/${username}`, data, { headers: headers });
 
     }
 

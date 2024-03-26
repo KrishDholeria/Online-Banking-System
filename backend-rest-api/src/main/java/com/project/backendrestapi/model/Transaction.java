@@ -22,8 +22,8 @@ public class Transaction {
     private int amount;
     private Date transactionDate;
 
-//    @ManyToOne
-//    private Branch branch;
+    // @ManyToOne
+    // private Branch branch;
 
     @OneToOne
     private Transaction relatedTransaction;

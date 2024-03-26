@@ -7,6 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class BeneficiaryDto {
     private String beneficiaryName;
     private String accountNo;

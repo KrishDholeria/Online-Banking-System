@@ -31,7 +31,7 @@ public class Customer {
     @OneToOne
     private Account account;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Beneficiary> beneficiaries;
 
     public List<Beneficiary> addBeneficiary(Beneficiary beneficiary){

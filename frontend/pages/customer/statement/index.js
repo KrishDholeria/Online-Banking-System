@@ -8,17 +8,23 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { useRouter } from "next/router";
 
 const StatementPage = () => {
     const [pdfUrl, setPdfUrl] = useState("");
+    const router = useRouter();
 
     useEffect(() => {
         // Fetch the PDF file from the backend
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('customer-token');
+        if (!token) {
+            router.push('/customer/login');
+            return;
+        }
         const headers = {
             'Authorization': `Bearer ${token}`
         }
-        const username = localStorage.getItem('username');
+        const username = localStorage.getItem('customer-username');
         axios.get(`/customer/statement/${username}`, { responseType: "blob", headers })
             .then((response) => {
                 // Convert the blob to URL

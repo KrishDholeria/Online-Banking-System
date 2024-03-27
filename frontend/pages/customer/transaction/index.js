@@ -20,6 +20,7 @@ import axios from 'axios'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useRouter } from "next/router"
 import { toast } from 'sonner'
+import Navbar from "@/components/navbar/navbar"
 
 
 export default function Transaction() {
@@ -30,6 +31,7 @@ export default function Transaction() {
     const [activeTab, setActiveTab] = useState('transfer');
     const [otp, setOtp] = useState('');
     const [error, setError] = useState(null);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const router = useRouter();
 
     const getbeneficieries = async () => {
@@ -51,7 +53,11 @@ export default function Transaction() {
         const token = localStorage.getItem('customer-token');
         if (!token) {
             router.push('/customer/login');
+            setIsLoggedIn(false);
             return;
+        }
+        else {
+            setIsLoggedIn(true);
         }
         // fetch beneficiery
         getbeneficieries();
@@ -236,70 +242,73 @@ export default function Transaction() {
 
 
     return (
-        <div className="flex justify-center mt-52">
-            {activeTab === 'transfer' && (<Card className="w-[400px]">
-                <CardHeader>
-                    <CardTitle>Transfer Money</CardTitle>
-                    <CardDescription>
-                        Transfer money to another account.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                    <div className="space-y-1">
-                        <Label htmlFor="beneficiery">Transaction Type</Label>
-                        <Select onValueChange={handleTypeChange}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select Transaction Type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="NEFT">NEFT</SelectItem>
-                                <SelectItem value="IMPS">IMPS</SelectItem>
-                                <SelectItem value="RTGS">RTGS</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-1">
-                        <Label htmlFor="beneficiery">Beneficiery</Label>
-                        <Select onValueChange={handleBeneficieryChange}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select Beneficiery" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {beneficiery && beneficiery.map((b, i) => {
-                                    return <SelectItem key={i} value={b.accountNo}>{b.beneficiaryName}</SelectItem>
-                                })}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-1">
-                        <Label htmlFor="amount">Amount</Label>
-                        <Input id="amount" placeholder="10000" onChange={handleAmountChange} />
-                    </div>
-                    <div className="h-1">
-                        {error && <div className="text-red-500">*{error}</div>}
-                    </div>
-                </CardContent>
-                <CardFooter>
-                    <Button onClick={handleNext}>Next</Button>
-                </CardFooter>
-            </Card>)}
-            {activeTab === 'OTP' && (<Card className='w-[400px]'>
-                <CardHeader>
-                    <CardTitle>Verify OTP</CardTitle>
-                    <CardDescription>
-                        Enter the OTP sent to your registered mobile number.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                    <div className="space-y-1">
-                        <Label htmlFor="otp">Enter OTP</Label>
-                        <Input id="otp" type="password" onChange={handleOtpChange} />
-                    </div>
-                </CardContent>
-                <CardFooter>
-                    <Button onClick={handleVerify}>Confirm</Button>
-                </CardFooter>
-            </Card>)}
+        <div>
+            <Navbar login={isLoggedIn} />
+            <div className="flex justify-center mt-52">
+                {activeTab === 'transfer' && (<Card className="w-[400px]">
+                    <CardHeader>
+                        <CardTitle>Transfer Money</CardTitle>
+                        <CardDescription>
+                            Transfer money to another account.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        <div className="space-y-1">
+                            <Label htmlFor="beneficiery">Transaction Type</Label>
+                            <Select onValueChange={handleTypeChange}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Transaction Type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="NEFT">NEFT</SelectItem>
+                                    <SelectItem value="IMPS">IMPS</SelectItem>
+                                    <SelectItem value="RTGS">RTGS</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-1">
+                            <Label htmlFor="beneficiery">Beneficiery</Label>
+                            <Select onValueChange={handleBeneficieryChange}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Beneficiery" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {beneficiery && beneficiery.map((b, i) => {
+                                        return <SelectItem key={i} value={b.accountNo}>{b.beneficiaryName}</SelectItem>
+                                    })}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-1">
+                            <Label htmlFor="amount">Amount</Label>
+                            <Input id="amount" placeholder="10000" onChange={handleAmountChange} />
+                        </div>
+                        <div className="h-1">
+                            {error && <div className="text-red-500">*{error}</div>}
+                        </div>
+                    </CardContent>
+                    <CardFooter>
+                        <Button onClick={handleNext}>Next</Button>
+                    </CardFooter>
+                </Card>)}
+                {activeTab === 'OTP' && (<Card className='w-[400px]'>
+                    <CardHeader>
+                        <CardTitle>Verify OTP</CardTitle>
+                        <CardDescription>
+                            Enter the OTP sent to your registered mobile number.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        <div className="space-y-1">
+                            <Label htmlFor="otp">Enter OTP</Label>
+                            <Input id="otp" type="password" onChange={handleOtpChange} />
+                        </div>
+                    </CardContent>
+                    <CardFooter>
+                        <Button onClick={handleVerify}>Confirm</Button>
+                    </CardFooter>
+                </Card>)}
+            </div>
         </div>
     )
 }

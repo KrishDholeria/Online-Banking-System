@@ -16,7 +16,6 @@ export default function App({ Component, pageProps }) {
     , [isLoggedIn])
   return (
     <div>
-      <Navbar login={isLoggedIn} />
       <Component {...pageProps} />
       <Toaster />
     </div>

@@ -7,15 +7,16 @@ import {
     TableCell,
     TableBody
 } from "@/components/ui/table";
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { FiEdit, FiTrash2, FiCheck, FiXCircle } from 'react-icons/fi';
 import axios from 'axios';
 import { useRouter } from "next/router";
 
-export default function CustomTable({beneficiaries, setBeneficiaries}) {
+export default function CustomTable({ beneficiaries, setBeneficiaries }) {
     const [isEditing, setIsEditing] = useState(null);
     const [rowData, setRowData] = useState();
     const router = useRouter();
+    const inputref = useRef(null);
     useEffect(() => {
         const token = localStorage.getItem('customer-token');
         if (!token) {
@@ -35,6 +36,12 @@ export default function CustomTable({beneficiaries, setBeneficiaries}) {
             })
     }
         , [])
+
+    useEffect(() => {
+        if (isEditing !== null) {
+            inputref.current.focus();
+        }
+    }, [isEditing]);
 
     const handleEdit = (id) => {
         setIsEditing(id);
@@ -108,6 +115,7 @@ export default function CustomTable({beneficiaries, setBeneficiaries}) {
                                             name="beneficiaryName"
                                             value={rowData.beneficiaryName}
                                             onChange={(e) => handleChange(e, index)}
+                                            ref={inputref}
                                         />
                                     ) : (
                                         beneficiary.beneficiaryName

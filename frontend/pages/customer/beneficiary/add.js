@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label"
 import axios from "axios"
 import { useRouter } from "next/router"
 import { toast } from 'sonner'
+import Navbar from "@/components/navbar/navbar"
 
 
 export default function addBeneficiery() {
@@ -21,13 +22,18 @@ export default function addBeneficiery() {
     const [confirmAccountNo, setConfirmAccountNo] = useState('');
     const [ifsc, setIfsc] = useState('');
     const [error, setError] = useState(null);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
         const token = localStorage.getItem('customer-token');
         if (!token) {
             router.push('/customer/login');
+            setIsLoggedIn(false);
             return;
+        }
+        else{
+            setIsLoggedIn(true);
         }
     }, [])
 
@@ -90,7 +96,7 @@ export default function addBeneficiery() {
                         toast(
                             'Account doesn\'t exist for the given account number.',
                             {
-                                description:"Please enter valid account details.",
+                                description: "Please enter valid account details.",
                                 action: {
                                     label: 'Close',
                                     onClick: () => toast.dismiss()
@@ -102,7 +108,7 @@ export default function addBeneficiery() {
                         toast(
                             'No branch exist for the given IFSC code.',
                             {
-                                description:"Please enter a valid IFSC code.",
+                                description: "Please enter a valid IFSC code.",
                                 action: {
                                     label: 'Close',
                                     onClick: () => toast.dismiss()
@@ -114,7 +120,7 @@ export default function addBeneficiery() {
                         toast(
                             'Beneficiery already exist.',
                             {
-                                description:"Try adding a different beneficiary. This one already exist.",
+                                description: "Try adding a different beneficiary. This one already exist.",
                                 action: {
                                     label: 'Close',
                                     onClick: () => toast.dismiss()
@@ -140,43 +146,46 @@ export default function addBeneficiery() {
     }
 
     return (
-        <div className="flex justify-center mt-40">
-            <Card className="w-2/6">
-                <CardHeader>
-                    <CardTitle>Add Beneficiery</CardTitle>
-                    <CardDescription>
-                        Add a new beneficiery to your account.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                    <form onSubmit={handleAdd}>
-                        <div className="space-y-1 mt-3">
-                            <Label htmlFor="name">Beneficiery Name</Label>
-                            <Input id="beneficiery name" placeholder="Pedro Duarte" onChange={handleNameChange} />
-                        </div>
-                        <div className="space-y-1 mt-3">
-                            <Label htmlFor="accountNo">Account Number</Label>
-                            <Input id="accountNo" placeholder="Account Number" type="password" onChange={handleAccountNoChange} />
-                        </div>
-                        <div className="space-y-1 mt-3">
-                            <Label htmlFor="confirm accountNo">Confirm Account Number</Label>
-                            <Input id="confirmAccountNo" placeholder="Confirm Account Number" onChange={handleConfirmAccountNoChange} />
-                        </div>
-                        <div className="space-y-1 mt-3">
-                            <Label htmlFor="IFSC">IFSC</Label>
-                            <Input id="ifsc" placeholder="IFSC Code" onChange={handleIfscChange} />
-                        </div>
-                        <div className="h-1">
-                            {error && <div className="text-red-500">*{error}</div>}
-                        </div>
-                        <div className="mt-7">
-                            <Button>ADD</Button>
-                        </div>
-                    </form>
-                </CardContent>
-                <CardFooter>
-                </CardFooter>
-            </Card>
+        <div>
+            <Navbar login={isLoggedIn}/>
+            <div className="flex justify-center mt-40">
+                <Card className="w-2/6">
+                    <CardHeader>
+                        <CardTitle>Add Beneficiery</CardTitle>
+                        <CardDescription>
+                            Add a new beneficiery to your account.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        <form onSubmit={handleAdd}>
+                            <div className="space-y-1 mt-3">
+                                <Label htmlFor="name">Beneficiery Name</Label>
+                                <Input id="beneficiery name" placeholder="Pedro Duarte" onChange={handleNameChange} />
+                            </div>
+                            <div className="space-y-1 mt-3">
+                                <Label htmlFor="accountNo">Account Number</Label>
+                                <Input id="accountNo" placeholder="Account Number" type="password" onChange={handleAccountNoChange} />
+                            </div>
+                            <div className="space-y-1 mt-3">
+                                <Label htmlFor="confirm accountNo">Confirm Account Number</Label>
+                                <Input id="confirmAccountNo" placeholder="Confirm Account Number" onChange={handleConfirmAccountNoChange} />
+                            </div>
+                            <div className="space-y-1 mt-3">
+                                <Label htmlFor="IFSC">IFSC</Label>
+                                <Input id="ifsc" placeholder="IFSC Code" onChange={handleIfscChange} />
+                            </div>
+                            <div className="h-1">
+                                {error && <div className="text-red-500">*{error}</div>}
+                            </div>
+                            <div className="mt-7">
+                                <Button>ADD</Button>
+                            </div>
+                        </form>
+                    </CardContent>
+                    <CardFooter>
+                    </CardFooter>
+                </Card>
+            </div>
         </div>
     )
 }

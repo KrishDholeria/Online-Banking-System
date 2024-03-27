@@ -1,14 +1,31 @@
 // pages/index.js
 
+import Navbar from '@/components/navbar/navbar';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 
 export default function Home() {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const router = useRouter();
+
+    useEffect(() => {
+        const token = localStorage.getItem('customer-token');
+        if (!token) {
+            setIsLoggedIn(false);
+            return;
+        }
+        else {
+            setIsLoggedIn(true);
+        }
+    }, [])
+
     const handleSignup = () => {
         window.location.href = '/customer/signup';
     }
     return (
         <div>
+            <Navbar login={isLoggedIn} />
             <Head>
                 <title>Welcome to Bank4Ever</title>
                 <meta name="description" content="Bank4Ever - Your Trusted Banking Partner" />

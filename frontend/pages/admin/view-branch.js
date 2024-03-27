@@ -1,13 +1,18 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useState, useEffect, useRef } from 'react';
-import { FaArrowLeft, FaSearch } from 'react-icons/fa';
+import { FaArrowLeft, FaSearch, FaEdit, FaSave } from 'react-icons/fa';
 import axios from 'axios';
+import Link from 'next/link';
 
 export default function ViewBranchDetails() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [branches, setBranches] = useState([]);
   const [searchInput, setSearchInput] = useState('');
+  const [editingBranch, setEditingBranch] = useState(null); // State to track the branch being edited
+  const [updatedBranchName, setUpdatedBranchName] = useState(''); // State to store updated branch name
+  const [updatedAddress, setUpdatedAddress] = useState(''); // State to store updated address
+  const [updatedPhoneNumber, setUpdatedPhoneNumber] = useState(''); // State to store updated phone number
   const router = useRouter();
   const searchInputRef = useRef(null);
 
@@ -18,13 +23,13 @@ export default function ViewBranchDetails() {
       fetchBranches();
       searchInputRef.current.focus();
     } else {
-      router.push('/admin'); // Redirect to admin page if not logged in
+      router.push('/admin');
     }
   }, []);
 
   const fetchBranches = async () => {
     try {
-      const response = await axios.get('/branches'); 
+      const response = await axios.get('/branches');
       setBranches(response.data);
     } catch (error) {
       console.error('Error fetching branches:', error);
@@ -46,6 +51,28 @@ export default function ViewBranchDetails() {
 
   const handleSearchInputChange = (e) => {
     setSearchInput(e.target.value);
+  };
+
+  const handleEditClick = (branch) => {
+    setEditingBranch(branch); // Set the branch to be edited
+    setUpdatedBranchName(branch.branchName); // Set initial values for updated branch details
+    setUpdatedAddress(branch.address);
+    setUpdatedPhoneNumber(branch.phoneNumber);
+  };
+
+  const handleSaveClick = async () => {
+    try {
+      const response = await axios.put(`/branches/${editingBranch.branchCode}`, { // Send a PUT request to update the branch
+        branchName: updatedBranchName,
+        address: updatedAddress,
+        phoneNumber: updatedPhoneNumber
+      });
+      console.log('Branch updated successfully:', response.data);
+      setEditingBranch(null); // Clear the editing state
+      fetchBranches(); // Fetch branches again to update the UI
+    } catch (error) {
+      console.error('Error updating branch:', error);
+    }
   };
 
   return (
@@ -85,15 +112,23 @@ export default function ViewBranchDetails() {
               <th className="py-2 px-4">Address</th>
               <th className="py-2 px-4">Phone Number</th>
               <th className="py-2 px-4">Branch Code</th>
+              <th className="py-2 px-4">Actions</th>
             </tr>
           </thead>
           <tbody>
             {branches.map((branch, index) => (
               <tr key={index} className="text-gray-800">
-                <td className="py-2 px-4">{branch.branchName}</td>
-                <td className="py-2 px-4">{branch.address}</td>
-                <td className="py-2 px-4">{branch.phoneNumber}</td>
+                <td className="py-2 px-4">{editingBranch === branch ? <input type="text" value={updatedBranchName} onChange={(e) => setUpdatedBranchName(e.target.value)} /> : branch.branchName}</td>
+                <td className="py-2 px-4">{editingBranch === branch ? <input type="text" value={updatedAddress} onChange={(e) => setUpdatedAddress(e.target.value)} /> : branch.address}</td>
+                <td className="py-2 px-4">{editingBranch === branch ? <input type="text" value={updatedPhoneNumber} onChange={(e) => setUpdatedPhoneNumber(e.target.value)} /> : branch.phoneNumber}</td>
                 <td className="py-2 px-4">{branch.branchCode}</td>
+                <td className="py-2 px-4">
+                  {editingBranch === branch ? (
+                    <FaSave className="cursor-pointer" size={20} onClick={handleSaveClick} />
+                  ) : (
+                    <FaEdit className="cursor-pointer" size={20} onClick={() => handleEditClick(branch)} />
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

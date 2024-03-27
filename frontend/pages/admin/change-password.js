@@ -89,7 +89,9 @@ export default function ChangePassword() {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm" 
-              required 
+              required
+              pattern="^(?=.*[A-Za-z]).{8,}$"  // Add pattern attribute for regex pattern
+              title="Password must contain at least one alphabet and be at least 8 characters long"  // Add title attribute for validation message
             />
           </div>
 

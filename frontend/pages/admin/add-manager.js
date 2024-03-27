@@ -36,8 +36,8 @@ const AddManagerForm = () => {
       const response = await axios.post('/add/manager', {
         userName,
         password,
-        branch:{
-            branchCode:branchId
+        branch: {
+          branchCode: branchId
         },
         person: {
           lastName,
@@ -70,108 +70,111 @@ const AddManagerForm = () => {
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="userName" className="block text-sm font-medium text-gray-900">Username:</label>
-            <input 
-              type="text" 
-              id="userName" 
+            <input
+              type="text"
+              id="userName"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
-              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm" 
-              required 
+              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm"
+              required
             />
           </div>
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-900">Password:</label>
-            <input 
-              type="password" 
-              id="password" 
+            <input
+              type="password"
+              id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm" 
-              required 
+              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm"
+              required
+              pattern="^(?=.*[A-Za-z]).{8,}$"  // Add pattern attribute for regex pattern
+              title="Password must contain at least one alphabet and be at least 8 characters long"  // Add title attribute for validation message
             />
           </div>
 
+
           <div>
             <label htmlFor="lastName" className="block text-sm font-medium text-gray-900">Last Name:</label>
-            <input 
-              type="text" 
-              id="lastName" 
+            <input
+              type="text"
+              id="lastName"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
-              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm" 
-              required 
+              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm"
+              required
             />
           </div>
 
           <div>
             <label htmlFor="firstName" className="block text-sm font-medium text-gray-900">First Name:</label>
-            <input 
-              type="text" 
-              id="firstName" 
+            <input
+              type="text"
+              id="firstName"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
-              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm" 
-              required 
+              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm"
+              required
             />
           </div>
 
           <div>
             <label htmlFor="dob" className="block text-sm font-medium text-gray-900">Date of Birth:</label>
-            <input 
-              type="date" 
-              id="dob" 
+            <input
+              type="date"
+              id="dob"
               value={dob}
               onChange={(e) => setDob(e.target.value)}
-              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm" 
-              required 
+              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm"
+              required
             />
           </div>
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-900">Email:</label>
-            <input 
-              type="email" 
-              id="email" 
+            <input
+              type="email"
+              id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm" 
-              required 
+              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm"
+              required
             />
           </div>
 
-          <div>
-            <label htmlFor="phoneNo" className="block text-sm font-medium text-gray-900">Phone Number:</label>
-            <input 
-              type="tel" 
-              id="phoneNo" 
-              value={phoneNo}
-              onChange={(e) => setPhoneNo(e.target.value)}
-              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm" 
-              required 
-            />
-          </div>
+          <label htmlFor="phoneNo" className="block text-sm font-medium text-gray-900">Phone Number:</label>
+          <input
+            type="tel"
+            id="phoneNo"
+            value={phoneNo}
+            onChange={(e) => setPhoneNo(e.target.value)}
+            className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm"
+            required
+            pattern="[0-9]{10}"  // Add pattern attribute to enforce 10 digits
+            title="Phone number must be 10 digits"  // Add title attribute for validation message
+          />
 
           <div>
             <label htmlFor="address" className="block text-sm font-medium text-gray-900">Address:</label>
-            <textarea 
-              id="address" 
+            <textarea
+              id="address"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm resize-none" 
-              required 
+              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm resize-none"
+              required
             />
           </div>
 
           <div>
-            <label htmlFor="branchId" className="block text-sm font-medium text-gray-900">Branch ID:</label>
-            <input 
-              type="text" 
-              id="branchId" 
+            <label htmlFor="branchId" className="block text-sm font-medium text-gray-900">Branch Code:</label>
+            <input
+              type="text"
+              id="branchId"
               value={branchId}
               onChange={(e) => setBranchId(e.target.value)}
-              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm" 
-              required 
+              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm"
+              required
             />
           </div>
 

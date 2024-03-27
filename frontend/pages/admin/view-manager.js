@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useState, useEffect, useRef } from 'react';
-import { FaArrowLeft, FaSearch } from 'react-icons/fa';
+import { FaArrowLeft, FaSearch, FaTrash } from 'react-icons/fa';
 import axios from 'axios';
 
 export default function ViewManagerDetails() {
@@ -48,6 +48,18 @@ export default function ViewManagerDetails() {
     setSearchInput(e.target.value);
   };
 
+  const handleDeleteClick = async (username) => {
+    try {
+      console.log(username)
+      const res = await axios.delete(`/managers/${username}`);
+      console.log(res.data);
+      setManagers(managers.filter(manager => manager.userName !== username));
+      console.log('Manager deleted successfully');
+    } catch (error) {
+      console.error('Error deleting manager:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col">
       <header className="bg-gray-800 text-white w-full flex justify-between items-center px-4 py-2">
@@ -87,6 +99,7 @@ export default function ViewManagerDetails() {
               <th className="py-2 px-4">Email</th>
               <th className="py-2 px-4">Phone</th>
               <th className="py-2 px-4">Address</th>
+              <th className="py-2 px-4">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -98,6 +111,13 @@ export default function ViewManagerDetails() {
                 <td className="py-2 px-4">{manager.person.email}</td>
                 <td className="py-2 px-4">{manager.person.phoneNo}</td>
                 <td className="py-2 px-4">{manager.person.address}</td>
+                <td className="py-2 px-4">
+                  <FaTrash
+                    className="cursor-pointer"
+                    size={20}
+                    onClick={() => handleDeleteClick(manager.userName)}
+                  />
+                </td>
               </tr>
             ))}
           </tbody>

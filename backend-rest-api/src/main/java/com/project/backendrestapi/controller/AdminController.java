@@ -23,12 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping
+@CrossOrigin(origins = "http://localhost:3000")
 public class AdminController {
 
     @Autowired
@@ -129,20 +131,18 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(managerService.entityToDto(createdManager));
     }
 
-    // @PutMapping("/managers/{managerId}")
-    // public ResponseEntity<Manager> updateManager(@PathVariable Long managerId,
-    // @RequestBody Manager updatedManager) {
-    // Optional<Manager> manager = adminService.updateManager(managerId,
-    // updatedManager);
-    // return manager.map(ResponseEntity::ok).orElseGet(() ->
-    // ResponseEntity.notFound().build());
-    // }
 
-    @DeleteMapping("/managers/{managerId}")
-    public ResponseEntity<Void> deleteManager(@PathVariable Long managerId) {
-        boolean deleted = managerService.deleteManager(managerId);
-        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+
+    @DeleteMapping("managers/{username}")
+    public ResponseEntity<?> deleteManagerByUsername(@PathVariable String username) {
+        try {
+            managerService.deleteManagerByUsername(username);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.OK).body("Failed to delete manager: " + e.getMessage());
+        }
     }
+
 
     @GetMapping("/branches")
     public ResponseEntity<List<BranchDto>> getAllBranches() {

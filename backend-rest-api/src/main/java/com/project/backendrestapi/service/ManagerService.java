@@ -92,6 +92,24 @@ public class ManagerService {
         return manager;
     }
 
+    // public boolean deletePerson(Long personId) {
+    //     if (personRepository.existsById(personId)) {
+    //         personRepository.deleteById(personId);
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
+
+    
+
+    public void deleteManagerByUsername(String username) {
+        // TODO Auto-generated method stub
+        Optional<Manager> manager = managerRepository.getManagerByuserName(username);
+        managerRepository.deleteById(manager.get().getManagerId());
+        System.out.println(username);
+    }
+
     // public void assignPersonToManager(Long managerId, Person person) {
     // Optional<Manager> managerOptional = managerRepository.findById(managerId);
     // if (managerOptional.isPresent()) {

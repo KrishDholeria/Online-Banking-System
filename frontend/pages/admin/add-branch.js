@@ -88,7 +88,9 @@ export default function AddBranchForm() {
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
               className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm" 
-              required 
+              required
+              pattern="[0-9]{10}"  // Add pattern attribute to enforce 10 digits
+              title="Phone number must be 10 digits"  // Add title attribute for validation message
             />
           </div>
 

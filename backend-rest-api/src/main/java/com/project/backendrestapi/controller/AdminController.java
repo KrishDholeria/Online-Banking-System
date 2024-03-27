@@ -127,7 +127,9 @@ public class AdminController {
     @PostMapping("/add/manager")
     public ResponseEntity<ManagerDto> createManager(@RequestBody ManagerDto manager) {
 
+        // System.out.println("createdManager");
         Manager createdManager = managerService.createManager(manager);
+        // System.out.println(createdManager);
         return ResponseEntity.status(HttpStatus.CREATED).body(managerService.entityToDto(createdManager));
     }
 

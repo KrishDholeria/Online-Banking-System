@@ -7,7 +7,7 @@ import com.project.backendrestapi.model.Branch;
 import com.project.backendrestapi.repository.ManagerRepository;
 
 import lombok.AllArgsConstructor;
-
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,13 +36,16 @@ public class ManagerService {
     }
 
     public Manager createManager(ManagerDto managerDto) {
+
+        BCryptPasswordEncoder b = new BCryptPasswordEncoder();
         Manager manager = Manager.builder()
                 .userName(managerDto.getUserName())
-                .password(managerDto.getPassword())
+                .password(b.encode(managerDto.getPassword()))
                 .person(personService.createPerson(managerDto.getPerson()))
                 .branch(branchService.getBranchByBranchCode(managerDto.getBranch().getBranchCode()).get())
                 .build();
         branchService.assignManagerToBranch(manager.getBranch().getBranchId(), manager);
+        
         return managerRepository.save(manager);
     }
 
@@ -50,10 +53,11 @@ public class ManagerService {
         Optional<Manager> existingManager = managerRepository.findById(managerId);
 
         if (existingManager.isPresent()) {
+            BCryptPasswordEncoder b = new BCryptPasswordEncoder();
             Manager existing = existingManager.get();
             existing.setManagerId(managerId);
             existing.setUserName(updatedManagerDto.getUserName());
-            existing.setPassword(updatedManagerDto.getPassword());
+            existing.setPassword(b.encode(updatedManagerDto.getPassword()));
 
             existing.setBranch(branchService.getBranchByBranchCode(updatedManagerDto.getBranch().getBranchCode()).get());
 
@@ -80,7 +84,7 @@ public class ManagerService {
         return ManagerDto.builder()
                 .userName(manager.getUserName())
                 .manageId(manager.getManagerId())
-                .password(manager.getPassword())
+                // .password(manager.getPassword())
                 .branch(branchService.entityToDto(manager.getBranch()))
                 .person(personService.entityToDto(manager.getPerson()))
                 .build();

@@ -8,6 +8,7 @@ import com.project.backendrestapi.repository.ManagerRepository;
 
 import lombok.AllArgsConstructor;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,10 +45,11 @@ public class ManagerService {
     }
 
     public Manager createManager(ManagerDto managerDto) {
+        BCryptPasswordEncoder b = new BCryptPasswordEncoder();
 
         Manager manager = Manager.builder()
             .userName(managerDto.getUserName())
-            .password(managerDto.getPassword())
+            .password(b.encode(managerDto.getPassword()))
             .person(personService.createPerson(managerDto.getPerson()))
             .branch(branchService.getBranchById(managerDto.getBranchId()).get())
             .build();
@@ -57,12 +59,13 @@ public class ManagerService {
 
     public Optional<Manager> updateManager(Long managerId, ManagerDto updatedManagerDto) {
         Optional<Manager> existingManager = managerRepository.findById(managerId);
+        BCryptPasswordEncoder b = new BCryptPasswordEncoder();
 
         if (existingManager.isPresent()) {
             Manager existing = existingManager.get();
             existing.setManagerId(managerId);
             existing.setUserName(updatedManagerDto.getUserName());
-            existing.setPassword(updatedManagerDto.getPassword());
+            existing.setPassword(b.encode(updatedManagerDto.getPassword()));
 
             Person person = existing.getPerson();
             personService.updatePerson(person.getPersonId(), personService.personToPersonDto(person));
@@ -89,25 +92,34 @@ public class ManagerService {
     public Manager authenticateManager(String username, String password) {
         // Find the manager by username from the database
         Manager manager = managerRepository.findByUserName(username);
-        System.out.println(username);
-
-        System.out.println(manager.getPerson());
         
+        String storedEncodedPassword = manager.getPassword();
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
         // If manager not found or password does not match, return null
-        if (manager == null || password == manager.getPassword()){
+
+        if (manager == null) {
             return null;
+        }
+    
+        if (bCryptPasswordEncoder.matches(password, storedEncodedPassword)){
+            return manager;
         }
 
         // Return the authenticated manager
-        return manager;
+        return null;
     }
 
     public boolean validatePassword(String username, String password) {
+
         Manager manager = managerRepository.findByUserName(username);
+        String storedEncodedPassword = manager.getPassword();
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        
         // System.out.println(manager);
         if (manager != null) {
             
-            if(password.equals(manager.getPassword())){
+            if(bCryptPasswordEncoder.matches(password, storedEncodedPassword)){
                 // System.out.println("hello");
                 return true;
             }
@@ -117,16 +129,18 @@ public class ManagerService {
 
     public void changePassword(String username, String newPassword) {
         Manager manager = managerRepository.findByUserName(username);
+        BCryptPasswordEncoder b = new BCryptPasswordEncoder();
         if (manager != null) {
-            manager.setPassword(newPassword);
+            manager.setPassword(b.encode(newPassword));
             managerRepository.save(manager);
         }
     }
 
     public static ManagerDto managerToManagerDto(Manager manager) {
+        BCryptPasswordEncoder b = new BCryptPasswordEncoder();
         ManagerDto managerDto = new ManagerDto();
         managerDto.setUserName(manager.getUserName());
-        managerDto.setPassword(manager.getPassword());
+        managerDto.setPassword(b.encode(manager.getPassword()));
         managerDto.setBranchId(manager.getBranch().getBranchId()); // Assuming branchId is stored in Manager object
         managerDto.setPerson(PersonService.personToPersonDto(manager.getPerson())); // Assuming you have a method to map Person to PersonDto
         return managerDto;

@@ -15,6 +15,7 @@ const AddManagerForm = () => {
   const [password, setPassword] = useState('');
   const [branchId, setBranchId] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState(''); // Added success message state
   const router = useRouter();
 
   useEffect(() => {
@@ -48,11 +49,18 @@ const AddManagerForm = () => {
           address,
         },
       });
-      console.log(response.data);
-      router.push('/admin/home');
+      setSuccessMessage('Manager added successfully'); // Set success message
+      setTimeout(() => {
+        setSuccessMessage('');
+        router.push('/admin/home');
+      }, 3000); // Redirect after 3 seconds
     } catch (error) {
       console.error('Error adding manager:', error);
-      setErrorMessage('Failed to add manager. Please try again.');
+      if (error.response && error.response.status === 400) {
+        setErrorMessage('Username already exists');
+      } else {
+        setErrorMessage('Failed to add manager. Please try again.');
+      }
     }
   };
 
@@ -179,6 +187,7 @@ const AddManagerForm = () => {
           </div>
 
           <button type="submit" className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 transition duration-300">Add Manager</button>
+          {successMessage && <p className="text-green-500">{successMessage}</p>}
           {errorMessage && <p className="text-red-500">{errorMessage}</p>}
         </form>
       </div>

@@ -46,7 +46,7 @@ public class AdminController {
     public ResponseEntity<List<AdminDto>> getAllAdmins() {
         List<Admin> admins = adminService.getAllAdmins();
         List<AdminDto> adminDtos = new ArrayList<>();
-        for(Admin a : admins){
+        for (Admin a : admins) {
             adminDtos.add(adminService.entityToDto(a));
         }
         return ResponseEntity.ok(adminDtos);
@@ -55,7 +55,8 @@ public class AdminController {
     @GetMapping("/{adminId}")
     public ResponseEntity<AdminDto> getAdminById(@PathVariable Long adminId) {
         Optional<Admin> admin = adminService.getAdminById(adminId);
-        return admin.map(value -> ResponseEntity.status(HttpStatus.OK).body(adminService.entityToDto(admin.get()))).orElseGet(() -> ResponseEntity.notFound().build());
+        return admin.map(value -> ResponseEntity.status(HttpStatus.OK).body(adminService.entityToDto(admin.get())))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/new")
@@ -67,7 +68,8 @@ public class AdminController {
     @PutMapping("/{adminId}")
     public ResponseEntity<AdminDto> updateAdmin(@PathVariable Long adminId, @RequestBody AdminDto updatedAdmin) {
         Optional<Admin> admin = adminService.updateAdmin(adminId, updatedAdmin);
-        return admin.map(value -> ResponseEntity.status(HttpStatus.OK).body(adminService.entityToDto(admin.get()))).orElseGet(() -> ResponseEntity.notFound().build());
+        return admin.map(value -> ResponseEntity.status(HttpStatus.OK).body(adminService.entityToDto(admin.get())))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{adminId}")
@@ -102,17 +104,17 @@ public class AdminController {
                 .compact();
     }
 
-//    @GetMapping("/customers")
-//    public ResponseEntity<List<Customer>> getAllCustomers() {
-//        List<Customer> customers = adminService.getAllCustomers();
-//        return ResponseEntity.ok(customers);
-//    }
+    // @GetMapping("/customers")
+    // public ResponseEntity<List<Customer>> getAllCustomers() {
+    // List<Customer> customers = adminService.getAllCustomers();
+    // return ResponseEntity.ok(customers);
+    // }
 
     @GetMapping("all/managers")
     public ResponseEntity<List<ManagerDto>> getAllManagers() {
         List<Manager> managers = managerService.getAllManagers();
         List<ManagerDto> managerDtos = new ArrayList<>();
-        for(Manager m: managers){
+        for (Manager m : managers) {
             managerDtos.add(managerService.entityToDto(m));
         }
         return ResponseEntity.ok(managerDtos);
@@ -121,19 +123,20 @@ public class AdminController {
     @GetMapping("/manager/username")
     public ResponseEntity<ManagerDto> getManagerById(@RequestParam String userName) {
         Optional<Manager> manager = managerService.getManagerByuserName(userName);
-        return manager.map(value -> ResponseEntity.status(HttpStatus.OK).body(managerService.entityToDto(manager.get()))).orElseGet(() -> ResponseEntity.notFound().build());
+        return manager
+                .map(value -> ResponseEntity.status(HttpStatus.OK).body(managerService.entityToDto(manager.get())))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/add/manager")
-    public ResponseEntity<ManagerDto> createManager(@RequestBody ManagerDto manager) {
-
-        // System.out.println("createdManager");
+    public ResponseEntity<?> createManager(@RequestBody ManagerDto manager) {
         Manager createdManager = managerService.createManager(manager);
-        // System.out.println(createdManager);
-        return ResponseEntity.status(HttpStatus.CREATED).body(managerService.entityToDto(createdManager));
+        if (createdManager != null) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(managerService.entityToDto(createdManager));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already exists");
+        }
     }
-
-
 
     @DeleteMapping("managers/{username}")
     public ResponseEntity<?> deleteManagerByUsername(@PathVariable String username) {
@@ -145,12 +148,11 @@ public class AdminController {
         }
     }
 
-
     @GetMapping("/branches")
     public ResponseEntity<List<BranchDto>> getAllBranches() {
         List<Branch> branches = branchService.getAllBranches();
         List<BranchDto> branchDtos = new ArrayList<>();
-        for(Branch b: branches){
+        for (Branch b : branches) {
             branchDtos.add(branchService.entityToDto(b));
         }
         return ResponseEntity.ok(branchDtos);
@@ -159,7 +161,8 @@ public class AdminController {
     @GetMapping("/branches/{branchCode}")
     public ResponseEntity<BranchDto> getBranchById(@PathVariable String branchCode) {
         Optional<Branch> branch = branchService.getBranchByBranchCode(branchCode);
-        return branch.map(value -> ResponseEntity.status(HttpStatus.OK).body(branchService.entityToDto(value))).orElseGet(() -> ResponseEntity.notFound().build());
+        return branch.map(value -> ResponseEntity.status(HttpStatus.OK).body(branchService.entityToDto(value)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/add/branch")
@@ -169,10 +172,11 @@ public class AdminController {
     }
 
     @PutMapping("/branches/{branchCode}")
-    public ResponseEntity<BranchDto> updateBranch(@PathVariable String branchCode, @RequestBody BranchDto updatedBranch) {
+    public ResponseEntity<BranchDto> updateBranch(@PathVariable String branchCode,
+            @RequestBody BranchDto updatedBranch) {
         System.out.println(branchCode);
         Optional<Branch> branch = branchService.updateBranch(branchCode, updatedBranch);
-        if(branch.isPresent()){
+        if (branch.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(branchService.entityToDto(branch.get()));
         }
         return ResponseEntity.notFound().build();
@@ -184,8 +188,7 @@ public class AdminController {
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
-
-     @PostMapping("admin/change-password")
+    @PostMapping("admin/change-password")
     public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) {
         try {
             String username = request.getUsername();

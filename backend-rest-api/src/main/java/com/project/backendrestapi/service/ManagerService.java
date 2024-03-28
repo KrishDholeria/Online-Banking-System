@@ -37,6 +37,14 @@ public class ManagerService {
 
     public Manager createManager(ManagerDto managerDto) {
 
+        List<Manager> managers = managerRepository.findAll();
+
+        for (Manager manager : managers) {
+            if (manager.getUserName().equals(managerDto.getUserName())) {
+                return null; // Username already exists
+            }
+        }
+
         BCryptPasswordEncoder b = new BCryptPasswordEncoder();
         Manager manager = Manager.builder()
                 .userName(managerDto.getUserName())

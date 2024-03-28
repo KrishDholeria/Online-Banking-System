@@ -9,12 +9,6 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger
-} from "@/components/ui/tabs"
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -29,10 +23,52 @@ export default function Transaction() {
     const [accountNo, setAccountNo] = useState('');
     const [type, setType] = useState('');
     const [activeTab, setActiveTab] = useState('transfer');
-    const [otp, setOtp] = useState('');
+    const [otp, setOtp] = useState('OTP');
     const [error, setError] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [resendDisabled, setResendDisabled] = useState(false);
+    const [countdown, setCountdown] = useState(60);
     const router = useRouter();
+
+    const handleResendClick = async () => {
+
+        await axios.get('/customer/sendotp')
+            .then(res => {
+                console.log(res.data);
+                toast(
+                    'OTP sent successfully.',
+                    {
+                        action: {
+                            label: 'Close',
+                            onClick: () => toast.dismiss()
+                        }
+                    }
+                )
+            })
+            .catch(err => {
+                console.log(err);
+            })
+        setResendDisabled(true);
+        setCountdown(60);
+
+        const intervalId = setInterval(() => {
+            setCountdown((prev) => {
+                if (prev === 0) {
+                    clearInterval(intervalId);
+                    setResendDisabled(false);
+                    return 60;
+                } else {
+                    return prev - 1;
+                }
+            });
+        }, 1000);
+    };
+
+    useEffect(() => {
+        if (countdown === 0) {
+            setResendDisabled(false);
+        }
+    }, [countdown]);
 
     const getbeneficieries = async () => {
         const token = localStorage.getItem('customer-token');
@@ -105,12 +141,8 @@ export default function Transaction() {
             setError('Amount should be less than 100000.');
             return;
         }
-        const token = localStorage.getItem('customer-token');
-        const headers = {
-            'Authorization': `Bearer ${token}`
-        }
 
-        await axios.get('/customer/sendotp', { headers })
+        await axios.get('/customer/sendotp')
             .then(res => {
                 console.log(res.data);
                 toast(
@@ -303,9 +335,10 @@ export default function Transaction() {
                             <Label htmlFor="otp">Enter OTP</Label>
                             <Input id="otp" type="password" onChange={handleOtpChange} />
                         </div>
-                    </CardContent>
-                    <CardFooter>
                         <Button onClick={handleVerify}>Confirm</Button>
+                    </CardContent>
+                    <CardFooter className='flex justify-center'>
+                        <div className="text-sm text-center">Didn't receive the OTP? {resendDisabled ? `Resend OTP in ${countdown} seconds` : <span className="text-blue-500 cursor-pointer" onClick={handleResendClick}>Resend OTP</span>}</div>
                     </CardFooter>
                 </Card>)}
             </div>

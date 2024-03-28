@@ -29,6 +29,8 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers("/customer/verifyotp")
                 .permitAll()
+                .requestMatchers("/customer/sendotp")
+                .permitAll()
                 .requestMatchers("/customer/**").authenticated()
                 .anyRequest()
                 .permitAll()

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
     Card,
     CardContent,
@@ -13,16 +13,60 @@ import { Button } from "@/components/ui/button"
 import { useCarousel } from '@/components/ui/carousel'
 import { ArrowLeft } from "lucide-react"
 import axios from 'axios'
+import { toast } from "sonner";
 
 
 export default function step1() {
     const [otp, setOtp] = useState('');
     const [error, setError] = useState(null);
+    const [resendDisabled, setResendDisabled] = useState(false);
+    const [countdown, setCountdown] = useState(60);
     const {scrollNext, scrollPrev} = useCarousel();
 
     const handleOtpChange = (e) => {
         setOtp(e.target.value);
     }
+
+    const handleResendClick = async () => {
+
+        await axios.get('/customer/sendotp')
+            .then(res => {
+                console.log(res.data);
+                toast(
+                    'OTP sent successfully.',
+                    {
+                        action: {
+                            label: 'Close',
+                            onClick: () => toast.dismiss()
+                        }
+                    }
+                )
+            })
+            .catch(err => {
+                console.log(err);
+            })
+        setResendDisabled(true);
+        setCountdown(60);
+
+        const intervalId = setInterval(() => {
+            setCountdown((prev) => {
+                if (prev === 0) {
+                    clearInterval(intervalId);
+                    setResendDisabled(false);
+                    return 60;
+                } else {
+                    return prev - 1;
+                }
+            });
+        }, 1000);
+    };
+
+    useEffect(() => {
+        if (countdown === 0) {
+            setResendDisabled(false);
+        }
+    }, [countdown]);
+
 
     const handlenext1 = async (e) => {
         e.preventDefault();
@@ -72,7 +116,7 @@ export default function step1() {
         </form>
     </CardContent>
     <CardFooter className="flex justify-center">
-        <div className="text-sm text-center">Didn't receive the OTP? <span className="text-blue-500 cursor-pointer">Resend OTP</span></div>
+    <div className="text-sm text-center">Didn't receive the OTP? {resendDisabled ? `Resend OTP in ${countdown} seconds` : <span className="text-blue-500 cursor-pointer" onClick={handleResendClick}>Resend OTP</span>}</div>
     </CardFooter>
 </Card>)
 }

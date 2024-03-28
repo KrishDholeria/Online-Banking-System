@@ -46,6 +46,9 @@ public class CustomerController {
     @Autowired
     private final BranchService branchService;
 
+    @Autowired
+    private final EmailService emailService;
+
     @PostMapping("/setusername")
     public ResponseEntity<?> setUsername(@RequestBody CustomerSignupDto customer) {
         Optional<Account> accountOptional = accountService.getAccountByAccountNo(customer.getAccountNo());
@@ -197,6 +200,23 @@ public class CustomerController {
         remove = transactionService.createTransaction(remove);
         add.setRelatedTransaction(remove);
         transactionService.updateTransaction(add.getTransactionId(), add);
+
+        String creditMsg = "Hello, " + to.getCustomer().getPerson().getFirstName() + "\n"
+                + "Your A/cX" + to.getAccountNumber().substring(8) + "credited by Rs" + amount + " on " + add.getTransactionDate().toString() + " by Ref no " + add.getReferenceId() + ".";
+        EmailDetails creditAccount = EmailDetails.builder()
+                .recipient(to.getCustomer().getPerson().getEmail())
+                .subject("Money recieved in your account.")
+                .msgBody(creditMsg)
+                .build();
+        emailService.sendSimpleMail(creditAccount);
+        String debitMsg = "Hello, " + from.getCustomer().getPerson().getFirstName() + "\n"
+                + "Your A/cX" + from.getAccountNumber().substring(8) + "debited by Rs" + amount + " on " + remove.getTransactionDate().toString() + " to " + to.getCustomer().getPerson().getFirstName() + " Ref no " + remove.getReferenceId() + ".";
+        EmailDetails debitAccount = EmailDetails.builder()
+                .recipient(customer.getPerson().getEmail())
+                .subject("Money debited from your account.")
+                .msgBody(debitMsg)
+                .build();
+        emailService.sendSimpleMail(debitAccount);
 
         return TransactionResponse.builder()
                 .responseMessage(Util.TRANSFER_COMPLETE_MESSAGE)

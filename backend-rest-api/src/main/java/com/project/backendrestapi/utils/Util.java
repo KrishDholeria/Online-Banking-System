@@ -13,5 +13,7 @@ public class Util {
     public static String BENEFICIARY_ADDED_SUCCESSFULLY_MESSAGE = "Beneficiary added successfully.";
     public static String BRANCH_NOT_FOUND_CODE = "006";
     public static String BRANCH_NOT_FOUND_MESSAGE = "Branch for this IFSC code not found.";
+    public static String BENEFICIARY_UPDATED_SUCCESSFULLY_CODE = "007";
+    public static String BENEFICIARY_UPDATED_SUCCESSFULLY_MESSAGE = "Beneficiary updated successfully.";
 
 }

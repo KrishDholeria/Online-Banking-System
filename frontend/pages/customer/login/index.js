@@ -55,7 +55,6 @@ const login = () => {
     }
     catch (error) {
       console.log(error.response);
-      setError(error.response.data);
     }
     // const response = await axios.post("/auth/login", {username, password});
     // setError(null);

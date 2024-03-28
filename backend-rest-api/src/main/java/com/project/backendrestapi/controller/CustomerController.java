@@ -43,6 +43,9 @@ public class CustomerController {
     @Autowired
     private final BeneficiaryService beneficiaryService;
 
+    @Autowired
+    private final BranchService branchService;
+
     @PostMapping("/setusername")
     public ResponseEntity<?> setUsername(@RequestBody CustomerSignupDto customer) {
         Optional<Account> accountOptional = accountService.getAccountByAccountNo(customer.getAccountNo());
@@ -281,22 +284,48 @@ public class CustomerController {
     @CrossOrigin(originPatterns = "http://localhost:3000")
     @PutMapping("/updateBeneficiary/{username}/{accountNo}")
     ResponseEntity<?> updateBeneficiary(@PathVariable String username,@PathVariable String accountNo, @RequestBody BeneficiaryDto beneficiaryDto){
+        Optional<Account> optionalAccount = accountService.getAccountByAccountNo(beneficiaryDto.getAccountNo());
+        if(optionalAccount.isEmpty()){
+            return ResponseEntity.ok(BeneficiaryResponse.builder()
+                    .responseCode(Util.ACCOUNT_NOT_FOUND_CODE)
+                    .responseMessage(Util.ACCOUNT_NOT_FOUND_MESSAGE)
+                    .build());
+        }
+        Optional<Branch> optionalBranch = branchService.getBranchByBranchCode(beneficiaryDto.getBranchCode());
+        if(optionalBranch.isEmpty()){
+            return ResponseEntity.ok(BeneficiaryResponse.builder()
+                            .responseCode(Util.BRANCH_NOT_FOUND_CODE)
+                            .responseMessage(Util.BRANCH_NOT_FOUND_MESSAGE)
+                    .build());
+        }
         Optional<Customer> customerOptional = customerService.getCustomerByUserName(username);
         if(customerOptional.isPresent()){
             Customer customer = customerOptional.get();
-            Beneficiary beneficiary = null;
-            for(Beneficiary b: customer.getBeneficiaries()){
-                if(b.getAccountNumber().equals(accountNo)){
-                    beneficiary = beneficiaryService.updateBeneficiary(b.getBeneficiaryId(), beneficiaryDto);
+            List<Beneficiary> beneficiaries = customer.getBeneficiaries();
+            for(Beneficiary b: beneficiaries){
+                if(!b.getAccountNumber().equals(accountNo) && b.getAccountNumber().equals(beneficiaryDto.getAccountNo())){
+                    return ResponseEntity.ok(BeneficiaryResponse.builder()
+                                    .responseCode(Util.BENEFICIARY_ALREADY_EXISTS_CODE)
+                                    .responseMessage(Util.BENEFICIARY_ALREADY_EXISTS_MESSAGE)
+                            .build());
+                }
+            }
+            for(int i=0; i< beneficiaries.size(); i++){
+                if(beneficiaries.get(i).getAccountNumber().equals(accountNo)){
+                    Beneficiary b = beneficiaryService.updateBeneficiary(beneficiaries.get(i).getBeneficiaryId(), beneficiaryDto);
+                    beneficiaries.set(i, b);
                     break;
                 }
             }
-            if(beneficiary != null){
-                return new ResponseEntity<>(beneficiaryService.entityToDto(beneficiary), HttpStatus.OK);
+            List<BeneficiaryDto> beneficiaryDtos = new ArrayList<>();
+            for(Beneficiary b: beneficiaries){
+                beneficiaryDtos.add(beneficiaryService.entityToDto(b));
             }
-            else {
-                return new ResponseEntity<>("Beneficiary not found!!", HttpStatus.NO_CONTENT);
-            }
+            return new ResponseEntity<>(BeneficiaryResponse.builder()
+                    .responseCode(Util.BENEFICIARY_UPDATED_SUCCESSFULLY_CODE)
+                    .responseMessage(Util.BENEFICIARY_UPDATED_SUCCESSFULLY_MESSAGE)
+                    .beneficiaryDtoList(beneficiaryDtos)
+                    .build(), HttpStatus.OK);
         }
         return new ResponseEntity<>("Customer Not Found!!", HttpStatus.NO_CONTENT);
     }

@@ -11,6 +11,7 @@ import { useState, useEffect, useRef } from 'react'
 import { FiEdit, FiTrash2, FiCheck, FiXCircle } from 'react-icons/fi';
 import axios from 'axios';
 import { useRouter } from "next/router";
+import { toast } from 'sonner';
 
 export default function CustomTable({ beneficiaries, setBeneficiaries }) {
     const [isEditing, setIsEditing] = useState(null);
@@ -55,18 +56,70 @@ export default function CustomTable({ beneficiaries, setBeneficiaries }) {
             [name]: value
         }));
     };
-    const handleUpdate = () => {
+    const handleUpdate = async () => {
         const token = localStorage.getItem('customer-token');
         const username = localStorage.getItem('customer-username');
         const headers = {
             "Authorization": `Bearer ${token}`
         }
-        axios.put(`customer/updateBeneficiary/${username}/${beneficiaries[isEditing].accountNo}`, rowData, { headers })
+        await axios.put(`customer/updateBeneficiary/${username}/${beneficiaries[isEditing].accountNo}`, rowData, { headers })
             .then(res => {
-                beneficiaries[isEditing] = rowData;
+                // beneficiaries[isEditing] = rowData;
                 console.log(res);
                 setIsEditing(null);
-                router.push('/customer/beneficiary');
+                // router.push('/customer/beneficiary');
+
+                switch (res.data.responseCode) {
+                    case '002':
+                        toast(
+                            'Account doesn\'t exist for the given account number.',
+                            {
+                                description: "Please enter valid account details.",
+                                action: {
+                                    label: 'Close',
+                                    onClick: () => toast.dismiss()
+                                }
+                            }
+                        )
+                        break;
+                    case "006":
+                        toast(
+                            'No branch exist for the given IFSC code.',
+                            {
+                                description: "Please enter a valid IFSC code.",
+                                action: {
+                                    label: 'Close',
+                                    onClick: () => toast.dismiss()
+                                }
+                            }
+                        )
+                        break;
+                    case "004":
+                        toast(
+                            'Beneficiery already exist.',
+                            {
+                                description: "Try adding a different beneficiary. This one already exist.",
+                                action: {
+                                    label: 'Close',
+                                    onClick: () => toast.dismiss()
+                                }
+                            }
+                        )
+                        break;
+                    case '007':
+                        toast(
+                            'Beneficiary updated successfully.',
+                            {
+                                action: {
+                                    label: 'Close',
+                                    onClick: () => toast.dismiss()
+                                }
+                            }
+                        )
+                        setBeneficiaries(res.data.beneficiaryDtoList);
+                        // router.push('/customer/beneficiary');
+                        break;
+                }
             })
             .catch(err => {
                 console.log(err);

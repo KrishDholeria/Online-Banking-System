@@ -9,6 +9,8 @@ import com.project.backendrestapi.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -109,4 +111,34 @@ public class TransactionService {
         // Now, fetch transactions associated with this account
         return transactionRepository.findByAccount(account);
     }
+
+    public List<Transaction> getTransactionsByDuration(String duration) {
+        // Determine the start and end dates based on the provided duration
+        Calendar calendar = Calendar.getInstance();
+        Date endDate = calendar.getTime();
+        Date startDate = null;
+
+        switch (duration) {
+            case "last6months":
+                calendar.add(Calendar.MONTH, -6);
+                startDate = calendar.getTime();
+                break;
+            case "lastmonth":
+                calendar.add(Calendar.MONTH, -1);
+                startDate = calendar.getTime();
+                break;
+            case "lastweek":
+                calendar.add(Calendar.DAY_OF_MONTH, -7);
+                startDate = calendar.getTime();
+                break;
+            default:
+                // Handle unsupported duration
+                throw new IllegalArgumentException("Unsupported duration: " + duration);
+        }
+
+        List<Transaction> transactions = transactionRepository.getTransactionsBetweenDates(startDate, endDate);
+
+        return transactions;
+    }
+
 }

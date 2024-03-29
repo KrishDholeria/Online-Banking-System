@@ -136,7 +136,7 @@ public class TransactionService {
                 throw new IllegalArgumentException("Unsupported duration: " + duration);
         }
 
-        List<Transaction> transactions = transactionRepository.getTransactionsBetweenDates(startDate, endDate);
+        List<Transaction> transactions = transactionRepository.findByTransactionDateBetween(startDate, endDate);
 
         return transactions;
     }

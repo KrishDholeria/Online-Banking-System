@@ -5,6 +5,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.hibernate.dialect.SybaseASEDialect;
 
 import com.project.backendrestapi.dto.*;
 import com.project.backendrestapi.model.*;
@@ -142,7 +143,7 @@ public class CustomerController {
         Customer customer = customerOptional.get();
         Account from = customer.getAccount();
         Optional<Account> accountOptional = accountService.getAccountByAccountNo((transactionDto.getAccountNo()));
-        if(accountOptional.isEmpty()){
+        if (accountOptional.isEmpty()) {
             return TransactionResponse.builder()
                     .responseCode(Util.ACCOUNT_NOT_FOUND_CODE)
                     .responseMessage(Util.ACCOUNT_NOT_FOUND_MESSAGE)
@@ -162,7 +163,7 @@ public class CustomerController {
         Date date = new Date();
 
         int amount = Integer.parseInt(transactionDto.getAmount());
-        if(from.getAccountBalance() < amount){
+        if (from.getAccountBalance() < amount) {
             return TransactionResponse.builder()
                     .responseCode(Util.INSUFFICIENT_BALANCE_CODE)
                     .responseMessage(Util.INSUFFICIENT_BALANCE_MESSAGE)
@@ -222,7 +223,8 @@ public class CustomerController {
             return ResponseEntity.notFound().build();
         } else {
             // Fetch transactions by customer ID
-            List<Transaction> transactions = transactionService.getTransactionsByCustomerId(customerOptional.get().getCustomerId());
+            List<Transaction> transactions = transactionService
+                    .getTransactionsByCustomerId(customerOptional.get().getCustomerId());
 
             // Generate PDF document
             try (PDDocument document = new PDDocument()) {
@@ -233,7 +235,8 @@ public class CustomerController {
                     contentStream.beginText();
                     contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
                     contentStream.newLineAtOffset(100, 700);
-                    contentStream.showText("Transaction Statement for Customer ID: " + customerOptional.get().getCustomerId());
+                    contentStream.showText(
+                            "Transaction Statement for Customer ID: " + customerOptional.get().getCustomerId());
                     contentStream.newLine();
                     contentStream.setFont(PDType1Font.HELVETICA, 10);
 
@@ -268,33 +271,32 @@ public class CustomerController {
     }
 
     @GetMapping("/getbalance/{username}")
-    ResponseEntity<?> getBalance(@PathVariable String username){
+    ResponseEntity<?> getBalance(@PathVariable String username) {
         Optional<Customer> customerOptional = customerService.getCustomerByUserName(username);
-        if(customerOptional.isPresent()){
+        if (customerOptional.isPresent()) {
             Customer customer = customerOptional.get();
             return new ResponseEntity<>(customer.getAccount().getAccountBalance(), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-
     @CrossOrigin(originPatterns = "http://localhost:3000")
     @PutMapping("/updateBeneficiary/{username}/{accountNo}")
-    ResponseEntity<?> updateBeneficiary(@PathVariable String username,@PathVariable String accountNo, @RequestBody BeneficiaryDto beneficiaryDto){
+    ResponseEntity<?> updateBeneficiary(@PathVariable String username, @PathVariable String accountNo,
+            @RequestBody BeneficiaryDto beneficiaryDto) {
         Optional<Customer> customerOptional = customerService.getCustomerByUserName(username);
-        if(customerOptional.isPresent()){
+        if (customerOptional.isPresent()) {
             Customer customer = customerOptional.get();
             Beneficiary beneficiary = null;
-            for(Beneficiary b: customer.getBeneficiaries()){
-                if(b.getAccountNumber().equals(accountNo)){
+            for (Beneficiary b : customer.getBeneficiaries()) {
+                if (b.getAccountNumber().equals(accountNo)) {
                     beneficiary = beneficiaryService.updateBeneficiary(b.getBeneficiaryId(), beneficiaryDto);
                     break;
                 }
             }
-            if(beneficiary != null){
+            if (beneficiary != null) {
                 return new ResponseEntity<>(beneficiaryService.entityToDto(beneficiary), HttpStatus.OK);
-            }
-            else {
+            } else {
                 return new ResponseEntity<>("Beneficiary not found!!", HttpStatus.NO_CONTENT);
             }
         }
@@ -303,14 +305,15 @@ public class CustomerController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @DeleteMapping("/deleteBeneficiary/{username}/{accountNo}")
-    ResponseEntity<?> deleteBenefiaiary(@PathVariable String username, @PathVariable String accountNo){
+    ResponseEntity<?> deleteBenefiaiary(@PathVariable String username, @PathVariable String accountNo) {
         Optional<Customer> optionalCustomer = customerService.getCustomerByUserName(username);
-        if(optionalCustomer.isPresent()){
+        if (optionalCustomer.isPresent()) {
             Customer customer = optionalCustomer.get();
-            for(Beneficiary b: customer.getBeneficiaries()){
-                if(b.getAccountNumber().equals(accountNo)){
+            for (Beneficiary b : customer.getBeneficiaries()) {
+                if (b.getAccountNumber().equals(accountNo)) {
                     Boolean res = beneficiaryService.deleteBeneficiary(b.getBeneficiaryId());
-                    return res ? new ResponseEntity<>("Beneficiary deleted succesfully!!", HttpStatus.OK) : new ResponseEntity<>("There is an error deleting beneficiary", HttpStatus.OK);
+                    return res ? new ResponseEntity<>("Beneficiary deleted succesfully!!", HttpStatus.OK)
+                            : new ResponseEntity<>("There is an error deleting beneficiary", HttpStatus.OK);
                 }
             }
             return new ResponseEntity<>("Beneficiary not found!!", HttpStatus.NO_CONTENT);
@@ -319,26 +322,39 @@ public class CustomerController {
     }
 
     @GetMapping("/sendotp")
-    ResponseEntity<?> sendOtp(){
+    ResponseEntity<?> sendOtp() {
         smsService.genrateOTP();
         return new ResponseEntity<>("OTP sent!!", HttpStatus.OK);
     }
 
-//    @GetMapping("/getbeneficieries/{username}")
-//    ResponseEntity<?> getBeneficieries(@PathVariable String username){
-//        Optional<Customer> customerOptional = customerService.getCustomerByUserName(username);
-//        if(customerOptional.isPresent()){
-//            Customer customer = customerOptional.get();
-//            if(customer.getBeneficiaries().isEmpty()){
-//                return new ResponseEntity<>("No Beneficiery added", HttpStatus.NO_CONTENT);
-//            }
-//            List<BeneficiaryDto> beneficiaryDtos = new ArrayList<>();
-//            for(Beneficiary b : customer.getBeneficiaries()){
-//                beneficiaryDtos.add(beneficiaryService.entityToDto(b));
-//            }
-//            return new ResponseEntity<>(beneficiaryDtos, HttpStatus.OK);
-//        }
-//        return new ResponseEntity<>("customer not found!!", HttpStatus.NO_CONTENT);
-//    }
+    @GetMapping("/profile")
+    public ResponseEntity<?> getCustomerProfile(@RequestParam String username) {
+        // Assume you have a method in your service to fetch the customer profile
+        ProfileDto profileDto = customerService.getCustomerProfile(username);
+        // System.out.println(profileDto);
+        if (profileDto != null) {
+            return ResponseEntity.ok((profileDto));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    // @GetMapping("/getbeneficieries/{username}")
+    // ResponseEntity<?> getBeneficieries(@PathVariable String username){
+    // Optional<Customer> customerOptional =
+    // customerService.getCustomerByUserName(username);
+    // if(customerOptional.isPresent()){
+    // Customer customer = customerOptional.get();
+    // if(customer.getBeneficiaries().isEmpty()){
+    // return new ResponseEntity<>("No Beneficiery added", HttpStatus.NO_CONTENT);
+    // }
+    // List<BeneficiaryDto> beneficiaryDtos = new ArrayList<>();
+    // for(Beneficiary b : customer.getBeneficiaries()){
+    // beneficiaryDtos.add(beneficiaryService.entityToDto(b));
+    // }
+    // return new ResponseEntity<>(beneficiaryDtos, HttpStatus.OK);
+    // }
+    // return new ResponseEntity<>("customer not found!!", HttpStatus.NO_CONTENT);
+    // }
 
 }

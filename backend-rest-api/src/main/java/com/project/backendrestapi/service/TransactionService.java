@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionService {
@@ -100,45 +101,39 @@ public class TransactionService {
     // }
     // }
 
-    public List<Transaction> getTransactionsByCustomerId(Long customerId) {
-        // Fetch transactions associated with the customer ID
-        Customer customer = customerRepository.findById(customerId)
+    public List<Transaction> getTransactionsByDuration(String username, String duration) {
+
+        Customer customer = customerRepository.findByUserName(username)
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
 
-        // Get the account associated with the customer
         Account account = customer.getAccount();
 
-        // Now, fetch transactions associated with this account
-        return transactionRepository.findByAccount(account);
-    }
+        // Fetch all transactions
+        List<Transaction> allTransactions = transactionRepository.findByAccount(account);
 
-    public List<Transaction> getTransactionsByDuration(String duration) {
-        // Determine the start and end dates based on the provided duration
-        Calendar calendar = Calendar.getInstance();
-        Date endDate = calendar.getTime();
-        Date startDate = null;
-
+        // Calculate start date based on the selected duration
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
         switch (duration) {
-            case "last6months":
-                calendar.add(Calendar.MONTH, -6);
-                startDate = calendar.getTime();
+            case "last6Months":
+                cal.add(Calendar.MONTH, -6);
                 break;
-            case "lastmonth":
-                calendar.add(Calendar.MONTH, -1);
-                startDate = calendar.getTime();
+            case "lastMonth":
+                cal.add(Calendar.MONTH, -1);
                 break;
-            case "lastweek":
-                calendar.add(Calendar.DAY_OF_MONTH, -7);
-                startDate = calendar.getTime();
+            case "lastWeek":
+                cal.add(Calendar.WEEK_OF_YEAR, -1);
                 break;
             default:
-                // Handle unsupported duration
-                throw new IllegalArgumentException("Unsupported duration: " + duration);
+                throw new IllegalArgumentException("Invalid duration: " + duration);
         }
+        Date startDate = cal.getTime();
 
-        List<Transaction> transactions = transactionRepository.findByTransactionDateBetween(startDate, endDate);
+        List<Transaction> filteredTransactions = allTransactions.stream()
+                .filter(transaction -> transaction.getTransactionDate().after(startDate))
+                .collect(Collectors.toList());
 
-        return transactions;
+        return filteredTransactions;
     }
 
 }

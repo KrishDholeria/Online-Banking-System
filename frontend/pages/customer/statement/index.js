@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import jsPDF from 'jspdf';
 import {
     Card,
     CardContent,
@@ -10,12 +11,41 @@ import {
 } from "@/components/ui/card";
 import { useRouter } from "next/router";
 
+
 const StatementPage = () => {
-    const [pdfUrl, setPdfUrl] = useState("");
+    const [transactions, setTransactions] = useState([]);
+    const [loading, setLoading] = useState(true);
     const router = useRouter();
 
     useEffect(() => {
-        // Fetch the PDF file from the backend
+        const fetchData = async () => {
+            const token = localStorage.getItem('customer-token');
+            if (!token) {
+                router.push('/customer/login');
+                return;
+            }
+            const headers = {
+                'Authorization': `Bearer ${token}`
+            }
+            const username = localStorage.getItem('customer-username');
+            try {
+                const response = await axios.get(`/customer/transactions/${username}`, {
+                    params: { duration: 'last6Months' },
+                    headers
+                });
+                setTransactions(response.data);
+                setLoading(false);
+            } catch (error) {
+                console.error("Error fetching transactions:", error);
+                // Handle error
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const handleDurationChange = async (duration) => {
+        setLoading(true);
         const token = localStorage.getItem('customer-token');
         if (!token) {
             router.push('/customer/login');
@@ -25,26 +55,32 @@ const StatementPage = () => {
             'Authorization': `Bearer ${token}`
         }
         const username = localStorage.getItem('customer-username');
-        axios.get(`/customer/statement/${username}`, { responseType: "blob", headers })
-            .then((response) => {
-                // Convert the blob to URL
-                const file = new Blob([response.data], { type: "application/pdf" });
-                const fileURL = URL.createObjectURL(file);
-                setPdfUrl(fileURL);
-            })
-            .catch((error) => {
-                console.error("Error fetching PDF:", error);
-                // Handle error
+        try {
+            const response = await axios.get(`/customer/transactions/${username}`, {
+                params: { duration },
+                headers
             });
-    }, []);
+            setTransactions(response.data);
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching transactions:", error);
+            setLoading(false);
+        }
+    };
 
     const handleDownload = () => {
-        const link = document.createElement("a");
-        link.href = pdfUrl;
-        link.setAttribute("download", "statement.pdf");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const pdf = new jsPDF();
+        let y = 10; 
+
+        transactions.forEach(transaction => {
+            pdf.text(`Transaction ID: ${transaction.transactionId}`, 10, y);
+            pdf.text(`Amount: ${transaction.amount}`, 10, y + 10);
+            
+
+            y += 20; 
+        });
+
+        pdf.save('transaction_statement.pdf');
     };
 
     return (
@@ -57,15 +93,37 @@ const StatementPage = () => {
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                    {pdfUrl ? (
+                    <div className="flex justify-between items-center">
                         <div>
-                            <embed src={pdfUrl} type="application/pdf" width="100%" height="600px" />
-                            <div className="mt-7">
-                                <button onClick={handleDownload} className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Download PDF</button>
-                            </div>
+                            <button onClick={() => handleDurationChange('last6Months')} className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Last 6 Months</button>
+                            <button onClick={() => handleDurationChange('lastMonth')} className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 ml-2">Last Month</button>
+                            <button onClick={() => handleDurationChange('lastWeek')} className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 ml-2">Last Week</button>
                         </div>
-                    ) : (
+                        <div>
+                            <button onClick={handleDownload} className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Download PDF</button>
+                        </div>
+                    </div>
+                    {loading ? (
                         <p>Loading...</p>
+                    ) : (
+                        <table className="w-full border-collapse border border-gray-500">
+                            <thead>
+                                <tr>
+                                    <th className="border border-gray-500 px-4 py-2">Transaction ID</th>
+                                    <th className="border border-gray-500 px-4 py-2">Amount</th>
+                                    {/* Add more table headers if needed */}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {transactions.map(transaction => (
+                                    <tr key={transaction.transactionId}>
+                                        <td className="border border-gray-500 px-4 py-2">{transaction.transactionId}</td>
+                                        <td className="border border-gray-500 px-4 py-2">{transaction.amount}</td>
+                                        {/* Add more table data cells if needed */}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     )}
                 </CardContent>
                 <CardFooter></CardFooter>
@@ -75,4 +133,3 @@ const StatementPage = () => {
 }
 
 export default StatementPage;
-

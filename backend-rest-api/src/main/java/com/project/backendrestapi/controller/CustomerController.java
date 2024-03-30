@@ -213,68 +213,71 @@ public class CustomerController {
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 
-    /*
-     * @GetMapping("/statement/{username}")
-     * public ResponseEntity<byte[]> generateStatement(@PathVariable String
-     * username) {
-     * 
-     * // Fetch customer by ID to ensure it exists
-     * Optional<Customer> customerOptional =
-     * customerService.getCustomerByUserName(username);
-     * if (customerOptional.isEmpty()) {
-     * return ResponseEntity.notFound().build();
-     * } else {
-     * // Fetch transactions by customer ID
-     * List<Transaction> transactions = transactionService
-     * .getTransactionsByCustomerId(customerOptional.get().getCustomerId());
-     * 
-     * // Generate PDF document
-     * try (PDDocument document = new PDDocument()) {
-     * PDPage page = new PDPage();
-     * document.addPage(page);
-     * 
-     * try (PDPageContentStream contentStream = new PDPageContentStream(document,
-     * page)) {
-     * contentStream.beginText();
-     * contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
-     * contentStream.newLineAtOffset(100, 700);
-     * contentStream.showText(
-     * "Transaction Statement for Customer ID: " +
-     * customerOptional.get().getCustomerId());
-     * contentStream.newLine();
-     * contentStream.setFont(PDType1Font.HELVETICA, 10);
-     * 
-     * // Write transaction details to the PDF
-     * for (Transaction transaction : transactions) {
-     * contentStream.showText("Transaction ID: " + transaction.getTransactionId());
-     * contentStream.newLine();
-     * 
-     * contentStream.showText("Amount: " + transaction.getAmount());
-     * contentStream.newLine();
-     * }
-     * 
-     * contentStream.endText();
-     * }
-     * 
-     * // Convert PDF document to byte array
-     * ByteArrayOutputStream baos = new ByteArrayOutputStream();
-     * document.save(baos);
-     * byte[] pdfBytes = baos.toByteArray();
-     * 
-     * // Set headers for PDF response
-     * HttpHeaders headers = new HttpHeaders();
-     * headers.setContentType(MediaType.APPLICATION_PDF);
-     * headers.setContentDispositionFormData("filename",
-     * "transaction_statement.pdf");
-     * 
-     * return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-     * } catch (IOException e) {
-     * e.printStackTrace();
-     * return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-     * }
-     * }
-     * }
-     */
+    @GetMapping("/statement/{username}")
+    public ResponseEntity<byte[]> generateStatement(@PathVariable String username, @RequestParam String duration) {
+        // Fetch transactions based on the specified duration
+        List<Transaction> transactions = transactionService.getTransactionsByDuration(username, duration);
+
+        // Generate PDF document based on the filtered transactions
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage();
+            document.addPage(page);
+
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+                contentStream.beginText();
+                contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+                contentStream.newLineAtOffset(100, 700);
+                contentStream.showText("Transaction Statement for Customer: " + username);
+                contentStream.newLine();
+                contentStream.setFont(PDType1Font.HELVETICA, 10);
+
+                // Write transaction details to the PDF
+                int y = 680;
+                for (Transaction transaction : transactions) {
+                    contentStream.showText("Transaction ID: " + transaction.getTransactionId());
+                    contentStream.newLine();
+                    contentStream.showText("Amount: " + transaction.getAmount());
+                    contentStream.newLine();
+
+                    y -= 20;
+                    if (y < 20) {
+
+                        contentStream.endText();
+                        contentStream.close();
+                        page = new PDPage();
+                        document.addPage(page);
+                        contentStream.beginText();
+                        contentStream.setFont(PDType1Font.HELVETICA, 10);
+                        y = 700;
+                    }
+                }
+
+                contentStream.endText();
+            }
+
+            // Convert PDF document to byte array
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            document.save(baos);
+            byte[] pdfBytes = baos.toByteArray();
+
+            // Set headers for PDF response
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("filename", "transaction_statement.pdf");
+
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/transactions/{username}")
+    public ResponseEntity<List<Transaction>> getTransactionsByDuration(@PathVariable String username,
+            @RequestParam String duration) {
+        List<Transaction> transactions = transactionService.getTransactionsByDuration(username, duration);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
 
     @GetMapping("/getbalance/{username}")
     ResponseEntity<?> getBalance(@PathVariable String username) {
@@ -333,51 +336,58 @@ public class CustomerController {
         return new ResponseEntity<>("OTP sent!!", HttpStatus.OK);
     }
 
-    @GetMapping("/statement/{duration}")
-    public ResponseEntity<byte[]> generateStatementByDuration(@PathVariable String duration) {
-
-        List<Transaction> transactions = transactionService.getTransactionsByDuration(duration);
-
-        try (PDDocument document = new PDDocument()) {
-            PDPage page = new PDPage();
-            document.addPage(page);
-
-            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
-                contentStream.beginText();
-                contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
-                contentStream.newLineAtOffset(100, 700);
-                contentStream.showText("Transaction Statement for Duration: " + duration);
-                contentStream.newLine();
-                contentStream.setFont(PDType1Font.HELVETICA, 10);
-
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                for (Transaction transaction : transactions) {
-                    contentStream.showText("Transaction ID: " + transaction.getTransactionId());
-                    contentStream.newLine();
-                    contentStream.showText("Amount: " + transaction.getAmount());
-                    contentStream.newLine();
-                    contentStream.showText("Date: " + sdf.format(transaction.getTransactionDate()));
-                    contentStream.newLine();
-                }
-
-                contentStream.endText();
-            }
-
-            // PDF document to byte array
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            document.save(baos);
-            byte[] pdfBytes = baos.toByteArray();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
-            headers.setContentDispositionFormData("filename", "transaction_statement.pdf");
-
-            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    /*
+     * @GetMapping("/statement/{duration}")
+     * public ResponseEntity<byte[]> generateStatementByDuration(@PathVariable
+     * String duration) {
+     * 
+     * List<Transaction> transactions =
+     * transactionService.getTransactionsByDuration(duration);
+     * 
+     * try (PDDocument document = new PDDocument()) {
+     * PDPage page = new PDPage();
+     * document.addPage(page);
+     * 
+     * try (PDPageContentStream contentStream = new PDPageContentStream(document,
+     * page)) {
+     * contentStream.beginText();
+     * contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+     * contentStream.newLineAtOffset(100, 700);
+     * contentStream.showText("Transaction Statement for Duration: " + duration);
+     * contentStream.newLine();
+     * contentStream.setFont(PDType1Font.HELVETICA, 10);
+     * 
+     * SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+     * for (Transaction transaction : transactions) {
+     * contentStream.showText("Transaction ID: " + transaction.getTransactionId());
+     * contentStream.newLine();
+     * contentStream.showText("Amount: " + transaction.getAmount());
+     * contentStream.newLine();
+     * contentStream.showText("Date: " +
+     * sdf.format(transaction.getTransactionDate()));
+     * contentStream.newLine();
+     * }
+     * 
+     * contentStream.endText();
+     * }
+     * 
+     * // PDF document to byte array
+     * ByteArrayOutputStream baos = new ByteArrayOutputStream();
+     * document.save(baos);
+     * byte[] pdfBytes = baos.toByteArray();
+     * 
+     * HttpHeaders headers = new HttpHeaders();
+     * headers.setContentType(MediaType.APPLICATION_PDF);
+     * headers.setContentDispositionFormData("filename",
+     * "transaction_statement.pdf");
+     * 
+     * return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+     * } catch (IOException e) {
+     * e.printStackTrace();
+     * return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+     * }
+     * }
+     */
 
     // @GetMapping("/getbeneficieries/{username}")
     // ResponseEntity<?> getBeneficieries(@PathVariable String username){

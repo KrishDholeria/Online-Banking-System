@@ -10,6 +10,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class CustomerDto {
+    private String responseCode;
+    private String responseMessage;
     private String userName;
     private String password;
     private String panNo;

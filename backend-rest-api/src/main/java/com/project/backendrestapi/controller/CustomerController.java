@@ -10,6 +10,7 @@ import com.project.backendrestapi.dto.*;
 import com.project.backendrestapi.model.*;
 import com.project.backendrestapi.service.*;
 import lombok.AllArgsConstructor;
+import org.aspectj.util.UtilClassLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
@@ -56,39 +57,39 @@ public class CustomerController {
         if (accountOptional.isPresent()) {
             account = accountOptional.get();
         } else {
-            return new ResponseEntity<>("Account not found", HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(CustomerDto.builder()
+                    .responseCode(Util.ACCOUNT_NOT_FOUND_CODE)
+                    .responseMessage(Util.ACCOUNT_NOT_FOUND_MESSAGE)
+                    .build(), HttpStatus.OK);
+        }
+        if(!customer.getBranchCode().equals(account.getBranch().getBranchCode())){
+            return ResponseEntity.ok(CustomerDto.builder()
+                            .responseCode(Util.INVALID_BRANCH_CODE_CODE)
+                            .responseMessage(Util.INVALID_BRANCH_CODE_MESSAGE)
+                    .build());
         }
 
-        System.out.println("Helloooooooo!!!!!!");
+        System.out.println(customer.getUserName());
         if (!customerService.customerExistByUserName(customer.getUserName())) {
-            Optional<Customer> customer1 = customerService.updateCustomer(account.getCustomer().getUserName(),
-                    CustomerDto.builder().userName(customer.getUserName()).build());
-            if (customer1.get().getPassword() != null) {
-                return new ResponseEntity<>("Customer already exist!!!", HttpStatus.ALREADY_REPORTED);
+            if(account.getCustomer().getPassword() != null){
+                return new ResponseEntity<>(CustomerDto.builder()
+                        .responseCode(Util.CUSTOMER_ALREADY_EXIST_CODE)
+                        .responseMessage(Util.CUSTOMER_ALREADY_EXIST_MESSAGE)
+                        .build(), HttpStatus.OK);
             }
-            Person person = customer1.get().getPerson();
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            CustomerDto customerDto = CustomerDto.builder()
-                    .panNo(customer1.get().getPanNo())
-                    .userName(customer.getUserName())
-                    .account(AccountDto.builder()
-                            .accountBalance(account.getAccountBalance())
-                            .branchId(account.getBranch().getBranchId())
-                            .cutomerId(customer1.get().getCustomerId())
-                            .build())
-                    .person(PersonDto.builder()
-                            .dob(sdf.format(person.getDob()))
-                            .email(person.getEmail())
-                            .address(person.getAddress())
-                            .phoneNo(person.getPhoneNo())
-                            .firstName(person.getFirstName())
-                            .lastName(person.getLastName())
-                            .build())
-                    .build();
-            String s = smsService.genrateOTP();
-            return new ResponseEntity<>(customerDto, HttpStatus.OK);
+            CustomerDto customerDto1 = new CustomerDto();
+            customerDto1.setUserName(customer.getUserName());
+            customerService.updateCustomer(account.getCustomer().getCustomerId(),customerDto1);
+            CustomerDto customerDto = customerService.convertToCustomerDto(account.getCustomer());
+            customerDto.setUserName(customer.getUserName());
+            customerDto.setResponseCode(Util.USERNAME_UPDATED_SUCCESSFULLY_CODE);
+            customerDto.setResponseMessage(Util.USERNAME_UPDATED_SUCCESSFULLY_MESSAGE);
+            return ResponseEntity.ok(customerDto);
         } else {
-            return new ResponseEntity<>(HttpStatus.IM_USED);
+            return new ResponseEntity<>(CustomerDto.builder()
+                    .responseCode(Util.USERNAME_ALREADY_EXIST_CODE)
+                    .responseMessage(Util.USERNAME_ALREADY_EXIST_MESSAGE)
+                    .build(),HttpStatus.OK);
         }
         // return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
@@ -108,15 +109,23 @@ public class CustomerController {
         System.out.println(customerDto.getPassword() + " " + customerDto.getUserName());
         String username = customerDto.getUserName();
         String password = customerDto.getPassword();
+        System.out.println(username+ "  "  + password);
         Optional<Customer> customerOptional = customerService.getCustomerByUserName(username);
         if (customerOptional.isPresent()) {
             Customer customer = customerOptional.get();
+            System.out.println(customer.getPerson().getFirstName());
             BCryptPasswordEncoder b = new BCryptPasswordEncoder();
             customer.setPassword(b.encode(password));
-            customerService.updateCustomer(username, customerService.convertToCustomerDto(customer));
-            return ResponseEntity.ok(customerService.convertToCustomerDto(customer));
+            customerService.updateCustomer(customer.getCustomerId(), customerService.convertToCustomerDto(customer));
+            CustomerDto customerDto1 = customerService.convertToCustomerDto(customer);
+            customerDto1.setResponseCode(Util.PASSWORD_SET_SUCCESSFULLY_CODE);
+            customerDto1.setResponseMessage(Util.PASSWORD_SET_SUCCESSFULLY_MESSAGE);
+            return ResponseEntity.ok(customerDto1);
         }
-        return new ResponseEntity<>("Customer not found", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(CustomerDto.builder()
+                .responseCode(Util.ACCOUNT_NOT_FOUND_CODE)
+                .responseMessage(Util.ACCOUNT_NOT_FOUND_MESSAGE)
+                .build(), HttpStatus.OK);
     }
 
     @PostMapping("/addbeneficiary/{username}")

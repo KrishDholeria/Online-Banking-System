@@ -18,6 +18,7 @@ const signup = () => {
                     <CarouselContent>
                         <CarouselItem>
                             <Step1 setUser={(value) => {
+                                console.log("step1: "+value);
                                 setCustomer(value);
                             }} />
                         </CarouselItem>

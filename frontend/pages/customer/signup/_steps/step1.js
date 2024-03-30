@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useCarousel } from '@/components/ui/carousel'
 import axios from 'axios'
+import { toast } from 'sonner'
 
 
 export default function step1({ setUser }) {
@@ -46,54 +47,124 @@ export default function step1({ setUser }) {
         setLoading(true);
         if (username === '' || account === '' || confirmaccount === '' || ifsccode === '') {
             setError('Please fill all the fields.');
+            setLoading(false);
             return;
         }
         const validusernameregx = /^[a-zA-Z0-9]+$/; //alphanumeric
         if (!username.match(validusernameregx)) {
             setError('Username should be alphanumeric.');
+            setLoading(false);
             return;
         }
         // regular expression for 12 digits number
         const validaccountregx = /^\d{12}$/
         if (!account.match(validaccountregx)) {
             setError('Account number must be 12 digits.');
+            setLoading(false);
             return;
         }
         if (account !== confirmaccount) {
             setError('Account number and confirm account number do not match.');
+            setLoading(false);
             return;
         }
         if (error !== null) {
+            setLoading(false);
             return;
         }
         const user = await axios.post('/customer/setusername', {
             userName: username,
             accountNo: account,
             branchCode: ifsccode
-        }).catch((err) => {
-            console.log(err);
-            console.log("Error!!!!!")
-            setError('Something went wrong. Please try again.');
-        }
-        );
+        }).then(async (res) => {
+            console.log(res);
+            switch (res.data.responseCode) {
+                case "002":
+                    toast(
+                        'Account with this account number not found.',
+                        {
+                            description: 'Enter valid account number.',
+                            type: 'error',
+                            action: {
+                                label: 'Close',
+                                onClick: () => toast.dismiss()
+                            }
+                        }
+                    )
+                    break;
+                case "010":
+                    toast(
+                        'Invalid IFSC code.',
+                        {
+                            description: 'Enter a valid IFSC code.',
+                            type: 'error',
+                            action: {
+                                label: 'Close',
+                                onClick: () => toast.dismiss()
+                            }
+                        }
+                    )
+                    break;
+                case "012":
+                    toast(
+                        'Account already exist.',
+                        {
+                            description: 'Try login.',
+                            type: 'error',
+                            action: {
+                                label: 'Close',
+                                onClick: () => toast.dismiss()
+                            }
+                        }
+                    )
+                    break;
+                case "008":
+                    toast(
+                        'This is a weak username.',
+                        {
+                            description: 'Choose a different username.',
+                            type: 'error',
+                            action: {
+                                label: 'Close',
+                                onClick: () => toast.dismiss()
+                            }
+                        }
+                    )
+                    break;
+                case "009":
+                    await axios.get('/customer/sendotp')
+                        .then(res => {
+                            console.log(res.data);
+                            toast(
+                                'OTP sent successfully.',
+                                {
+                                    action: {
+                                        label: 'Close',
+                                        onClick: () => toast.dismiss()
+                                    }
+                                }
+                            )
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        })
+                    setUser(res.data);
+                    scrollNext();
+                    break;
+            }
+            setLoading(false);
+        })
+            .catch((err) => {
+                console.log(err);
+                console.log("Error!!!!!")
+                setError('Something went wrong. Please try again.');
+                setLoading(false);
+                return;
+            }
+            );
         console.log(user);
-        // localStorage.setItem('customer', JSON.stringify(user.data));
-        if (user?.status === 204) {
-            setError('User account not found');
-            return;
-        }
-        else if (user?.status === 226) {
-            setError('Try choosing a different username');
-            return;
-        }
-        else if (user?.status === 208) {
-            setError('Account already exists try logging in.');
-            return;
-        }
-        setUser(user?.data);
         setError(null);
         setLoading(false);
-        scrollNext();
     }
 
     return (<Card className={`w-full h-[600px] overflow-auto`}>

@@ -75,6 +75,7 @@ export default function CustomTable({ beneficiaries, setBeneficiaries }) {
                             'Account doesn\'t exist for the given account number.',
                             {
                                 description: "Please enter valid account details.",
+                                type: 'error',
                                 action: {
                                     label: 'Close',
                                     onClick: () => toast.dismiss()
@@ -87,6 +88,7 @@ export default function CustomTable({ beneficiaries, setBeneficiaries }) {
                             'No branch exist for the given IFSC code.',
                             {
                                 description: "Please enter a valid IFSC code.",
+                                type: 'error',
                                 action: {
                                     label: 'Close',
                                     onClick: () => toast.dismiss()
@@ -99,6 +101,7 @@ export default function CustomTable({ beneficiaries, setBeneficiaries }) {
                             'Beneficiery already exist.',
                             {
                                 description: "Try adding a different beneficiary. This one already exist.",
+                                type: 'error',
                                 action: {
                                     label: 'Close',
                                     onClick: () => toast.dismiss()

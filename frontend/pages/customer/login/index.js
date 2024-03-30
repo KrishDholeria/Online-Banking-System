@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button"
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import LoginNavbar from '@/components/navbar/loginNavbar'
+import { toast } from 'sonner'
 
 const login = () => {
   const [username, setUsername] = useState('');
@@ -55,6 +56,7 @@ const login = () => {
     }
     catch (error) {
       console.log(error.response);
+      toast('Invalid credentials.', { type: 'error', action: { label: 'Close', onClick: () => toast.dismiss() } });
     }
     // const response = await axios.post("/auth/login", {username, password});
     // setError(null);

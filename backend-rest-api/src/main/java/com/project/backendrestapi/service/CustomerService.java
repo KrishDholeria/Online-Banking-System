@@ -84,8 +84,8 @@ public class CustomerService {
         return emptyNames.toArray(result);
     }
 
-    public Optional<Customer> updateCustomer(String userName, CustomerDto updatedCustomerDto) {
-        Optional<Customer> existingCustomerOptional = customerRepository.findByUserName(userName);
+    public Optional<Customer> updateCustomer(Long customerId, CustomerDto updatedCustomerDto) {
+        Optional<Customer> existingCustomerOptional = getCustomerById(customerId);
 
         if (existingCustomerOptional.isPresent()) {
             Customer existingCustomer = existingCustomerOptional.get();

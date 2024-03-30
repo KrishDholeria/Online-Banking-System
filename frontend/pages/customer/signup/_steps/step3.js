@@ -14,6 +14,7 @@ import { useCarousel } from '@/components/ui/carousel'
 import { ArrowLeft } from "lucide-react"
 import { useRouter } from 'next/router'
 import axios from 'axios'
+import { toast } from 'sonner'
 
 
 export default function step1({user, setUser}) {
@@ -43,10 +44,26 @@ export default function step1({user, setUser}) {
         if(error !== null){
             return;
         }
-        const res = await axios.post("/customer/setpassword", {...user, password});
-        setUser(res.data);
+        await axios.post("/customer/setpassword", {...user, password}).then(res => {
+            if(res.data.responseCode === '011'){
+                toast(
+                    'Account created successfully. Please login to continue.',
+                    {
+                        action: {
+                            label: 'Close',
+                            onClick: () => toast.dismiss()
+                        }
+                    }
+                )
+            }
+            console.log(res);
+            setUser(res.data);
+            router.push('/customer/login');
+        }).catch(err => {
+            console.log(err.response);
+            setError(err.response.data.message);
+        })
         setError(null);
-        router.push('/customer/login');
     }
 
     return (<Card className={`w-full h-[450px] overflow-auto`}>

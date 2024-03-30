@@ -181,6 +181,7 @@ export default function Transaction() {
                         'Invalid OTP.',
                         {
                             description: 'Please enter a valid OTP.',
+                            type: 'error',
                             action: {
                                 label: 'Close',
                                 onClick: () => toast.dismiss()
@@ -219,6 +220,7 @@ export default function Transaction() {
                             'Account for the beneficiery not found.',
                             {
                                 description: 'Please choose a valid beneficiery.',
+                                type: 'error',
                                 action: {
                                     label: 'Close',
                                     onClick: () => toast.dismiss()
@@ -232,6 +234,7 @@ export default function Transaction() {
                             'Insufficient balance.',
                             {
                                 description: 'Please enter a valid ammount.',
+                                type: 'error',
                                 action: {
                                     label: 'Close',
                                     onClick: () => toast.dismiss()
@@ -256,6 +259,7 @@ export default function Transaction() {
                         toast(
                             'Transaction failed.',
                             {
+                                type: 'error',
                                 action: {
                                     label: 'Close',
                                     onClick: () => toast.dismiss()

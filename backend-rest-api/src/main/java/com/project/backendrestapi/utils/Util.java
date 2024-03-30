@@ -15,5 +15,15 @@ public class Util {
     public static String BRANCH_NOT_FOUND_MESSAGE = "Branch for this IFSC code not found.";
     public static String BENEFICIARY_UPDATED_SUCCESSFULLY_CODE = "007";
     public static String BENEFICIARY_UPDATED_SUCCESSFULLY_MESSAGE = "Beneficiary updated successfully.";
+    public static String USERNAME_ALREADY_EXIST_CODE = "008";
+    public static String USERNAME_ALREADY_EXIST_MESSAGE = "Username already exist.";
+    public static String USERNAME_UPDATED_SUCCESSFULLY_CODE = "009";
+    public static String USERNAME_UPDATED_SUCCESSFULLY_MESSAGE = "Username updated successfully.";
+    public static String INVALID_BRANCH_CODE_CODE = "010";
+    public static String INVALID_BRANCH_CODE_MESSAGE = "Invalid branch code.";
+    public static String PASSWORD_SET_SUCCESSFULLY_CODE = "011";
+    public static String PASSWORD_SET_SUCCESSFULLY_MESSAGE = "Password set successfully.";
+    public static String CUSTOMER_ALREADY_EXIST_CODE = "012";
+    public static String CUSTOMER_ALREADY_EXIST_MESSAGE = "Customer already exist.";
 
 }

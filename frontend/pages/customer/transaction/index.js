@@ -132,13 +132,13 @@ export default function Transaction() {
             return;
         }
         // check if amount is greater than 0
-        if (amount <= 0) {
-            setError('Amount should be greater than 0.');
+        if (amount <= 1000) {
+            setError('Amount should be greater than Rs.1000.');
             return;
         }
         // check if amount is less than 100000
-        if (amount > 100000) {
-            setError('Amount should be less than 100000.');
+        if (amount > 1000000) {
+            setError('Amount should be less than Rs.1000000.');
             return;
         }
 

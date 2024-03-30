@@ -154,13 +154,13 @@ export default function Transaction() {
                         }
                     }
                 )
+                console.log('OTP sent');
+                setActiveTab("OTP");
+                console.log(activeTab);
             })
             .catch(err => {
                 console.log(err);
             })
-        console.log('OTP sent');
-        setActiveTab("OTP");
-        console.log(activeTab);
     }
     const handleVerify = async (e) => {
         e.preventDefault();

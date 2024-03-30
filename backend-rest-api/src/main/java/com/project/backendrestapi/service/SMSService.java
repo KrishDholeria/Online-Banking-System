@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @Slf4j
 @Service
 public class SMSService {
-    String ACCOUNT_SID = "AC5ae45b92e2078ee87fd9efff73632e8c";
-    String AUTH_TOKEN = "c50be3f549b5f64e3bc8956df62befd5";
+    String ACCOUNT_SID = "";
+    String AUTH_TOKEN = "";
 
     public String genrateOTP() {
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);

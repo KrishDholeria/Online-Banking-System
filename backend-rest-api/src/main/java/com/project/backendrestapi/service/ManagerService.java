@@ -100,16 +100,25 @@ public class ManagerService {
         return manager;
     }
 
-    public Manager abc(String username) {
-        // Find the manager by username from the database
+    public boolean validatePassword(String username, String password) {
         Manager manager = managerRepository.findByUserName(username).get();
-        System.out.println(username);
+        // System.out.println(manager);
+        if (manager != null) {
+            
+            if(password.equals(manager.getPassword())){
+                // System.out.println("hello");
+                return true;
+            }
+        }
+        return false;
+    }
 
-        System.out.println(manager.getPerson());
-        
-
-        // Return the authenticated manager
-        return manager;
+    public void changePassword(String username, String newPassword) {
+        Manager manager = managerRepository.findByUserName(username).get();
+        if (manager != null) {
+            manager.setPassword(newPassword);
+            managerRepository.save(manager);
+        }
     }
 
     public ManagerDto managerToManagerDto(Manager manager) {

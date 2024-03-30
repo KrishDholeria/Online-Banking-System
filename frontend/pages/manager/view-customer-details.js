@@ -32,18 +32,23 @@ export default function ViewCustomerDetails() {
     }
   };
 
-  const handleSearchInputChange = (e) => {
-    setSearchInput(e.target.value);
-  };
-
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (searchInput.trim() !== '') {
-      const filteredCustomers = customers.filter(customer => customer.account.accountNumber === searchInput);
-      setCustomers(filteredCustomers);
+      try {
+        const response = await axios.get(`customer?accountNo=${searchInput.trim()}`);
+        setCustomers(response.data);
+      } catch (error) {
+        console.error('Error fetching customers:', error);
+      }
     } else {
       fetchCustomers();
     }
   };
+
+  const handleSearchInputChange = (e) => {
+    setSearchInput(e.target.value);
+  };
+  
 
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col">
@@ -60,9 +65,10 @@ export default function ViewCustomerDetails() {
             placeholder="Enter Account Number"
             value={searchInput}
             onChange={handleSearchInputChange}
-            className="p-2 mr-2 rounded-md border border-gray-400 focus:outline-none"
+            className="p-2 mr-2 rounded-md border border-gray-400 focus:outline-none z-10 text-gray-900"
             readOnly={false} // Ensure the input field is not read-only
-            ref={searchInputRef} // Attach the ref to the input field
+            ref={searchInputRef}
+            onClick={(e) => e.target.focus()} // Attach the ref to the input field
           />
           <FaSearch size={20} className="cursor-pointer" onClick={handleSearch} />
         </div>

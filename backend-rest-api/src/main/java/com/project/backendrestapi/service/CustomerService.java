@@ -133,4 +133,10 @@ public class CustomerService {
 
         return customerDto;
     }
+
+    public Customer getCustomerByAccountId(Account account) {
+        Customer customer = customerRepository.findByAccount(account);
+        return customer;
+    }
+    
 }

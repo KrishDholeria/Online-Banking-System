@@ -1,14 +1,18 @@
 package com.project.backendrestapi.controller;
 
+import com.project.backendrestapi.dto.ChangePasswordRequest;
 import com.project.backendrestapi.dto.CustomerDto;
 import com.project.backendrestapi.dto.LoginResponse;
 import com.project.backendrestapi.dto.ManagerDto;
 import com.project.backendrestapi.dto.PersonDto;
+import com.project.backendrestapi.model.Account;
 import com.project.backendrestapi.model.Branch;
 import com.project.backendrestapi.model.Customer;
 import com.project.backendrestapi.model.Manager;
 import com.project.backendrestapi.model.Person;
+import com.project.backendrestapi.repository.AccountRepository;
 import com.project.backendrestapi.repository.PersonRepository;
+import com.project.backendrestapi.service.AccountService;
 import com.project.backendrestapi.service.CustomerService;
 import com.project.backendrestapi.service.ManagerService;
 import com.project.backendrestapi.service.PersonService;
@@ -31,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -44,6 +49,9 @@ public class ManagerController {
 
     @Autowired
     private final PersonService personService;
+
+    @Autowired
+    private final AccountService accountService;
 
     @PostMapping("/add/customer")
     public ResponseEntity<String> addCustomer(@RequestBody CustomerDto customerDto) {
@@ -68,6 +76,43 @@ public class ManagerController {
         }
 
         return customerDtos;
+    }
+
+    @GetMapping("customer")
+    public List<CustomerDto> getCustomersByaccountNo(@RequestParam String accountNo) {
+        Account account = accountService.getAccountByAccountNo(accountNo).get();
+        System.out.println(account);
+        List<CustomerDto> customerDtos = new ArrayList<>();
+        Customer customer = customerService.getCustomerByAccountId(account);
+        
+        System.out.println(customer);
+        CustomerDto customerDto = new CustomerDto();
+        customerDto = customerService.convertToCustomerDto(customer);
+        customerDtos.add(customerDto);
+        return customerDtos;
+    }
+
+    @PostMapping("manager/change-password")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) {
+        try {
+            String username = request.getUsername();
+            String oldPassword = request.getOldPassword();
+            String newPassword = request.getNewPassword();
+
+            // Validate old password
+            boolean isPasswordValid = managerService.validatePassword(username, oldPassword);
+            if (!isPasswordValid) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Invalid old password");
+            }
+            // Change password
+            managerService.changePassword(username, newPassword);
+
+            return ResponseEntity.ok().body("Password changed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to change password: " + e.getMessage());
+        }
     }
 
     @PostMapping("/manager/details")

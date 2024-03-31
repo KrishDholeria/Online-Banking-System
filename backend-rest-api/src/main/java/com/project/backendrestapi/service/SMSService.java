@@ -15,6 +15,8 @@ public class SMSService {
     String ACCOUNT_SID = System.getenv("TWILIO_ACCOUNT_SID");
     String AUTH_TOKEN = System.getenv("TWILIO_AUTH_TOKEN");
     public String genrateOTP(){
+        System.out.println("Hello!!!!");
+        System.out.println(ACCOUNT_SID + " " + AUTH_TOKEN);
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 
         Verification verification = Verification.creator(

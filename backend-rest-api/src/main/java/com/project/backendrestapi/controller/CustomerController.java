@@ -148,7 +148,7 @@ public class CustomerController {
         Customer customer = customerOptional.get();
         Account from = customer.getAccount();
         Optional<Account> accountOptional = accountService.getAccountByAccountNo((transactionDto.getAccountNo()));
-        if(accountOptional.isEmpty()){
+        if (accountOptional.isEmpty()) {
             return TransactionResponse.builder()
                     .responseCode(Util.ACCOUNT_NOT_FOUND_CODE)
                     .responseMessage(Util.ACCOUNT_NOT_FOUND_MESSAGE)
@@ -168,7 +168,7 @@ public class CustomerController {
         Date date = new Date();
 
         int amount = Integer.parseInt(transactionDto.getAmount());
-        if(from.getAccountBalance() < amount){
+        if (from.getAccountBalance() < amount) {
             return TransactionResponse.builder()
                     .responseCode(Util.INSUFFICIENT_BALANCE_CODE)
                     .responseMessage(Util.INSUFFICIENT_BALANCE_MESSAGE)
@@ -237,69 +237,80 @@ public class CustomerController {
     }
 
     @GetMapping("/statement/{username}")
-    public ResponseEntity<byte[]> generateStatement(@PathVariable String username) {
+    public ResponseEntity<byte[]> generateStatement(@PathVariable String username, @RequestParam String duration) {
+        // Fetch transactions based on the specified duration
+        List<Transaction> transactions = transactionService.getTransactionsByDuration(username, duration);
 
-        // Fetch customer by ID to ensure it exists
-        Optional<Customer> customerOptional = customerService.getCustomerByUserName(username);
-        if (customerOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            // Fetch transactions by customer ID
-            List<Transaction> transactions = transactionService.getTransactionsByCustomerId(customerOptional.get().getCustomerId());
+        // Generate PDF document based on the filtered transactions
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage();
+            document.addPage(page);
 
-            // Generate PDF document
-            try (PDDocument document = new PDDocument()) {
-                PDPage page = new PDPage();
-                document.addPage(page);
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+                contentStream.beginText();
+                contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+                contentStream.newLineAtOffset(100, 700);
+                contentStream.showText("Transaction Statement for Customer: " + username);
+                contentStream.newLine();
+                contentStream.setFont(PDType1Font.HELVETICA, 10);
 
-                try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
-                    contentStream.beginText();
-                    contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
-                    contentStream.newLineAtOffset(100, 700);
-                    contentStream.showText("Transaction Statement for Customer ID: " + customerOptional.get().getCustomerId());
+                // Write transaction details to the PDF
+                int y = 680;
+                for (Transaction transaction : transactions) {
+                    contentStream.showText("Transaction ID: " + transaction.getTransactionId());
                     contentStream.newLine();
-                    contentStream.setFont(PDType1Font.HELVETICA, 10);
+                    contentStream.showText("Amount: " + transaction.getAmount());
+                    contentStream.newLine();
 
-                    // Write transaction details to the PDF
-                    for (Transaction transaction : transactions) {
-                        contentStream.showText("Transaction ID: " + transaction.getTransactionId());
-                        contentStream.newLine();
+                    y -= 20;
+                    if (y < 20) {
 
-                        contentStream.showText("Amount: " + transaction.getAmount());
-                        contentStream.newLine();
+                        contentStream.endText();
+                        contentStream.close();
+                        page = new PDPage();
+                        document.addPage(page);
+                        contentStream.beginText();
+                        contentStream.setFont(PDType1Font.HELVETICA, 10);
+                        y = 700;
                     }
-
-                    contentStream.endText();
                 }
 
-                // Convert PDF document to byte array
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                document.save(baos);
-                byte[] pdfBytes = baos.toByteArray();
-
-                // Set headers for PDF response
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_PDF);
-                headers.setContentDispositionFormData("filename", "transaction_statement.pdf");
-
-                return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                contentStream.endText();
             }
+
+            // Convert PDF document to byte array
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            document.save(baos);
+            byte[] pdfBytes = baos.toByteArray();
+
+            // Set headers for PDF response
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("filename", "transaction_statement.pdf");
+
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @GetMapping("/transactions/{username}")
+    public ResponseEntity<List<Transaction>> getTransactionsByDuration(@PathVariable String username,
+            @RequestParam String duration) {
+        List<Transaction> transactions = transactionService.getTransactionsByDuration(username, duration);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
     @GetMapping("/getbalance/{username}")
-    ResponseEntity<?> getBalance(@PathVariable String username){
+    ResponseEntity<?> getBalance(@PathVariable String username) {
         Optional<Customer> customerOptional = customerService.getCustomerByUserName(username);
-        if(customerOptional.isPresent()){
+        if (customerOptional.isPresent()) {
             Customer customer = customerOptional.get();
             return new ResponseEntity<>(customer.getAccount().getAccountBalance(), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 
     @CrossOrigin(originPatterns = "http://localhost:3000")
     @PutMapping("/updateBeneficiary/{username}/{accountNo}")
@@ -319,7 +330,7 @@ public class CustomerController {
                     .build());
         }
         Optional<Customer> customerOptional = customerService.getCustomerByUserName(username);
-        if(customerOptional.isPresent()){
+        if (customerOptional.isPresent()) {
             Customer customer = customerOptional.get();
             List<Beneficiary> beneficiaries = customer.getBeneficiaries();
             for(Beneficiary b: beneficiaries){
@@ -352,14 +363,15 @@ public class CustomerController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @DeleteMapping("/deleteBeneficiary/{username}/{accountNo}")
-    ResponseEntity<?> deleteBenefiaiary(@PathVariable String username, @PathVariable String accountNo){
+    ResponseEntity<?> deleteBenefiaiary(@PathVariable String username, @PathVariable String accountNo) {
         Optional<Customer> optionalCustomer = customerService.getCustomerByUserName(username);
-        if(optionalCustomer.isPresent()){
+        if (optionalCustomer.isPresent()) {
             Customer customer = optionalCustomer.get();
-            for(Beneficiary b: customer.getBeneficiaries()){
-                if(b.getAccountNumber().equals(accountNo)){
+            for (Beneficiary b : customer.getBeneficiaries()) {
+                if (b.getAccountNumber().equals(accountNo)) {
                     Boolean res = beneficiaryService.deleteBeneficiary(b.getBeneficiaryId());
-                    return res ? new ResponseEntity<>("Beneficiary deleted succesfully!!", HttpStatus.OK) : new ResponseEntity<>("There is an error deleting beneficiary", HttpStatus.OK);
+                    return res ? new ResponseEntity<>("Beneficiary deleted succesfully!!", HttpStatus.OK)
+                            : new ResponseEntity<>("There is an error deleting beneficiary", HttpStatus.OK);
                 }
             }
             return new ResponseEntity<>("Beneficiary not found!!", HttpStatus.NO_CONTENT);
@@ -368,26 +380,80 @@ public class CustomerController {
     }
 
     @GetMapping("/sendotp")
-    ResponseEntity<?> sendOtp(){
+    ResponseEntity<?> sendOtp() {
         smsService.genrateOTP();
         return new ResponseEntity<>("OTP sent!!", HttpStatus.OK);
     }
 
-//    @GetMapping("/getbeneficieries/{username}")
-//    ResponseEntity<?> getBeneficieries(@PathVariable String username){
-//        Optional<Customer> customerOptional = customerService.getCustomerByUserName(username);
-//        if(customerOptional.isPresent()){
-//            Customer customer = customerOptional.get();
-//            if(customer.getBeneficiaries().isEmpty()){
-//                return new ResponseEntity<>("No Beneficiery added", HttpStatus.NO_CONTENT);
-//            }
-//            List<BeneficiaryDto> beneficiaryDtos = new ArrayList<>();
-//            for(Beneficiary b : customer.getBeneficiaries()){
-//                beneficiaryDtos.add(beneficiaryService.entityToDto(b));
-//            }
-//            return new ResponseEntity<>(beneficiaryDtos, HttpStatus.OK);
-//        }
-//        return new ResponseEntity<>("customer not found!!", HttpStatus.NO_CONTENT);
-//    }
+    /*
+     * @GetMapping("/statement/{duration}")
+     * public ResponseEntity<byte[]> generateStatementByDuration(@PathVariable
+     * String duration) {
+     * 
+     * List<Transaction> transactions =
+     * transactionService.getTransactionsByDuration(duration);
+     * 
+     * try (PDDocument document = new PDDocument()) {
+     * PDPage page = new PDPage();
+     * document.addPage(page);
+     * 
+     * try (PDPageContentStream contentStream = new PDPageContentStream(document,
+     * page)) {
+     * contentStream.beginText();
+     * contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+     * contentStream.newLineAtOffset(100, 700);
+     * contentStream.showText("Transaction Statement for Duration: " + duration);
+     * contentStream.newLine();
+     * contentStream.setFont(PDType1Font.HELVETICA, 10);
+     * 
+     * SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+     * for (Transaction transaction : transactions) {
+     * contentStream.showText("Transaction ID: " + transaction.getTransactionId());
+     * contentStream.newLine();
+     * contentStream.showText("Amount: " + transaction.getAmount());
+     * contentStream.newLine();
+     * contentStream.showText("Date: " +
+     * sdf.format(transaction.getTransactionDate()));
+     * contentStream.newLine();
+     * }
+     * 
+     * contentStream.endText();
+     * }
+     * 
+     * // PDF document to byte array
+     * ByteArrayOutputStream baos = new ByteArrayOutputStream();
+     * document.save(baos);
+     * byte[] pdfBytes = baos.toByteArray();
+     * 
+     * HttpHeaders headers = new HttpHeaders();
+     * headers.setContentType(MediaType.APPLICATION_PDF);
+     * headers.setContentDispositionFormData("filename",
+     * "transaction_statement.pdf");
+     * 
+     * return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+     * } catch (IOException e) {
+     * e.printStackTrace();
+     * return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+     * }
+     * }
+     */
+
+    // @GetMapping("/getbeneficieries/{username}")
+    // ResponseEntity<?> getBeneficieries(@PathVariable String username){
+    // Optional<Customer> customerOptional =
+    // customerService.getCustomerByUserName(username);
+    // if(customerOptional.isPresent()){
+    // Customer customer = customerOptional.get();
+    // if(customer.getBeneficiaries().isEmpty()){
+    // return new ResponseEntity<>("No Beneficiery added", HttpStatus.NO_CONTENT);
+    // }
+    // List<BeneficiaryDto> beneficiaryDtos = new ArrayList<>();
+    // for(Beneficiary b : customer.getBeneficiaries()){
+    // beneficiaryDtos.add(beneficiaryService.entityToDto(b));
+    // }
+    // return new ResponseEntity<>(beneficiaryDtos, HttpStatus.OK);
+    // }
+    // return new ResponseEntity<>("customer not found!!", HttpStatus.NO_CONTENT);
+    // }
 
 }

@@ -9,8 +9,11 @@ import com.project.backendrestapi.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionService {
@@ -98,15 +101,39 @@ public class TransactionService {
     // }
     // }
 
-    public List<Transaction> getTransactionsByCustomerId(Long customerId) {
-        // Fetch transactions associated with the customer ID
-        Customer customer = customerRepository.findById(customerId)
+    public List<Transaction> getTransactionsByDuration(String username, String duration) {
+
+        Customer customer = customerRepository.findByUserName(username)
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
 
-        // Get the account associated with the customer
         Account account = customer.getAccount();
 
-        // Now, fetch transactions associated with this account
-        return transactionRepository.findByAccount(account);
+        // Fetch all transactions
+        List<Transaction> allTransactions = transactionRepository.findByAccount(account);
+
+        // Calculate start date based on the selected duration
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        switch (duration) {
+            case "last6Months":
+                cal.add(Calendar.MONTH, -6);
+                break;
+            case "lastMonth":
+                cal.add(Calendar.MONTH, -1);
+                break;
+            case "lastWeek":
+                cal.add(Calendar.WEEK_OF_YEAR, -1);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid duration: " + duration);
+        }
+        Date startDate = cal.getTime();
+
+        List<Transaction> filteredTransactions = allTransactions.stream()
+                .filter(transaction -> transaction.getTransactionDate().after(startDate))
+                .collect(Collectors.toList());
+
+        return filteredTransactions;
     }
+
 }

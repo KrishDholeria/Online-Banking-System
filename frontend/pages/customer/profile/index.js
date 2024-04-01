@@ -3,44 +3,54 @@
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/router';
+import Navbar from '@/components/navbar/navbar';
 
 export default function CustomerProfile() {
     const [customer, setCustomer] = useState(null);
     const [showFullAccNo, setShowFullAccNo] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const router = useRouter();
 
     const toggleAccNoVisibility = () => {
         setShowFullAccNo(!showFullAccNo);
     };
 
     useEffect(() => {
-        // Check if window is defined to ensure we're on the client side
-        if (typeof window !== 'undefined') {
-            const token = localStorage.getItem('customer-token');
-            const username = localStorage.getItem('customer-username');
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-                params: {
-                    username: username
-                }
-            };
-
-            const fetchCustomerData = async () => {
-                try {
-                    const response = await axios.get('/customer/profile', config);
-                    setCustomer(response.data);
-                } catch (error) {
-                    console.error('Error fetching customer data:', error);
-                }
-            };
-
-            fetchCustomerData();
+        const token = localStorage.getItem('customer-token');
+        const username = localStorage.getItem('customer-username');
+        if(!token){
+            router.push('/customer/login');
+            setIsLoggedIn(false);
+            return;
         }
+        else {
+            setIsLoggedIn(true);
+        }
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            params: {
+                username: username
+            }
+        };
+
+        const fetchCustomerData = async () => {
+            try {
+                const response = await axios.get('/customer/profile', config);
+                setCustomer(response.data);
+            } catch (error) {
+                console.error('Error fetching customer data:', error);
+            }
+        };
+
+        fetchCustomerData();
     }, []);
 
     return (
         <div>
+        <Navbar login={isLoggedIn} />
             <Head>
                 <title>Customer Profile - Bank4Ever</title>
                 <meta name="description" content="Customer Profile - Bank4Ever" />
@@ -57,12 +67,12 @@ export default function CustomerProfile() {
                                 <p className="text-lg"><span className="font-semibold">Customer Name:</span> {customer.person.firstName} {customer.person.lastName}</p>
                                 <p className="text-lg"><span className="font-semibold">Username:</span> {customer.userName}</p>
                                 <p className="text-lg">
-                                <span className="font-semibold">Account No:</span> 
-                                {showFullAccNo ? customer.accNo : "**** **** **** " + customer.accNo.slice(-4)} 
-                                <button onClick={toggleAccNoVisibility} className="ml-2 focus:outline-none">
-                                    {showFullAccNo ? '👁️' : '🔒'} {/* Eye icon or lock icon */}
-                                </button>
-                            </p>
+                                    <span className="font-semibold">Account No:</span>
+                                    {showFullAccNo ? customer.accNo : "**** **** **** " + customer.accNo.slice(-4)}
+                                    <button onClick={toggleAccNoVisibility} className="ml-2 focus:outline-none">
+                                        {showFullAccNo ? '👁️' : '🔒'} {/* Eye icon or lock icon */}
+                                    </button>
+                                </p>
 
                                 <p className="text-lg"><span className="font-semibold">Address:</span> {customer.person.address}</p>
                                 <p className="text-lg"><span className="font-semibold">DOB:</span> {customer.person.dob}</p>

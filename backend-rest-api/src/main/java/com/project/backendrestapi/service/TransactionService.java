@@ -1,6 +1,7 @@
 package com.project.backendrestapi.service;
 
 import com.project.backendrestapi.model.Transaction;
+import com.project.backendrestapi.dto.TransactionResponse;
 import com.project.backendrestapi.model.Account;
 import com.project.backendrestapi.model.Branch;
 import com.project.backendrestapi.model.Customer;
@@ -9,6 +10,7 @@ import com.project.backendrestapi.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -136,4 +138,19 @@ public class TransactionService {
         return filteredTransactions;
     }
 
+    public List<TransactionResponse> convertToResponse(List<Transaction> transactions) {
+        List<TransactionResponse> transactionResponses = new ArrayList<>();
+        for (Transaction transaction : transactions) {
+            TransactionResponse response = TransactionResponse.builder()
+                    .responseCode("SUCCESS")
+                    .responseMessage("Transaction retrieved successfully")
+                    .refId(transaction.getReferenceId())
+                    .amount(String.valueOf(transaction.getAmount()))
+                    .type(transaction.getTransactionType())
+                    .accountTo(transaction.getAccount().getAccountNumber())
+                    .build();
+            transactionResponses.add(response);
+        }
+        return transactionResponses;
+    }
 }

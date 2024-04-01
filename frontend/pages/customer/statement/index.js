@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import jsPDF from 'jspdf';
 import {
     Card,
     CardContent,
@@ -10,12 +11,18 @@ import {
 } from "@/components/ui/card";
 import { useRouter } from "next/router";
 
+
 const StatementPage = () => {
-    const [pdfUrl, setPdfUrl] = useState("");
+    const [transactions, setTransactions] = useState([]);
+    const [loading, setLoading] = useState(true);
     const router = useRouter();
 
     useEffect(() => {
-        // Fetch the PDF file from the backend
+        fetchData('last6Months');
+    }, []);
+
+    const fetchData = async (duration) => {
+        setLoading(true);
         const token = localStorage.getItem('customer-token');
         if (!token) {
             router.push('/customer/login');
@@ -25,26 +32,44 @@ const StatementPage = () => {
             'Authorization': `Bearer ${token}`
         }
         const username = localStorage.getItem('customer-username');
-        axios.get(`/customer/statement/${username}`, { responseType: "blob", headers })
-            .then((response) => {
-                // Convert the blob to URL
-                const file = new Blob([response.data], { type: "application/pdf" });
-                const fileURL = URL.createObjectURL(file);
-                setPdfUrl(fileURL);
-            })
-            .catch((error) => {
-                console.error("Error fetching PDF:", error);
-                // Handle error
+        try {
+            const response = await axios.get(`/customer/transactions/${username}`, {
+                params: { duration },
+                headers
             });
-    }, []);
+            setTransactions(response.data);
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching transactions:", error);
+            // Handle error
+            setLoading(false);
+        }
+    };
+
+    const handleDurationChange = (duration) => {
+        fetchData(duration);
+    };
 
     const handleDownload = () => {
-        const link = document.createElement("a");
-        link.href = pdfUrl;
-        link.setAttribute("download", "statement.pdf");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const pdf = new jsPDF();
+        let y = 10;
+        let pageHeight = pdf.internal.pageSize.height;
+        let currentPage = 1;
+        const lineHeight = 10;
+
+        transactions.forEach((transaction, index) => {
+            pdf.text(`Transaction ID: ${transaction.refId}`, 10, y);
+            pdf.text(`Amount: ${transaction.amount}`, 10, y + lineHeight);
+            y += lineHeight * 2;
+
+            if (y > pageHeight - 20 || index === transactions.length - 1) {
+                pdf.addPage();
+                y = 10;
+                currentPage++;
+            }
+        });
+
+        pdf.save('transaction_statement.pdf');
     };
 
     return (
@@ -57,15 +82,37 @@ const StatementPage = () => {
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                    {pdfUrl ? (
+                    <div className="flex justify-between items-center">
                         <div>
-                            <embed src={pdfUrl} type="application/pdf" width="100%" height="600px" />
-                            <div className="mt-7">
-                                <button onClick={handleDownload} className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Download PDF</button>
-                            </div>
+                            <button onClick={() => handleDurationChange('last6Months')} className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800">Last 6 Months</button>
+                            <button onClick={() => handleDurationChange('lastMonth')} className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 ml-2">Last Month</button>
+                            <button onClick={() => handleDurationChange('lastWeek')} className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 ml-2">Last Week</button>
                         </div>
-                    ) : (
+                        <div>
+                            <button onClick={handleDownload} className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800">Download PDF</button>
+                        </div>
+                    </div>
+                    {loading ? (
                         <p>Loading...</p>
+                    ) : (
+                        <table className="w-full border-collapse border border-black">
+                            <thead>
+                                <tr>
+                                    <th className="border border-black px-4 py-2">Transaction ID</th>
+                                    <th className="border border-black px-4 py-2">Amount</th>
+                                    {/* table headers */}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {transactions.map(transaction => (
+                                    <tr key={transaction.refId}>
+                                        <td className="border border-black px-4 py-2">{transaction.refId}</td>
+                                        <td className="border border-black px-4 py-2">{transaction.amount}</td>
+                                        {/* table data cells */}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     )}
                 </CardContent>
                 <CardFooter></CardFooter>

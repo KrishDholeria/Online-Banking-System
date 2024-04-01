@@ -118,6 +118,19 @@ export default function addBeneficiery() {
                             }
                         )
                         break;
+                        case "010":
+                            toast(
+                                'Invalid IFSC code for this account.',
+                                {
+                                    description: "Please enter a valid IFSC code.",
+                                    type: 'error',
+                                    action: {
+                                        label: 'Close',
+                                        onClick: () => toast.dismiss()
+                                    }
+                                }
+                            )
+                            break;
                     case "004":
                         toast(
                             'Beneficiery already exist.',

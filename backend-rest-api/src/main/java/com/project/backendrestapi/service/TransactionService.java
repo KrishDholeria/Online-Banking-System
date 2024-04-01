@@ -148,6 +148,7 @@ public class TransactionService {
                     .amount(String.valueOf(transaction.getAmount()))
                     .type(transaction.getTransactionType())
                     .accountTo(transaction.getAccount().getAccountNumber())
+                    .accountFrom(transaction.getRelatedTransaction().getAccount().getAccountNumber())
                     .build();
             transactionResponses.add(response);
         }

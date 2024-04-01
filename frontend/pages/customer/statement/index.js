@@ -65,11 +65,11 @@ const StatementPage = () => {
 
         transactions.forEach((transaction, index) => {
             if (transaction.amount < 0) {
-                pdf.text(`TRANSFER TO ${transaction.accountTo} WITH REF: ${transaction.type}/${transaction.refId}`, 10, y);
+                pdf.text(`TRANSFER TO ${transaction.accountFrom} WITH REF: ${transaction.type}/${transaction.refId}`, 10, y);
                 pdf.text(`Amount: ${transaction.amount}`, 10, y + lineHeight);
             }
             else {
-                pdf.text(`TRANSFER FROM ${transaction.accountTo} WITH REF: ${transaction.type}/${transaction.refId}`, 10, y);
+                pdf.text(`TRANSFER FROM ${transaction.accountFrom} WITH REF: ${transaction.type}/${transaction.refId}`, 10, y);
                 pdf.text(`Amount: ${transaction.amount}`, 10, y + lineHeight);
             }
             y += lineHeight * 2;
@@ -122,14 +122,14 @@ const StatementPage = () => {
                                         if (transaction.amount < 0) {
                                             return (<tr key={transaction.refId} className="bg-white hover:bg-gray-100">
                                                 <td className="px-4 py-2">
-                                                    TRANSFER TO {transaction.accountTo} WITH REF: {transaction.type}/{transaction.refId}
+                                                    TRANSFER TO {transaction.accountFrom} WITH REF: {transaction.type}/{transaction.refId}
                                                 </td>
                                                 <td className="px-4 py-2 text-right text-red-500">{transaction.amount}</td>
                                             </tr>)
                                         }
                                         else {
                                             return (<tr key={transaction.refId} className="bg-white hover:bg-gray-100">
-                                                <td className="px-4 py-2">TRANSFER FROM {transaction.accountTo} WITH REF: {transaction.type}/{transaction.refId}</td>
+                                                <td className="px-4 py-2">TRANSFER FROM {transaction.accountFrom} WITH REF: {transaction.type}/{transaction.refId}</td>
                                                 <td className="px-4 py-2 text-right text-green-500">{transaction.amount}</td>
                                             </tr>)
                                         }

@@ -90,6 +90,12 @@ public class BeneficiaryService {
                     .responseMessage(Util.BRANCH_NOT_FOUND_MESSAGE)
                     .build();
         }
+        if(!optionalBranch.get().getBranchCode().equals(optionalAccount.get().getBranch().getBranchCode())){
+            return BeneficiaryResponse.builder()
+                    .responseCode(Util.INVALID_BRANCH_CODE_CODE)
+                    .responseMessage(Util.INVALID_BRANCH_CODE_MESSAGE)
+                    .build();
+        }
 
         Customer customer = customerRepository.findByUserName(userName).get();
         for(Beneficiary b: customer.getBeneficiaries()){

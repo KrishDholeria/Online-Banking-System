@@ -227,7 +227,7 @@ export default function Transaction() {
                                 }
                             }
                         )
-                        router.push('/customer/transcation');
+                        router.push('/customer/transaction');
                         break;
                     case "001":
                         toast(
@@ -241,7 +241,7 @@ export default function Transaction() {
                                 }
                             }
                         )
-                        router.push('/customer/transcation');
+                        router.push('/customer/transaction');
                         break;
                     case "003":
                         toast(
@@ -266,7 +266,7 @@ export default function Transaction() {
                                 }
                             }
                         )
-                        router.push('/customer/transcation');
+                        router.push('/customer/transaction');
                         break;
                 }
             })

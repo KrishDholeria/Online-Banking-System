@@ -13,8 +13,8 @@ export default function AdminHome() {
 
   const handleLogout = () => {
     // Perform logout logic here (e.g., clear localStorage, reset state, etc.)
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
+    localStorage.removeItem('admin-token');
+    localStorage.removeItem('admin-username');
     setIsLoggedIn(false);
     // Redirect to the login page after logout
     router.push('/admin');
@@ -22,12 +22,12 @@ export default function AdminHome() {
 
   useEffect(() => {
     // Check if the user is logged in by verifying the presence of a token in localStorage
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('admin-token');
     if (token) {
       // You can also validate the token with your backend to ensure it's still valid
       // For simplicity, we're assuming the presence of a token means the user is logged in
       setIsLoggedIn(true);
-      setUsername(localStorage.getItem('username')); // Get username from localStorage
+      setUsername(localStorage.getItem('admin-username')); // Get username from localStorage
     } else {
       // Redirect to the login page if the user is not logged in
       router.push('/admin');

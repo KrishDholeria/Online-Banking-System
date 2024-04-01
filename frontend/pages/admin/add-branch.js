@@ -13,7 +13,7 @@ export default function AddBranchForm() {
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('admin-token');
     if (token) {
       setIsLoggedIn(true);
     } else {

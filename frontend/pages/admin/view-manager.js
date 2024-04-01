@@ -12,7 +12,7 @@ export default function ViewManagerDetails() {
   const searchInputRef = useRef(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('admin-token');
     if (token) {
       setIsLoggedIn(true);
       fetchManagers();

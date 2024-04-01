@@ -21,8 +21,8 @@ export default function AdminLogin() {
       const { data } = response;
 
       // Store the token in localStorage
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('username', userName);
+      localStorage.setItem('admin-token', data.token);
+      localStorage.setItem('admin-username', userName);
 
       console.log(data.token);
 

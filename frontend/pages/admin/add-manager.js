@@ -19,7 +19,7 @@ const AddManagerForm = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('admin-token');
     if (token) {
       setIsLoggedIn(true);
     } else {

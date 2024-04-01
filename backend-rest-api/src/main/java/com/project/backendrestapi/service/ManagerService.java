@@ -63,7 +63,6 @@ public class ManagerService {
         BCryptPasswordEncoder b = new BCryptPasswordEncoder();
 
         if (existingManager.isPresent()) {
-            BCryptPasswordEncoder b = new BCryptPasswordEncoder();
             Manager existing = existingManager.get();
             existing.setManagerId(managerId);
             existing.setUserName(updatedManagerDto.getUserName());

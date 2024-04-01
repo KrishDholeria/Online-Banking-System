@@ -14,7 +14,7 @@ export default function ChangePassword() {
 
   useEffect(() => {
     // Check if the user is logged in by verifying the presence of a token in localStorage
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('admin-token');
     if (token) {
       setIsLoggedIn(true);
     } else {
@@ -30,7 +30,7 @@ export default function ChangePassword() {
       return;
     }
     try {
-      const username = localStorage.getItem('username');
+      const username = localStorage.getItem('admin-username');
       // Make API request to change the password
       const response = await axios.post('/admin/change-password', {
         username: username,

@@ -4,8 +4,10 @@ import com.project.backendrestapi.dto.AccountDto;
 import com.project.backendrestapi.dto.BeneficiaryDto;
 import com.project.backendrestapi.dto.CustomerDto;
 import com.project.backendrestapi.dto.PersonDto;
+import com.project.backendrestapi.dto.ProfileDto;
 import com.project.backendrestapi.model.Account;
 import com.project.backendrestapi.model.Beneficiary;
+import com.project.backendrestapi.model.Branch;
 import com.project.backendrestapi.model.Customer;
 import com.project.backendrestapi.model.Person;
 import com.project.backendrestapi.model.Transaction;
@@ -19,6 +21,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +47,9 @@ public class CustomerService {
 
     @Autowired
     private final TransactionService transactionService;
+
+    @Autowired
+    private final BranchService branchService;
 
     public List<Customer> getAllCustomers() {
         List<Customer> customers = customerRepository.findAll();
@@ -82,6 +88,25 @@ public class CustomerService {
         }
         String[] result = new String[emptyNames.size()];
         return emptyNames.toArray(result);
+    }
+    public ProfileDto getCustomerProfile(String userName){
+        ProfileDto profileDto = new ProfileDto();
+        Optional<Customer> existingCustomerOptional = customerRepository.findByUserName(userName);
+        CustomerDto customerDto = convertToCustomerDto(existingCustomerOptional.get());
+        
+        profileDto.setUserName(existingCustomerOptional.get().getUserName());
+        profileDto.setPanNo(existingCustomerOptional.get().getPanNo());
+        profileDto.setPerson(customerDto.getPerson());
+        profileDto.setBalance(customerDto.getAccount().getAccountBalance());
+        Optional<Account> account = accountService.getAccountById(existingCustomerOptional.get().getAccount().getAccountId());
+        profileDto.setAccNo(account.get().getAccountNumber());
+        Optional<Branch> branch = branchService.getBranchById(existingCustomerOptional.get().getAccount().getBranch().getBranchId());
+        profileDto.setBranchAddress(branch.get().getAddress());
+        profileDto.setIfscCode(branch.get().getBranchCode());
+        profileDto.setBranchName(branch.get().getBranchName());
+        profileDto.setPhoneNo(branch.get().getPhoneNumber());
+        
+        return profileDto;
     }
 
     public Optional<Customer> updateCustomer(Long customerId, CustomerDto updatedCustomerDto) {

@@ -212,7 +212,7 @@ public class CustomerController {
         transactionService.updateTransaction(add.getTransactionId(), add);
 
         String creditMsg = "Hello, " + to.getCustomer().getPerson().getFirstName() + "\n"
-                + "Your A/cX" + to.getAccountNumber().substring(8) + "credited by Rs" + amount + " on " + add.getTransactionDate().toString() + " by Ref no " + add.getReferenceId() + ".";
+                + "Your A/cX" + to.getAccountNumber().substring(8) + " credited by Rs" + amount + " on " + add.getTransactionDate().toString() + " by Ref no " + add.getReferenceId() + ".";
         EmailDetails creditAccount = EmailDetails.builder()
                 .recipient(to.getCustomer().getPerson().getEmail())
                 .subject("Money recieved in your account.")
@@ -220,7 +220,7 @@ public class CustomerController {
                 .build();
         emailService.sendSimpleMail(creditAccount);
         String debitMsg = "Hello, " + from.getCustomer().getPerson().getFirstName() + "\n"
-                + "Your A/cX" + from.getAccountNumber().substring(8) + "debited by Rs" + amount + " on " + remove.getTransactionDate().toString() + " to " + to.getCustomer().getPerson().getFirstName() + " Ref no " + remove.getReferenceId() + ".";
+                + "Your A/cX" + from.getAccountNumber().substring(8) + " debited by Rs" + amount + " on " + remove.getTransactionDate().toString() + " to " + to.getCustomer().getPerson().getFirstName() + " Ref no " + remove.getReferenceId() + ".";
         EmailDetails debitAccount = EmailDetails.builder()
                 .recipient(customer.getPerson().getEmail())
                 .subject("Money debited from your account.")
@@ -240,55 +240,6 @@ public class CustomerController {
 
     }
 
-    
-
-    // // Generate PDF document based on the filtered transactions
-    // try (PDDocument document = new PDDocument()) {
-    // PDPage page = new PDPage();
-    // document.addPage(page);
-
-
-    // // Write transaction details to the PDF
-    // int y = 680;
-    // for (Transaction transaction : transactions) {
-    // contentStream.showText("Transaction ID: " + transaction.getTransactionId());
-    // contentStream.newLine();
-    // contentStream.showText("Amount: " + transaction.getAmount());
-    // contentStream.newLine();
-
-    // y -= 20;
-    // if (y < 20) {
-
-    // contentStream.endText();
-    // contentStream.close();
-    // page = new PDPage();
-    // document.addPage(page);
-    // contentStream.beginText();
-    // contentStream.setFont(PDType1Font.HELVETICA, 10);
-    // y = 700;
-    // }
-    // }
-
-    // contentStream.endText();
-    // }
-
-    // // Convert PDF document to byte array
-    // ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    // document.save(baos);
-    // byte[] pdfBytes = baos.toByteArray();
-
-    // // Set headers for PDF response
-    // HttpHeaders headers = new HttpHeaders();
-    // headers.setContentType(MediaType.APPLICATION_PDF);
-    // headers.setContentDispositionFormData("filename",
-    // "transaction_statement.pdf");
-
-    // return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-    // } catch (IOException e) {
-    // e.printStackTrace();
-    // return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    // }
-    // }
 
     @GetMapping("/transactions/{username}")
     public List<TransactionResponse> getTransactionsByDuration(@PathVariable String username,

@@ -18,8 +18,13 @@ const Navbar = ({ login }) => {
                 </Link>
                 {login && (<ul className="flex space-x-12 text-white">
                     <li>
+                        <Link href="/customer/statement">
+                            Statement
+                        </Link>
+                    </li>
+                    <li>
                         <Link href="/customer/transaction">
-                            Transactions
+                            Transfer
                         </Link>
                     </li>
                     <li>

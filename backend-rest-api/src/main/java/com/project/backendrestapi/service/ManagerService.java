@@ -49,10 +49,12 @@ public class ManagerService {
         Manager manager = Manager.builder()
                 .userName(managerDto.getUserName())
                 .password(b.encode(managerDto.getPassword()))
+                .password(b.encode(managerDto.getPassword()))
                 .person(personService.createPerson(managerDto.getPerson()))
                 .branch(branchService.getBranchByBranchCode(managerDto.getBranch().getBranchCode()).get())
                 .build();
         branchService.assignManagerToBranch(manager.getBranch().getBranchId(), manager);
+        
         return managerRepository.save(manager);
     }
 
@@ -61,6 +63,7 @@ public class ManagerService {
         BCryptPasswordEncoder b = new BCryptPasswordEncoder();
 
         if (existingManager.isPresent()) {
+            BCryptPasswordEncoder b = new BCryptPasswordEncoder();
             Manager existing = existingManager.get();
             existing.setManagerId(managerId);
             existing.setUserName(updatedManagerDto.getUserName());
@@ -151,10 +154,34 @@ public class ManagerService {
         return ManagerDto.builder()
                 .userName(manager.getUserName())
                 .manageId(manager.getManagerId())
-                .password(manager.getPassword())
+                // .password(manager.getPassword())
                 .branch(branchService.entityToDto(manager.getBranch()))
                 .person(personService.entityToDto(manager.getPerson()))
                 .build();
+    }
+
+    public Optional<Manager> getManagerByuserName(String userName) {
+        Optional<Manager> manager = managerRepository.getManagerByuserName(userName);
+        // TODO Auto-generated method stub
+        return manager;
+    }
+
+    // public boolean deletePerson(Long personId) {
+    //     if (personRepository.existsById(personId)) {
+    //         personRepository.deleteById(personId);
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
+
+    
+
+    public void deleteManagerByUsername(String username) {
+        // TODO Auto-generated method stub
+        Optional<Manager> manager = managerRepository.getManagerByuserName(username);
+        managerRepository.deleteById(manager.get().getManagerId());
+        System.out.println(username);
     }
 
     // public void assignPersonToManager(Long managerId, Person person) {

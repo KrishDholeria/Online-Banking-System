@@ -7,7 +7,7 @@ import com.project.backendrestapi.model.Branch;
 import com.project.backendrestapi.repository.ManagerRepository;
 
 import lombok.AllArgsConstructor;
-
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +27,6 @@ public class ManagerService {
     @Autowired
     private final BranchService branchService;
 
-
     public List<Manager> getAllManagers() {
         return managerRepository.findAll();
     }
@@ -37,13 +36,24 @@ public class ManagerService {
     }
 
     public Manager createManager(ManagerDto managerDto) {
+
+        List<Manager> managers = managerRepository.findAll();
+
+        for (Manager manager : managers) {
+            if (manager.getUserName().equals(managerDto.getUserName())) {
+                return null; // Username already exists
+            }
+        }
+
+        BCryptPasswordEncoder b = new BCryptPasswordEncoder();
         Manager manager = Manager.builder()
-            .userName(managerDto.getUserName())
-            .password(managerDto.getPassword())
-            .person(personService.createPerson(managerDto.getPerson()))
-            .branch(branchService.getBranchById(managerDto.getBranchId()).get())
-            .build();
-        branchService.assignManagerToBranch(managerDto.getBranchId(), manager);
+                .userName(managerDto.getUserName())
+                .password(b.encode(managerDto.getPassword()))
+                .person(personService.createPerson(managerDto.getPerson()))
+                .branch(branchService.getBranchByBranchCode(managerDto.getBranch().getBranchCode()).get())
+                .build();
+        branchService.assignManagerToBranch(manager.getBranch().getBranchId(), manager);
+        
         return managerRepository.save(manager);
     }
 
@@ -51,12 +61,13 @@ public class ManagerService {
         Optional<Manager> existingManager = managerRepository.findById(managerId);
 
         if (existingManager.isPresent()) {
+            BCryptPasswordEncoder b = new BCryptPasswordEncoder();
             Manager existing = existingManager.get();
             existing.setManagerId(managerId);
             existing.setUserName(updatedManagerDto.getUserName());
-            existing.setPassword(updatedManagerDto.getPassword());
+            existing.setPassword(b.encode(updatedManagerDto.getPassword()));
 
-            existing.setBranch(branchService.getBranchById(updatedManagerDto.getBranchId()).get());
+            existing.setBranch(branchService.getBranchByBranchCode(updatedManagerDto.getBranch().getBranchCode()).get());
 
             managerRepository.save(existing);
 
@@ -77,21 +88,55 @@ public class ManagerService {
         }
     }
 
-//    public void assignPersonToManager(Long managerId, Person person) {
-//        Optional<Manager> managerOptional = managerRepository.findById(managerId);
-//        if (managerOptional.isPresent()) {
-//            Manager manager = managerOptional.get();
-//            manager.setPerson(person);
-//            managerRepository.save(manager);
-//        }
-//    }
-//
-//    public void assignBranchToManager(Long managerId, Branch branch) {
-//        Optional<Manager> managerOptional = managerRepository.findById(managerId);
-//        if (managerOptional.isPresent()) {
-//            Manager manager = managerOptional.get();
-//            manager.setBranch(branch);
-//            managerRepository.save(manager);
-//        }
-//    }
+    public ManagerDto entityToDto(Manager manager){
+        return ManagerDto.builder()
+                .userName(manager.getUserName())
+                .manageId(manager.getManagerId())
+                // .password(manager.getPassword())
+                .branch(branchService.entityToDto(manager.getBranch()))
+                .person(personService.entityToDto(manager.getPerson()))
+                .build();
+    }
+
+    public Optional<Manager> getManagerByuserName(String userName) {
+        Optional<Manager> manager = managerRepository.getManagerByuserName(userName);
+        // TODO Auto-generated method stub
+        return manager;
+    }
+
+    // public boolean deletePerson(Long personId) {
+    //     if (personRepository.existsById(personId)) {
+    //         personRepository.deleteById(personId);
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
+
+    
+
+    public void deleteManagerByUsername(String username) {
+        // TODO Auto-generated method stub
+        Optional<Manager> manager = managerRepository.getManagerByuserName(username);
+        managerRepository.deleteById(manager.get().getManagerId());
+        System.out.println(username);
+    }
+
+    // public void assignPersonToManager(Long managerId, Person person) {
+    // Optional<Manager> managerOptional = managerRepository.findById(managerId);
+    // if (managerOptional.isPresent()) {
+    // Manager manager = managerOptional.get();
+    // manager.setPerson(person);
+    // managerRepository.save(manager);
+    // }
+    // }
+    //
+    // public void assignBranchToManager(Long managerId, Branch branch) {
+    // Optional<Manager> managerOptional = managerRepository.findById(managerId);
+    // if (managerOptional.isPresent()) {
+    // Manager manager = managerOptional.get();
+    // manager.setBranch(branch);
+    // managerRepository.save(manager);
+    // }
+    // }
 }

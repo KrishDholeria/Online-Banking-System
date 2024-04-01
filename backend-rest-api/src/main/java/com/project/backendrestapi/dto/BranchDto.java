@@ -1,17 +1,16 @@
 package com.project.backendrestapi.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class BranchDto {
     
     private String branchName;
     private String address;
     private String phoneNumber;
+    private String branchCode;
 }

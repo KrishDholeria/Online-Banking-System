@@ -1,5 +1,6 @@
 import { Html, Head, Main, NextScript } from 'next/document'
 import { ThemeProvider } from '@/components/theme-provider'
+import axios from 'axios'
 
 export default function Document() {
   return (
@@ -8,7 +9,7 @@ export default function Document() {
       <body>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >

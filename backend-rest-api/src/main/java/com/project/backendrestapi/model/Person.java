@@ -2,6 +2,9 @@
 package com.project.backendrestapi.model;
 
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,6 +36,7 @@ public class Person {
     private String phoneNo;
     private String address;
 
+    @JsonBackReference 
     @OneToOne(mappedBy = "person")
     private Manager manager;
 

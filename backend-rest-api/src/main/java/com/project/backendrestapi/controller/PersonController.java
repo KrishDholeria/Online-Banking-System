@@ -1,6 +1,7 @@
 package com.project.backendrestapi.controller;
 
 import com.project.backendrestapi.dto.PersonDto;
+import com.project.backendrestapi.model.Admin;
 import com.project.backendrestapi.model.Person;
 import com.project.backendrestapi.service.PersonService;
 

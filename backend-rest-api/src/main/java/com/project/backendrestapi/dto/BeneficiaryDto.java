@@ -1,15 +1,15 @@
 package com.project.backendrestapi.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@ToString
 public class BeneficiaryDto {
     private String beneficiaryName;
     private String accountNo;
+    private String branchCode;
 }

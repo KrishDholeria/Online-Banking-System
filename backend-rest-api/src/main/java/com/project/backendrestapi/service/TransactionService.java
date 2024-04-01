@@ -1,23 +1,32 @@
 package com.project.backendrestapi.service;
 
 import com.project.backendrestapi.model.Transaction;
+import com.project.backendrestapi.dto.TransactionResponse;
 import com.project.backendrestapi.model.Account;
 import com.project.backendrestapi.model.Branch;
+import com.project.backendrestapi.model.Customer;
+import com.project.backendrestapi.repository.CustomerRepository;
 import com.project.backendrestapi.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionService {
 
     @Autowired
     private final TransactionRepository transactionRepository;
+    private final CustomerRepository customerRepository;
 
-    public TransactionService(TransactionRepository transactionRepository) {
+    public TransactionService(TransactionRepository transactionRepository, CustomerRepository customerRepository) {
         this.transactionRepository = transactionRepository;
+        this.customerRepository = customerRepository;
     }
 
     public List<Transaction> getAllTransactions() {
@@ -83,12 +92,65 @@ public class TransactionService {
     }
 
     // Example method for associating a transaction with a branch
-    // public void associateTransactionWithBranch(Long transactionId, Branch branch) {
-    //     Optional<Transaction> transactionOptional = transactionRepository.findById(transactionId);
-    //     if (transactionOptional.isPresent()) {
-    //         Transaction transaction = transactionOptional.get();
-    //         transaction.setBranch(branch);
-    //         transactionRepository.save(transaction);
-    //     }
+    // public void associateTransactionWithBranch(Long transactionId, Branch branch)
+    // {
+    // Optional<Transaction> transactionOptional =
+    // transactionRepository.findById(transactionId);
+    // if (transactionOptional.isPresent()) {
+    // Transaction transaction = transactionOptional.get();
+    // transaction.setBranch(branch);
+    // transactionRepository.save(transaction);
     // }
+    // }
+
+    public List<Transaction> getTransactionsByDuration(String username, String duration) {
+
+        Customer customer = customerRepository.findByUserName(username)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+        Account account = customer.getAccount();
+
+        // Fetch all transactions
+        List<Transaction> allTransactions = transactionRepository.findByAccount(account);
+
+        // Calculate start date based on the selected duration
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        switch (duration) {
+            case "last6Months":
+                cal.add(Calendar.MONTH, -6);
+                break;
+            case "lastMonth":
+                cal.add(Calendar.MONTH, -1);
+                break;
+            case "lastWeek":
+                cal.add(Calendar.WEEK_OF_YEAR, -1);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid duration: " + duration);
+        }
+        Date startDate = cal.getTime();
+
+        List<Transaction> filteredTransactions = allTransactions.stream()
+                .filter(transaction -> transaction.getTransactionDate().after(startDate))
+                .collect(Collectors.toList());
+
+        return filteredTransactions;
+    }
+
+    public List<TransactionResponse> convertToResponse(List<Transaction> transactions) {
+        List<TransactionResponse> transactionResponses = new ArrayList<>();
+        for (Transaction transaction : transactions) {
+            TransactionResponse response = TransactionResponse.builder()
+                    .responseCode("SUCCESS")
+                    .responseMessage("Transaction retrieved successfully")
+                    .refId(transaction.getReferenceId())
+                    .amount(String.valueOf(transaction.getAmount()))
+                    .type(transaction.getTransactionType())
+                    .accountTo(transaction.getAccount().getAccountNumber())
+                    .build();
+            transactionResponses.add(response);
+        }
+        return transactionResponses;
+    }
 }

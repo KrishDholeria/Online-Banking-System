@@ -10,6 +10,7 @@ import com.project.backendrestapi.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -126,6 +127,8 @@ public class TransactionService {
             case "lastWeek":
                 cal.add(Calendar.WEEK_OF_YEAR, -1);
                 break;
+            case "all":
+                return allTransactions;
             default:
                 throw new IllegalArgumentException("Invalid duration: " + duration);
         }
@@ -140,6 +143,8 @@ public class TransactionService {
 
     public List<TransactionResponse> convertToResponse(List<Transaction> transactions) {
         List<TransactionResponse> transactionResponses = new ArrayList<>();
+        SimpleDateFormat format = new SimpleDateFormat("MMMM d, YYYY");
+        SimpleDateFormat format2 = new SimpleDateFormat("hh:mm a");
         for (Transaction transaction : transactions) {
             TransactionResponse response = TransactionResponse.builder()
                     .responseCode("SUCCESS")
@@ -149,6 +154,9 @@ public class TransactionService {
                     .type(transaction.getTransactionType())
                     .accountTo(transaction.getAccount().getAccountNumber())
                     .accountFrom(transaction.getRelatedTransaction().getAccount().getAccountNumber())
+                    .date(format.format(transaction.getTransactionDate()))
+                    .time(format2.format(transaction.getTransactionDate()))
+                    .name(transaction.getAccount().getCustomer().getPerson().getFirstName() + " " + transaction.getAccount().getCustomer().getPerson().getLastName())
                     .build();
             transactionResponses.add(response);
         }

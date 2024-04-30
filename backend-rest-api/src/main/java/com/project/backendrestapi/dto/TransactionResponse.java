@@ -15,5 +15,7 @@ public class TransactionResponse {
     private String type;
     private String accountTo;
     private String accountFrom;
-
+    private String date;
+    private String time;
+    private String name;
 }

@@ -66,16 +66,16 @@ export default function Home() {
                 </section>
 
                 {/* Call to action */}
-                <section className="bg-slate-800 text-white py-16">
+                {/* <section className="bg-slate-800 text-white py-16">
                     <div className="container mx-auto text-center">
                         <h2 className="text-3xl font-bold mb-4">Open an Account Today!</h2>
                         <p>Experience hassle-free banking with Bank4Ever. Sign up now to get started.</p>
                         <button className="mt-6 bg-white text-slate-800 px-8 py-3 rounded-md font-semibold hover:bg-slate-900 hover:text-white" onClick={handleSignup}>Sign Up</button>
                     </div>
-                </section>
+                </section> */}
             </main>
 
-            <footer className="bg-gray-200 py-8 text-center">
+            <footer className="bg-gray-200 py-12 text-center">
                 <div className="container mx-auto">
                     <p>&copy; 2024 Bank4Ever. All rights reserved.</p>
                 </div>

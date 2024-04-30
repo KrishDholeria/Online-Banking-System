@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Card,
   CardContent,
@@ -20,6 +20,11 @@ const login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const router = useRouter();
+
+  useEffect(() => {
+    localStorage.removeItem('customer-token');
+    localStorage.removeItem('customer-username');
+  }, []);
 
   const handleUsernameChange = (e) => {
     setUsername(e.target.value);

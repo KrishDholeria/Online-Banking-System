@@ -63,17 +63,43 @@ const StatementPage = () => {
         let currentPage = 1;
         const lineHeight = 10;
 
+        pdf.setFont("helvetica", "bold");
+        pdf.text("Customer Details", 10, y);
+        pdf.setFont("helvetica", "normal");
+        pdf.text(`Customer Name: ${transactions[0].name}`, 10, y + lineHeight);
+        pdf.text(`Account Number: ${transactions[0].accountTo}`, 10, y + lineHeight * 2);
+        y += lineHeight * 5;
+
+        pdf.text("Date", 10, y);
+        pdf.text("Transaction Details", 50, y);
+        pdf.text("Amount", 160, y);
+        y += lineHeight * 2;
+
         transactions.forEach((transaction, index) => {
-            if (transaction.amount < 0) {
-                pdf.text(`TRANSFER TO ${transaction.accountFrom} WITH REF: ${transaction.type}/${transaction.refId}`, 10, y);
-                pdf.text(`Amount: ${transaction.amount}`, 10, y + lineHeight);
+            const transactionDate = new Date(transaction.date).toLocaleDateString();
+            const transactionDetails = transaction.amount < 0 ?
+                `TRANSFER TO ${transaction.accountFrom} WITH REF: ${transaction.type}/${transaction.refId}` :
+                `TRANSFER FROM ${transaction.accountFrom} WITH REF: ${transaction.type}/${transaction.refId}`;
+
+            const lines = pdf.splitTextToSize(transactionDetails, 100);
+            const linesCount = lines.length;
+            const transactionDetailsHeight = linesCount * lineHeight;
+            const transactionAmountHeight = lineHeight * 2;
+
+            if (y + Math.max(transactionDetailsHeight, transactionAmountHeight) > pageHeight - 20) {
+                pdf.addPage();
+                y = 10;
+                currentPage++;
             }
-            else {
-                pdf.text(`TRANSFER FROM ${transaction.accountFrom} WITH REF: ${transaction.type}/${transaction.refId}`, 10, y);
-                pdf.text(`Amount: ${transaction.amount}`, 10, y + lineHeight);
-            }
-            y += lineHeight * 2;
-            y += lineHeight / 2;
+
+            pdf.text(transactionDate, 10, y);
+
+            lines.forEach((line, lineIndex) => {
+                pdf.text(line, 50, y + (lineIndex * lineHeight));
+            });
+            pdf.text(`${transaction.amount}`, 160, y);
+
+            y += Math.max(transactionDetailsHeight, transactionAmountHeight) + lineHeight;
 
             if (y > pageHeight - 20 || index === transactions.length - 1) {
                 pdf.addPage();
@@ -83,6 +109,9 @@ const StatementPage = () => {
         });
 
         pdf.save('transaction_statement.pdf');
+
+
+
     };
 
     return (
@@ -102,6 +131,7 @@ const StatementPage = () => {
                                 <button onClick={() => handleDurationChange('last6Months')} className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800">Last 6 Months</button>
                                 <button onClick={() => handleDurationChange('lastMonth')} className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 ml-2">Last Month</button>
                                 <button onClick={() => handleDurationChange('lastWeek')} className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 ml-2">Last Week</button>
+                                <button onClick={() => handleDurationChange('all')} className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 ml-2">View All</button>
                             </div>
                             <div>
                                 <button onClick={handleDownload} className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800">Download PDF</button>
@@ -113,6 +143,7 @@ const StatementPage = () => {
                             <table className="w-full table-fixed">
                                 <thead>
                                     <tr className="bg-gray-200">
+                                        <th className="px-4 py-2 w-1/5 text-left">Date</th>
                                         <th className="px-4 py-2 w-4/3 text-left">Transaction Details</th>
                                         <th className="px-4 py-2 w-1/4 text-right">Amount</th>
                                     </tr>
@@ -121,6 +152,7 @@ const StatementPage = () => {
                                     {transactions.map(transaction => {
                                         if (transaction.amount < 0) {
                                             return (<tr key={transaction.refId} className="bg-white hover:bg-gray-100">
+                                                <td className="px-4 py-2">{transaction.date} <p>{transaction.time}</p></td>
                                                 <td className="px-4 py-2">
                                                     TRANSFER TO {transaction.accountFrom} WITH REF: {transaction.type}/{transaction.refId}
                                                 </td>
@@ -129,6 +161,7 @@ const StatementPage = () => {
                                         }
                                         else {
                                             return (<tr key={transaction.refId} className="bg-white hover:bg-gray-100">
+                                                <td className="px-4 py-2">{transaction.date} <p>{transaction.time}</p></td>
                                                 <td className="px-4 py-2">TRANSFER FROM {transaction.accountFrom} WITH REF: {transaction.type}/{transaction.refId}</td>
                                                 <td className="px-4 py-2 text-right text-green-500">{transaction.amount}</td>
                                             </tr>)

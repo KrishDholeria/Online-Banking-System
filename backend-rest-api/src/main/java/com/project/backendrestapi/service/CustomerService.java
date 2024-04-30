@@ -9,11 +9,7 @@ import com.project.backendrestapi.model.Account;
 import com.project.backendrestapi.model.Beneficiary;
 import com.project.backendrestapi.model.Branch;
 import com.project.backendrestapi.model.Customer;
-import com.project.backendrestapi.model.Person;
-import com.project.backendrestapi.model.Transaction;
-import com.project.backendrestapi.repository.AccountRepository;
 import com.project.backendrestapi.repository.CustomerRepository;
-import com.project.backendrestapi.repository.PersonRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -21,13 +17,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.beans.PropertyDescriptor;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor

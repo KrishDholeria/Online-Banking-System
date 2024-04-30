@@ -1,29 +1,18 @@
 package com.project.backendrestapi.controller;
 
 import com.project.backendrestapi.utils.Util;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.hibernate.dialect.SybaseASEDialect;
 
 import com.project.backendrestapi.dto.*;
 import com.project.backendrestapi.model.*;
 import com.project.backendrestapi.service.*;
 import lombok.AllArgsConstructor;
-import org.aspectj.util.UtilClassLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.*;
-import java.text.SimpleDateFormat;
 
 @RestController
 @AllArgsConstructor
@@ -191,7 +180,7 @@ public class CustomerController {
         accountService.updateAccount(to.getAccountId(), to);
         accountService.updateAccount(from.getAccountId(), from);
 
-        Transaction add = Transaction.builder()
+        Transactions add = Transactions.builder()
                 .transactionType(transactionDto.getTransactionType())
                 .account(to)
                 .amount(amount)
@@ -199,16 +188,16 @@ public class CustomerController {
                 .referenceId(refId.toString())
                 .build();
         add = transactionService.createTransaction(add);
-        Transaction remove = Transaction.builder()
+        Transactions remove = Transactions.builder()
                 .transactionDate(date)
                 .transactionType(transactionDto.getTransactionType())
                 .account(from)
                 .amount(amount * -1)
-                .relatedTransaction(add)
+                .relatedTransactions(add)
                 .referenceId(refId.toString())
                 .build();
         remove = transactionService.createTransaction(remove);
-        add.setRelatedTransaction(remove);
+        add.setRelatedTransactions(remove);
         transactionService.updateTransaction(add.getTransactionId(), add);
 
         String creditMsg = "Hello, " + to.getCustomer().getPerson().getFirstName() + "\n"
@@ -244,7 +233,7 @@ public class CustomerController {
     @GetMapping("/transactions/{username}")
     public List<TransactionResponse> getTransactionsByDuration(@PathVariable String username,
             @RequestParam String duration) {
-        List<Transaction> transactions = transactionService.getTransactionsByDuration(username, duration);
+        List<Transactions> transactions = transactionService.getTransactionsByDuration(username, duration);
 
         // Convert Transaction entities to TransactionResponse objects
         List<TransactionResponse> transactionResponses = transactionService.convertToResponse(transactions);

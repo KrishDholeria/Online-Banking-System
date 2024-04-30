@@ -1,10 +1,5 @@
 package com.project.backendrestapi.dto;
 
-import java.util.List;
-import java.util.ArrayList;
-
-import com.project.backendrestapi.model.Transaction;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

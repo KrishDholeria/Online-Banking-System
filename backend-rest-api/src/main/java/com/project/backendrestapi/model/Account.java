@@ -1,6 +1,5 @@
 package com.project.backendrestapi.model;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import java.util.List;
@@ -32,7 +31,7 @@ public class Account {
     Branch branch;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Transaction> transactions;
+    private List<Transactions> transactions;
 
 
 }

@@ -12,7 +12,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Transaction {
+public class Transactions {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,7 +26,7 @@ public class Transaction {
     // private Branch branch;
 
     @OneToOne
-    private Transaction relatedTransaction;
+    private Transactions relatedTransactions;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id")

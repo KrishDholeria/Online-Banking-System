@@ -1,9 +1,8 @@
 package com.project.backendrestapi.service;
 
-import com.project.backendrestapi.model.Transaction;
+import com.project.backendrestapi.model.Transactions;
 import com.project.backendrestapi.dto.TransactionResponse;
 import com.project.backendrestapi.model.Account;
-import com.project.backendrestapi.model.Branch;
 import com.project.backendrestapi.model.Customer;
 import com.project.backendrestapi.repository.CustomerRepository;
 import com.project.backendrestapi.repository.TransactionRepository;
@@ -30,31 +29,31 @@ public class TransactionService {
         this.customerRepository = customerRepository;
     }
 
-    public List<Transaction> getAllTransactions() {
+    public List<Transactions> getAllTransactions() {
         return transactionRepository.findAll();
     }
 
-    public Optional<Transaction> getTransactionById(Long transactionId) {
+    public Optional<Transactions> getTransactionById(Long transactionId) {
         return transactionRepository.findById(transactionId);
     }
 
-    public Transaction createTransaction(Transaction transaction) {
-        return transactionRepository.save(transaction);
+    public Transactions createTransaction(Transactions transactions) {
+        return transactionRepository.save(transactions);
     }
 
-    public Optional<Transaction> updateTransaction(Long transactionId, Transaction updatedTransaction) {
-        Optional<Transaction> existingTransaction = transactionRepository.findById(transactionId);
+    public Optional<Transactions> updateTransaction(Long transactionId, Transactions updatedTransactions) {
+        Optional<Transactions> existingTransaction = transactionRepository.findById(transactionId);
 
         if (existingTransaction.isPresent()) {
-            Transaction existing = existingTransaction.get();
+            Transactions existing = existingTransaction.get();
             existing.setTransactionId(transactionId);
-            existing.setTransactionType(updatedTransaction.getTransactionType());
-            existing.setAmount(updatedTransaction.getAmount());
-            existing.setTransactionDate(updatedTransaction.getTransactionDate());
+            existing.setTransactionType(updatedTransactions.getTransactionType());
+            existing.setAmount(updatedTransactions.getAmount());
+            existing.setTransactionDate(updatedTransactions.getTransactionDate());
 
             // Handle relationships
-            existing.setAccount(updatedTransaction.getAccount());
-            existing.setRelatedTransaction(updatedTransaction.getRelatedTransaction());
+            existing.setAccount(updatedTransactions.getAccount());
+            existing.setRelatedTransactions(updatedTransactions.getRelatedTransactions());
 
             transactionRepository.save(existing);
 
@@ -76,19 +75,19 @@ public class TransactionService {
     // Additional methods for handling relationships if needed
 
     // Example method for creating a related transaction
-    public Transaction createRelatedTransaction(Transaction mainTransaction, Transaction relatedTransaction) {
-        mainTransaction.setRelatedTransaction(relatedTransaction);
-        transactionRepository.save(mainTransaction);
-        return mainTransaction;
+    public Transactions createRelatedTransaction(Transactions mainTransactions, Transactions relatedTransactions) {
+        mainTransactions.setRelatedTransactions(relatedTransactions);
+        transactionRepository.save(mainTransactions);
+        return mainTransactions;
     }
 
     // Example method for associating a transaction with an account
     public void associateTransactionWithAccount(Long transactionId, Account account) {
-        Optional<Transaction> transactionOptional = transactionRepository.findById(transactionId);
+        Optional<Transactions> transactionOptional = transactionRepository.findById(transactionId);
         if (transactionOptional.isPresent()) {
-            Transaction transaction = transactionOptional.get();
-            transaction.setAccount(account);
-            transactionRepository.save(transaction);
+            Transactions transactions = transactionOptional.get();
+            transactions.setAccount(account);
+            transactionRepository.save(transactions);
         }
     }
 
@@ -104,7 +103,7 @@ public class TransactionService {
     // }
     // }
 
-    public List<Transaction> getTransactionsByDuration(String username, String duration) {
+    public List<Transactions> getTransactionsByDuration(String username, String duration) {
 
         Customer customer = customerRepository.findByUserName(username)
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
@@ -112,7 +111,7 @@ public class TransactionService {
         Account account = customer.getAccount();
 
         // Fetch all transactions
-        List<Transaction> allTransactions = transactionRepository.findByAccount(account);
+        List<Transactions> allTransactions = transactionRepository.findByAccount(account);
 
         // Calculate start date based on the selected duration
         Calendar cal = Calendar.getInstance();
@@ -134,18 +133,18 @@ public class TransactionService {
         }
         Date startDate = cal.getTime();
 
-        List<Transaction> filteredTransactions = allTransactions.stream()
+        List<Transactions> filteredTransactions = allTransactions.stream()
                 .filter(transaction -> transaction.getTransactionDate().after(startDate))
                 .collect(Collectors.toList());
 
         return filteredTransactions;
     }
 
-    public List<TransactionResponse> convertToResponse(List<Transaction> transactions) {
+    public List<TransactionResponse> convertToResponse(List<Transactions> transactions) {
         List<TransactionResponse> transactionResponses = new ArrayList<>();
         SimpleDateFormat format = new SimpleDateFormat("MMMM d, YYYY");
         SimpleDateFormat format2 = new SimpleDateFormat("hh:mm a");
-        for (Transaction transaction : transactions) {
+        for (Transactions transaction : transactions) {
             TransactionResponse response = TransactionResponse.builder()
                     .responseCode("SUCCESS")
                     .responseMessage("Transaction retrieved successfully")
@@ -153,7 +152,7 @@ public class TransactionService {
                     .amount(String.valueOf(transaction.getAmount()))
                     .type(transaction.getTransactionType())
                     .accountTo(transaction.getAccount().getAccountNumber())
-                    .accountFrom(transaction.getRelatedTransaction().getAccount().getAccountNumber())
+                    .accountFrom(transaction.getRelatedTransactions().getAccount().getAccountNumber())
                     .date(format.format(transaction.getTransactionDate()))
                     .time(format2.format(transaction.getTransactionDate()))
                     .name(transaction.getAccount().getCustomer().getPerson().getFirstName() + " " + transaction.getAccount().getCustomer().getPerson().getLastName())

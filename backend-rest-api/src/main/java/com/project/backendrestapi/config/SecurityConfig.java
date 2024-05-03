@@ -31,6 +31,8 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers("/customer/sendotp")
                 .permitAll()
+                .requestMatchers("/customer/getCustomer/**")
+                .permitAll()
                 .requestMatchers("/customer/**").authenticated()
                 .anyRequest()
                 .permitAll()

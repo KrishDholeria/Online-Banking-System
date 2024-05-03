@@ -49,9 +49,25 @@ const Navbar = ({ login }) => {
                         </DropdownMenu>
                     </li>
                     <li>
-                        <Link href="/customer/profile">
-                            Profile
-                        </Link>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger className='flex'>
+                                Profile <FiChevronDown className='mt-1 ml-1' />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuGroup>
+                                    <DropdownMenuItem>
+                                        <Link href="/customer/profile">
+                                            Details
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Link href="/customer/changePassword">
+                                            Change Password
+                                        </Link>
+                                    </DropdownMenuItem>
+                                </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </li>
                     <li>
                         <Link href="" onClick={handleLogout}>

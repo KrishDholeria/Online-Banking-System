@@ -14,11 +14,13 @@ import axios from 'axios'
 import { useRouter } from 'next/router'
 import LoginNavbar from '@/components/navbar/loginNavbar'
 import { toast } from 'sonner'
+import { Loader2 } from 'lucide-react'
 
 const login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -52,6 +54,7 @@ const login = () => {
       return;
     }
     try {
+      setLoading(true);
       const response = await axios.post("/auth/login", { username, password });
       console.log(response);
       setError(null);
@@ -63,6 +66,7 @@ const login = () => {
       console.log(error.response);
       toast('Invalid credentials.', { type: 'error', action: { label: 'Close', onClick: () => toast.dismiss() } });
     }
+    setLoading(false);
     // const response = await axios.post("/auth/login", {username, password});
     // setError(null);
     // router.push('/customer');
@@ -91,9 +95,14 @@ const login = () => {
                 <div className="flex justify-center h-1">
                   {error && <div className="text-red-500">*{error}</div>}
                 </div>
-                <div className="flex justify-center mt-5">
-                  <Button className="w-full h-11 text-lg">Login</Button>
-                </div>
+                {
+                  (loading && error == null) ? <Button disabled>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Please wait
+                  </Button> : <div className="flex justify-center mt-5">
+                    <Button className="w-full h-11 text-lg">Login</Button>
+                  </div>
+                }
               </div>
             </form>
           </CardContent>

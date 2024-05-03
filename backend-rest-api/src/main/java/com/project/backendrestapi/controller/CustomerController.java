@@ -1,7 +1,6 @@
 package com.project.backendrestapi.controller;
 
 import com.project.backendrestapi.utils.Util;
-import lombok.Getter;
 
 import com.project.backendrestapi.dto.*;
 import com.project.backendrestapi.model.*;

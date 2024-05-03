@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useRouter } from "next/router"
 import { toast } from 'sonner'
 import Navbar from "@/components/navbar/navbar"
+import { Loader2 } from 'lucide-react'
 
 
 export default function Transaction() {
@@ -28,6 +29,7 @@ export default function Transaction() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [resendDisabled, setResendDisabled] = useState(false);
     const [countdown, setCountdown] = useState(60);
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const handleResendClick = async () => {
@@ -120,25 +122,30 @@ export default function Transaction() {
         setOtp(e.target.value);
     }
     const handleNext = async (e) => {
+        setLoading(true);
         e.preventDefault();
         if (amount === '' || accountNo === '' || type === '') {
             setError('Please fill all the fields.');
+            setLoading(false);
             return;
         }
         setError(null);
         // check if amount is a number
         if (isNaN(amount)) {
             setError('Amount should be a number.');
+            setLoading(false);
             return;
         }
         // check if amount is greater than 0
         if (amount <= 1000) {
             setError('Amount should be greater than Rs.1000.');
+            setLoading(false);
             return;
         }
         // check if amount is less than 100000
         if (amount > 1000000) {
             setError('Amount should be less than Rs.1000000.');
+            setLoading(false);
             return;
         }
 
@@ -157,15 +164,18 @@ export default function Transaction() {
                 console.log('OTP sent');
                 setActiveTab("OTP");
                 console.log(activeTab);
+                setLoading(false);
             })
             .catch(err => {
                 console.log(err);
             })
     }
     const handleVerify = async (e) => {
+        setLoading(true);
         e.preventDefault();
         if (otp === '') {
             setError('Please fill the OTP field.');
+            setLoading(false);
             return;
         }
         setError(null);
@@ -189,6 +199,7 @@ export default function Transaction() {
                         }
                     )
                     : makeTransaction();
+                setLoading(false);
             })
             .catch(err => {
                 console.log(err);
@@ -253,7 +264,7 @@ export default function Transaction() {
                                 }
                             }
                         )
-                        router.push('/customer/');
+                        router.push('/customer/statement');
                         break;
                     default:
                         toast(
@@ -316,7 +327,7 @@ export default function Transaction() {
                             </Select>
                         </div>
                         <div className="space-y-1">
-                            <Label htmlFor="amount">Amount</Label>
+                            <Label htmlFor="amount">Amount in Rs.</Label>
                             <Input id="amount" placeholder="10000" onChange={handleAmountChange} />
                         </div>
                         <div className="h-1">
@@ -324,7 +335,12 @@ export default function Transaction() {
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button onClick={handleNext}>Next</Button>
+                        {
+                            (loading && error == null) ? <Button disabled>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Please wait
+                            </Button> : <Button onClick={handleNext}>Next</Button>
+                        }
                     </CardFooter>
                 </Card>)}
                 {activeTab === 'OTP' && (<Card className='w-[400px]'>
@@ -339,7 +355,12 @@ export default function Transaction() {
                             <Label htmlFor="otp">Enter OTP</Label>
                             <Input id="otp" type="password" onChange={handleOtpChange} />
                         </div>
-                        <Button onClick={handleVerify}>Confirm</Button>
+                        {
+                            (loading && error == null) ? <Button disabled>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Please wait
+                            </Button> : <Button onClick={handleVerify}>Confirm</Button>
+                        }
                     </CardContent>
                     <CardFooter className='flex justify-center'>
                         <div className="text-sm text-center">Didn't receive the OTP? {resendDisabled ? `Resend OTP in ${countdown} seconds` : <span className="text-blue-500 cursor-pointer" onClick={handleResendClick}>Resend OTP</span>}</div>

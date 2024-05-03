@@ -1,6 +1,7 @@
 package com.project.backendrestapi.controller;
 
 import com.project.backendrestapi.utils.Util;
+import lombok.Getter;
 
 import com.project.backendrestapi.dto.*;
 import com.project.backendrestapi.model.*;
@@ -332,9 +333,47 @@ public class CustomerController {
         if (profileDto != null) {
             return ResponseEntity.ok((profileDto));
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
         }
     }
+
+    @GetMapping("/getCustomer/{username}")
+    public ResponseEntity<?> getCustomer(@PathVariable String username){
+        Optional<Customer> optionalCustomer = customerService.getCustomerByUserName(username);
+        if(optionalCustomer.isPresent()){
+            CustomerDto customerDto = customerService.convertToCustomerDto(optionalCustomer.get());
+            customerDto.setResponseCode(Util.CUSTOMER_FOUND_CODE);
+            customerDto.setResponseMessage(Util.CUSTOMER_FOUND_MESSAGE);
+            return new ResponseEntity<>(customerDto, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(CustomerDto.builder()
+                .responseCode(Util.INVALID_USERNAME_CODE)
+                .responseMessage(Util.INVALID_USERNAME_MESSAGE)
+                .build(), HttpStatus.OK);
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest customerDto){
+        Optional<Customer> customerOptional = customerService.getCustomerByUserName(customerDto.getUsername());
+        if(customerOptional.isPresent()){
+            Customer customer = customerOptional.get();
+            BCryptPasswordEncoder b = new BCryptPasswordEncoder();
+            if(b.matches(customerDto.getOldPassword(), customer.getPassword())){
+                customer.setPassword(b.encode(customerDto.getNewPassword()));
+                CustomerDto customerDto1 = customerService.convertToCustomerDto(customer);
+                customerService.updateCustomer(customer.getCustomerId(), customerDto1);
+                customerDto1.setResponseCode(Util.PASSWORD_SET_SUCCESSFULLY_CODE);
+                customerDto1.setResponseMessage(Util.PASSWORD_SET_SUCCESSFULLY_MESSAGE);
+                return ResponseEntity.ok(customerDto1);
+            }
+        }
+        return ResponseEntity.ok(CustomerDto.builder()
+                        .responseMessage(Util.NEW_AND_OLD_PASSWORD_DOESNT_MATCH_MESSAGE)
+                        .responseCode(Util.NEW_AND_OLD_PASSWORD_DOESNT_MATCH_CODE)
+                .build());
+    }
+
+
 
     // @GetMapping("/getbeneficieries/{username}")
     // ResponseEntity<?> getBeneficieries(@PathVariable String username){

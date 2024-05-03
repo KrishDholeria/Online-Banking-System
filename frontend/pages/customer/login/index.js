@@ -71,8 +71,8 @@ const login = () => {
   return (
     <div>
       <LoginNavbar login={true} />
-      <div className="flex justify-center mt-60">
-        <Card className={`w-[450px] h-[410px]`}>
+      <div className="flex justify-center mt-52">
+        <Card className={`w-[30%]`}>
           <CardHeader>
             <CardTitle className="text-3xl flex justify-center">Welcome to Bank4Ever</CardTitle>
             <CardDescription className="flex justify-center">Enter your credentials to login</CardDescription>
@@ -97,8 +97,13 @@ const login = () => {
               </div>
             </form>
           </CardContent>
-          <CardFooter className="flex justify-center ">
-            <a href="/customer/signup">Don't have an account? <span className='underline'>Signup</span></a>
+          <CardFooter className="flex flex-col justify-center items-center">
+            <div className="mb-2">
+              <a href="/customer/signup">Don't have an account? <span className='underline'>Signup</span></a>
+            </div>
+            <div>
+              <a href="/customer/forgot_password">Forgot password?</a>
+            </div>
           </CardFooter>
         </Card>
       </div>

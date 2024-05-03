@@ -1,13 +1,28 @@
 // pages/index.js
 
 import Navbar from '@/components/navbar/navbar';
+import axios from 'axios';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 
 export default function Home() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [user, setUser] = useState(null);
+    const [firstName, setFirstName] = useState('');
     const router = useRouter();
+
+    const fetchCustomer = async () => {
+        const username = localStorage.getItem('customer-username');
+        await axios.get(`/customer/getCustomer/${username}`).then((res) => {
+            console.log(res.data);
+            setUser(res.data);
+            setFirstName(res.data.person.firstName);
+        }
+        ).catch((err) => {
+            console.log(err);
+        });
+    }
 
     useEffect(() => {
         const token = localStorage.getItem('customer-token');
@@ -17,6 +32,7 @@ export default function Home() {
         }
         else {
             setIsLoggedIn(true);
+            fetchCustomer();
         }
     }, [])
 
@@ -36,8 +52,8 @@ export default function Home() {
                 {/* Hero section */}
                 <section className="bg-slate-800 text-white py-20">
                     <div className="container mx-auto">
-                        <h1 className="text-4xl md:text-6xl font-bold mb-4">Bank4Ever</h1>
-                        <p className="text-lg md:text-xl">Your Trusted Banking Partner</p>
+                        <h1 className="text-4xl md:text-6xl font-bold mb-4">Hi, {firstName}</h1>
+                        <p className="text-lg md:text-xl">Welcome to Bank4Ever</p>
                     </div>
                 </section>
 

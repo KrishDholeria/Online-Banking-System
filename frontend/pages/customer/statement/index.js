@@ -145,7 +145,7 @@ const StatementPage = () => {
                                     <tr className="bg-gray-200">
                                         <th className="px-4 py-2 w-1/5 text-left">Date</th>
                                         <th className="px-4 py-2 w-4/3 text-left">Transaction Details</th>
-                                        <th className="px-4 py-2 w-1/4 text-right">Amount</th>
+                                        <th className="px-4 py-2 w-1/4 text-right">Amount (in Rs.)</th>
                                     </tr>
                                 </thead>
                                 <tbody>

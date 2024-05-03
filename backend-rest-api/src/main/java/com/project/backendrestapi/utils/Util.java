@@ -25,5 +25,11 @@ public class Util {
     public static String PASSWORD_SET_SUCCESSFULLY_MESSAGE = "Password set successfully.";
     public static String CUSTOMER_ALREADY_EXIST_CODE = "012";
     public static String CUSTOMER_ALREADY_EXIST_MESSAGE = "Customer already exist.";
+    public static String CUSTOMER_FOUND_CODE = "013";
+    public static String CUSTOMER_FOUND_MESSAGE = "Customer found.";
+    public static String INVALID_USERNAME_CODE = "014";
+    public static String INVALID_USERNAME_MESSAGE = "Invalid username.";
+    public static String NEW_AND_OLD_PASSWORD_DOESNT_MATCH_CODE = "015";
+    public static String NEW_AND_OLD_PASSWORD_DOESNT_MATCH_MESSAGE = "New and old password doesnt match";
 
 }

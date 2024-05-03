@@ -12,10 +12,12 @@ import { FiEdit, FiTrash2, FiCheck, FiXCircle } from 'react-icons/fi';
 import axios from 'axios';
 import { useRouter } from "next/router";
 import { toast } from 'sonner';
+import Loader from "@/components/loader";
 
 export default function CustomTable({ beneficiaries, setBeneficiaries }) {
     const [isEditing, setIsEditing] = useState(null);
     const [rowData, setRowData] = useState();
+    const [loading, setLoading] = useState(true);
     const router = useRouter();
     const inputref = useRef(null);
     useEffect(() => {
@@ -30,7 +32,9 @@ export default function CustomTable({ beneficiaries, setBeneficiaries }) {
         }
         axios.get(`customer/getbeneficieries/${username}`, { headers })
             .then(res => {
+                console.log(res.data)
                 setBeneficiaries(res.data);
+                setLoading(false);
             })
             .catch(err => {
                 console.log(err);
@@ -146,6 +150,10 @@ export default function CustomTable({ beneficiaries, setBeneficiaries }) {
                 console.log(err);
             })
         setIsEditing(null);
+    }
+
+    if (loading) {
+        return (<Loader/>);
     }
 
     return (

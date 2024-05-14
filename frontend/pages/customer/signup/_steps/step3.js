@@ -17,7 +17,7 @@ import axios from 'axios'
 import { toast } from 'sonner'
 
 
-export default function step1({user, setUser}) {
+export default function Step3({user, setUser}) {
     const [password, setPassword] = useState('');
     const [confirmpassword, setConfirmPassword] = useState('');
     const [error, setError] = useState(null);

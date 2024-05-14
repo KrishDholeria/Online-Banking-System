@@ -71,7 +71,7 @@ export default function Home() {
                             {/* Feature 2 */}
                             <div className="p-6 bg-white shadow-lg rounded-md">
                                 <h3 className="text-xl font-semibold mb-4">Easy Account Management</h3>
-                                <p>Manage your accounts effortlessly with Bank4Ever's intuitive online banking platform.</p>
+                                <p>Manage your accounts effortlessly with Bank4Ever&apos;s intuitive online banking platform.</p>
                             </div>
                             {/* Feature 3 */}
                             <div className="p-6 bg-white shadow-lg rounded-md">

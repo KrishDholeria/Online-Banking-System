@@ -16,7 +16,7 @@ import LoginNavbar from '@/components/navbar/loginNavbar'
 import { toast } from 'sonner'
 import Navbar from '@/components/navbar/navbar'
 
-const login = () => {
+const ChangePassword = () => {
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
@@ -176,4 +176,4 @@ const login = () => {
     )
 }
 
-export default login
+export default ChangePassword

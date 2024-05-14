@@ -14,9 +14,10 @@ import { Button } from "@/components/ui/button"
 import { useCarousel } from '@/components/ui/carousel'
 import axios from 'axios'
 import { toast } from 'sonner'
+import Link from 'next/link'
 
 
-export default function step1({ setUser }) {
+export default function Step1({ setUser }) {
     const [username, setUsername] = useState('');
     const [account, setAccount] = useState('');
     const [confirmaccount, setConfirmAccount] = useState('');
@@ -207,7 +208,7 @@ export default function step1({ setUser }) {
             </form>
         </CardContent>
         <CardFooter className="flex justify-center">
-            Already have an account? <a href="/customer/login" className='underline'>Login</a>
+            Already have an account? <Link href="/customer/login" className='underline'>Login</Link>
         </CardFooter>
     </Card>)
 }

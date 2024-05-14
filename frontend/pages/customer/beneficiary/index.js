@@ -6,7 +6,7 @@ import Navbar from "@/components/navbar/navbar";
 
 
 
-export default function beneficiery() {
+export default function Beneficiery() {
     const router = useRouter();
     const [beneficiaries, setBeneficiaries] = useState([]);
     const [isLoggedIn, setIsLoggedIn] = useState(false);

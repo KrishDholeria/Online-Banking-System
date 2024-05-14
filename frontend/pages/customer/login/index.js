@@ -15,8 +15,9 @@ import { useRouter } from 'next/router'
 import LoginNavbar from '@/components/navbar/loginNavbar'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
+import Link from 'next/link'
 
-const login = () => {
+const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -108,10 +109,10 @@ const login = () => {
           </CardContent>
           <CardFooter className="flex flex-col justify-center items-center">
             <div className="mb-2">
-              <a href="/customer/signup">Don't have an account? <span className='underline'>Signup</span></a>
+              <Link href="/customer/signup">Don&apos;t have an account? <span className='underline'>Signup</span></Link>
             </div>
             <div>
-              <a href="/customer/forgot_password">Forgot password?</a>
+              <Link href="/customer/forgot_password">Forgot password?</Link>
             </div>
           </CardFooter>
         </Card>
@@ -120,4 +121,4 @@ const login = () => {
   )
 }
 
-export default login
+export default Login

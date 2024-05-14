@@ -364,7 +364,7 @@ export default function Transaction() {
                         }
                     </CardContent>
                     <CardFooter className='flex justify-center'>
-                        <div className="text-sm text-center">Didn't receive the OTP? {resendDisabled ? `Resend OTP in ${countdown} seconds` : <span className="text-blue-500 cursor-pointer" onClick={handleResendClick}>Resend OTP</span>}</div>
+                        <div className="text-sm text-center">Didn&apos;t receive the OTP? {resendDisabled ? `Resend OTP in ${countdown} seconds` : <span className="text-blue-500 cursor-pointer" onClick={handleResendClick}>Resend OTP</span>}</div>
                     </CardFooter>
                 </Card>)}
             </div>

@@ -17,7 +17,7 @@ import { toast } from 'sonner'
 import Navbar from "@/components/navbar/navbar"
 
 
-export default function addBeneficiery() {
+export default function Add() {
     const [name, setName] = useState('');
     const [accountNo, setAccountNo] = useState('');
     const [confirmAccountNo, setConfirmAccountNo] = useState('');

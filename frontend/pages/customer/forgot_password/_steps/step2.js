@@ -16,7 +16,7 @@ import axios from 'axios'
 import { toast } from "sonner";
 
 
-export default function step2() {
+export default function Step2() {
     const [otp, setOtp] = useState('');
     const [error, setError] = useState(null);
     const [resendDisabled, setResendDisabled] = useState(false);
@@ -116,7 +116,7 @@ export default function step2() {
         </form>
     </CardContent>
     <CardFooter className="flex justify-center">
-    <div className="text-sm text-center">Didn't receive the OTP? {resendDisabled ? `Resend OTP in ${countdown} seconds` : <span className="text-blue-500 cursor-pointer" onClick={handleResendClick}>Resend OTP</span>}</div>
+    <div className="text-sm text-center">Didn&apos;t receive the OTP? {resendDisabled ? `Resend OTP in ${countdown} seconds` : <span className="text-blue-500 cursor-pointer" onClick={handleResendClick}>Resend OTP</span>}</div>
     </CardFooter>
 </Card>)
 }

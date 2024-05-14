@@ -5,7 +5,7 @@ import Step3 from './_steps/step3'
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel'
 import LoginNavbar from '@/components/navbar/loginNavbar'
 
-const forgotPassowrd = () => {
+const ForgotPassowrd = () => {
     const [customer, setCustomer] = useState();
     // setCustomer(JSON.parse(localStorage.getItem('customer')));
 
@@ -37,4 +37,4 @@ const forgotPassowrd = () => {
     )
 }
 
-export default forgotPassowrd
+export default ForgotPassowrd

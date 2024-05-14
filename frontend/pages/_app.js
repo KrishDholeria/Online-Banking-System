@@ -1,3 +1,4 @@
+import React from "react"
 import Navbar from '@/components/navbar/navbar';
 import '@/styles/globals.css'
 import axios from 'axios';

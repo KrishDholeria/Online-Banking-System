@@ -1,5 +1,6 @@
 // pages/index.js
 
+import React from "react"
 import Navbar from '@/components/navbar/navbar';
 import axios from 'axios';
 import Head from 'next/head';

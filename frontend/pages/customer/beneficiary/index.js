@@ -1,3 +1,4 @@
+import React from "react"
 import { useEffect, useState } from "react"
 import CustomTable from "./_customTable"
 import { useRouter } from "next/router";

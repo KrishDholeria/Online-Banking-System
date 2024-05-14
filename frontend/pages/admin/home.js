@@ -1,3 +1,4 @@
+import React from "react"
 import { BluetoothSearchingIcon } from 'lucide-react';
 import Head from 'next/head';
 import Link from 'next/link';

@@ -1,0 +1,1148 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+paths:
+  /{adminId}:
+    get:
+      tags:
+      - admin-controller
+      operationId: getAdminById
+      parameters:
+      - name: adminId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AdminDto'
+    put:
+      tags:
+      - admin-controller
+      operationId: updateAdmin
+      parameters:
+      - name: adminId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AdminDto'
+    delete:
+      tags:
+      - admin-controller
+      operationId: deleteAdmin
+      parameters:
+      - name: adminId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+  /customer/updateBeneficiary/{username}/{accountNo}:
+    put:
+      tags:
+      - customer-controller
+      operationId: updateBeneficiary
+      parameters:
+      - name: username
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: accountNo
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BeneficiaryDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /branches/{branchCode}:
+    get:
+      tags:
+      - admin-controller
+      operationId: getBranchById
+      parameters:
+      - name: branchCode
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BranchDto'
+    put:
+      tags:
+      - admin-controller
+      operationId: updateBranch
+      parameters:
+      - name: branchCode
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BranchDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BranchDto'
+    delete:
+      tags:
+      - admin-controller
+      operationId: deleteBranch
+      parameters:
+      - name: branchCode
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+  /api/person/{personId}:
+    get:
+      tags:
+      - person-controller
+      operationId: getPersonById
+      parameters:
+      - name: personId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Person'
+    put:
+      tags:
+      - person-controller
+      operationId: updatePerson
+      parameters:
+      - name: personId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Person'
+    delete:
+      tags:
+      - person-controller
+      operationId: deletePerson
+      parameters:
+      - name: personId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+  /new:
+    post:
+      tags:
+      - admin-controller
+      operationId: createAdmin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AdminDto'
+  /manager/update:
+    post:
+      tags:
+      - manager-controller
+      operationId: updateManagerDetails
+      parameters:
+      - name: username
+        in: query
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /manager/login:
+    post:
+      tags:
+      - manager-controller
+      operationId: managerLogin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManagerDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /manager/details:
+    post:
+      tags:
+      - manager-controller
+      operationId: getManagerDetails
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ManagerDto'
+  /manager/change-password:
+    post:
+      tags:
+      - manager-controller
+      operationId: changePassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /customer/verifyotp:
+    post:
+      tags:
+      - customer-controller
+      operationId: verifyOtp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OtpRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /customer/setusername:
+    post:
+      tags:
+      - customer-controller
+      operationId: setUsername
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerSignupDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /customer/setpassword:
+    post:
+      tags:
+      - customer-controller
+      operationId: setPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /customer/maketransacion/{username}:
+    post:
+      tags:
+      - customer-controller
+      operationId: makeTransaction
+      parameters:
+      - name: username
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+  /customer/changePassword:
+    post:
+      tags:
+      - customer-controller
+      operationId: changePassword_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /customer/addbeneficiary/{username}:
+    post:
+      tags:
+      - customer-controller
+      operationId: addBeneficiary
+      parameters:
+      - name: username
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BeneficiaryDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /auth/login:
+    post:
+      tags:
+      - auth-controller
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JwtRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /api/person/new:
+    post:
+      tags:
+      - person-controller
+      operationId: createPerson
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Person'
+  /admin/login:
+    post:
+      tags:
+      - admin-controller
+      operationId: loginAdmin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /admin/change-password:
+    post:
+      tags:
+      - admin-controller
+      operationId: changePassword_2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /add/manager:
+    post:
+      tags:
+      - admin-controller
+      operationId: createManager
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManagerDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /add/customer:
+    post:
+      tags:
+      - manager-controller
+      operationId: addCustomer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /add/branch:
+    post:
+      tags:
+      - admin-controller
+      operationId: createBranch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BranchDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BranchDto'
+  /manager/username:
+    get:
+      tags:
+      - admin-controller
+      operationId: getManagerById
+      parameters:
+      - name: userName
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ManagerDto'
+  /customer:
+    get:
+      tags:
+      - manager-controller
+      operationId: getCustomersByaccountNo
+      parameters:
+      - name: accountNo
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomerDto'
+  /customer/transactions/{username}:
+    get:
+      tags:
+      - customer-controller
+      operationId: getTransactionsByDuration
+      parameters:
+      - name: username
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: duration
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionResponse'
+  /customer/sendotp:
+    get:
+      tags:
+      - customer-controller
+      operationId: sendOtp
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /customer/profile:
+    get:
+      tags:
+      - customer-controller
+      operationId: getCustomerProfile
+      parameters:
+      - name: username
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /customer/getbeneficieries/{username}:
+    get:
+      tags:
+      - customer-controller
+      operationId: getBeneficieries
+      parameters:
+      - name: username
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /customer/getbalance/{username}:
+    get:
+      tags:
+      - customer-controller
+      operationId: getBalance
+      parameters:
+      - name: username
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /customer/getaccount/{accountNo}:
+    get:
+      tags:
+      - customer-controller
+      operationId: getAccount
+      parameters:
+      - name: accountNo
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AccountDto'
+  /customer/getCustomer/{username}:
+    get:
+      tags:
+      - customer-controller
+      operationId: getCustomer
+      parameters:
+      - name: username
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /branches:
+    get:
+      tags:
+      - admin-controller
+      operationId: getAllBranches
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BranchDto'
+  /auth/status/{token}:
+    get:
+      tags:
+      - auth-controller
+      operationId: getStatus
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /api/person/all:
+    get:
+      tags:
+      - person-controller
+      operationId: getAllPersons
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Person'
+  /all:
+    get:
+      tags:
+      - admin-controller
+      operationId: getAllAdmins
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdminDto'
+  /all/managers:
+    get:
+      tags:
+      - admin-controller
+      operationId: getAllManagers
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ManagerDto'
+  /all/customers:
+    get:
+      tags:
+      - manager-controller
+      operationId: getAllCustomers
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomerDto'
+  /managers/{username}:
+    delete:
+      tags:
+      - admin-controller
+      operationId: deleteManagerByUsername
+      parameters:
+      - name: username
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /customer/deleteBeneficiary/{username}/{accountNo}:
+    delete:
+      tags:
+      - customer-controller
+      operationId: deleteBenefiaiary
+      parameters:
+      - name: username
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: accountNo
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+components:
+  schemas:
+    AdminDto:
+      type: object
+      properties:
+        userName:
+          type: string
+        password:
+          type: string
+        person:
+          $ref: '#/components/schemas/PersonDto'
+    PersonDto:
+      type: object
+      properties:
+        lastName:
+          type: string
+        firstName:
+          type: string
+        dob:
+          type: string
+        email:
+          type: string
+        phoneNo:
+          type: string
+        address:
+          type: string
+    BeneficiaryDto:
+      type: object
+      properties:
+        beneficiaryName:
+          type: string
+        accountNo:
+          type: string
+        branchCode:
+          type: string
+    BranchDto:
+      type: object
+      properties:
+        branchCode:
+          type: string
+        branchName:
+          type: string
+        address:
+          type: string
+        phoneNumber:
+          type: string
+    Account:
+      type: object
+      properties:
+        accountId:
+          type: integer
+          format: int64
+        accountNumber:
+          type: string
+        accountBalance:
+          type: number
+          format: double
+        dateOpened:
+          type: string
+          format: date-time
+        dateClosed:
+          type: string
+          format: date-time
+        customer:
+          $ref: '#/components/schemas/Customer'
+        branch:
+          $ref: '#/components/schemas/Branch'
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+    Admin:
+      type: object
+      properties:
+        userName:
+          type: string
+        password:
+          type: string
+        adminId:
+          type: integer
+          format: int64
+        person:
+          $ref: '#/components/schemas/Person'
+    Beneficiary:
+      type: object
+      properties:
+        beneficiaryId:
+          type: integer
+          format: int64
+        beneficiaryName:
+          type: string
+        accountNumber:
+          type: string
+        branchCode:
+          type: string
+        customer:
+          $ref: '#/components/schemas/Customer'
+    Branch:
+      type: object
+      properties:
+        branchId:
+          type: integer
+          format: int64
+        branchName:
+          type: string
+        branchCode:
+          type: string
+        address:
+          type: string
+        phoneNumber:
+          type: string
+        managers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Manager'
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
+    Customer:
+      type: object
+      properties:
+        customerId:
+          type: integer
+          format: int64
+        userName:
+          type: string
+        password:
+          type: string
+        panNo:
+          type: string
+        person:
+          $ref: '#/components/schemas/Person'
+        account:
+          $ref: '#/components/schemas/Account'
+        beneficiaries:
+          type: array
+          items:
+            $ref: '#/components/schemas/Beneficiary'
+    Manager:
+      type: object
+      properties:
+        userName:
+          type: string
+        password:
+          type: string
+        managerId:
+          type: integer
+          format: int64
+        person:
+          $ref: '#/components/schemas/Person'
+        branch:
+          $ref: '#/components/schemas/Branch'
+    Person:
+      type: object
+      properties:
+        personId:
+          type: integer
+          format: int64
+        lastName:
+          type: string
+        firstName:
+          type: string
+        dob:
+          type: string
+          format: date-time
+        email:
+          type: string
+        phoneNo:
+          type: string
+        address:
+          type: string
+        manager:
+          $ref: '#/components/schemas/Manager'
+        customer:
+          $ref: '#/components/schemas/Customer'
+        admin:
+          $ref: '#/components/schemas/Admin'
+    Transaction:
+      type: object
+      properties:
+        transactionId:
+          type: integer
+          format: int64
+        referenceId:
+          type: string
+        transactionType:
+          type: string
+        amount:
+          type: integer
+          format: int32
+        transactionDate:
+          type: string
+          format: date-time
+        relatedTransaction:
+          $ref: '#/components/schemas/Transaction'
+        account:
+          $ref: '#/components/schemas/Account'
+    ManagerDto:
+      type: object
+      properties:
+        manageId:
+          type: integer
+          format: int64
+        userName:
+          type: string
+        password:
+          type: string
+        branch:
+          $ref: '#/components/schemas/BranchDto'
+        person:
+          $ref: '#/components/schemas/PersonDto'
+    ChangePasswordRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        oldPassword:
+          type: string
+        newPassword:
+          type: string
+    OtpRequest:
+      type: object
+      properties:
+        otp:
+          type: string
+    CustomerSignupDto:
+      type: object
+      properties:
+        userName:
+          type: string
+        accountNo:
+          type: string
+        branchCode:
+          type: string
+    AccountDto:
+      type: object
+      properties:
+        accountBalance:
+          type: number
+          format: double
+        cutomerId:
+          type: integer
+          format: int64
+        branchId:
+          type: integer
+          format: int64
+    CustomerDto:
+      type: object
+      properties:
+        responseCode:
+          type: string
+        responseMessage:
+          type: string
+        userName:
+          type: string
+        password:
+          type: string
+        panNo:
+          type: string
+        person:
+          $ref: '#/components/schemas/PersonDto'
+        account:
+          $ref: '#/components/schemas/AccountDto'
+        beneficiaries:
+          type: array
+          items:
+            $ref: '#/components/schemas/BeneficiaryDto'
+    TransactionDto:
+      type: object
+      properties:
+        transactionType:
+          type: string
+        amount:
+          type: string
+        accountNo:
+          type: string
+    TransactionResponse:
+      type: object
+      properties:
+        responseCode:
+          type: string
+        responseMessage:
+          type: string
+        refId:
+          type: string
+        amount:
+          type: string
+        type:
+          type: string
+        accountTo:
+          type: string
+        accountFrom:
+          type: string
+        date:
+          type: string
+        time:
+          type: string
+        name:
+          type: string
+    JwtRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
